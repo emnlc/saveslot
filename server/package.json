@@ -1,9 +1,10 @@
 {
   "name": "server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/app.ts"
   },
   "dependencies": {
+    "dotenv": "^16.5.0",
     "hono": "^4.7.10"
   },
   "devDependencies": {
