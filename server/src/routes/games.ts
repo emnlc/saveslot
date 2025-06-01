@@ -110,12 +110,15 @@ gamesRoutes.get("/highly-rated", async (c) => {
       aggregated_rating,
       aggregated_rating_count,
       hypes,
+      cover.url,
+      slug,
       first_release_date;
     where
-      hypes > 15 &
+      hypes > 25 &
+      total_rating > 90 &
       total_rating_count > 150;
-    sort total_rating desc;
-    limit 10;
+    sort total_rating_count desc;
+    limit 6;
     `;
 
     const releases = await fetchIGDB("games", body);
