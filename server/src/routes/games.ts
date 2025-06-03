@@ -110,7 +110,7 @@ gamesRoutes.get("/highly-rated", async (c) => {
       aggregated_rating,
       aggregated_rating_count,
       hypes,
-      cover.url,
+      cover.image_id,
       slug,
       first_release_date;
     where
@@ -126,5 +126,50 @@ gamesRoutes.get("/highly-rated", async (c) => {
   } catch (err) {
     console.error("Error fetching popular games:", err);
     return c.json({ error: "Failed to fetch popular games" }, 500);
+  }
+});
+
+gamesRoutes.get("/:game_slug", async (c) => {
+  const gameSlug = c.req.param("game_slug");
+  try {
+    const body = `
+    fields 
+      name,
+      total_rating,
+      total_rating_count,
+      rating,
+      rating_count,
+      aggregated_rating,
+      aggregated_rating_count,
+      hypes,
+      age_ratings,
+      game_engines,
+      game_type,
+      genres.name,
+      involved_companies.company.name,
+      involved_companies.developer,
+      involved_companies.publisher,
+      artworks.image_id,
+      screenshots.url,
+      storyline,
+      summary,
+      platforms.name,
+      platforms.url,
+      videos.video_id,
+      videos.name,
+      cover.image_id,
+      slug,
+      url,
+      first_release_date;
+    where
+      slug = "${gameSlug}";
+    `;
+
+    const gameContent = await fetchIGDB("games", body);
+    const game = gameContent[0];
+    return c.json(game);
+  } catch (err) {
+    console.error("Error fetching popular games:", err);
+    return c.json({ error: `Failed to fetch ${gameSlug} information.` }, 500);
   }
 });
