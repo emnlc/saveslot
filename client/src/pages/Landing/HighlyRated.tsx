@@ -1,9 +1,7 @@
 import { useHighlyRated } from "../../hooks/useHighlyRated";
 import { Link } from "@tanstack/react-router";
 
-const unixTimestampToDate = (timestamp: number) => {
-  return new Date(timestamp * 1000);
-};
+import { convertToDate } from "../../utils/gameHelpers";
 
 const HighlyRated = () => {
   const { data, isLoading, isError } = useHighlyRated();
@@ -15,7 +13,7 @@ const HighlyRated = () => {
     <>
       <div className="flex flex-row justify-center items-center gap-2">
         {data?.map((game) => {
-          game.cover.url = game.cover.url.replace("t_thumb", "t_1080p");
+          const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${game?.cover.image_id}.jpg`;
 
           return (
             <Link
@@ -26,7 +24,7 @@ const HighlyRated = () => {
             >
               <img
                 className="w-full h-full object-fill rounded-lg transition duration-300 group-hover:brightness-25"
-                src={game.cover.url}
+                src={cover_url}
                 alt={game.name}
               />
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-8 opacity-0 group-hover:opacity-100 transition duration-300">
@@ -34,9 +32,7 @@ const HighlyRated = () => {
                   {game.name}
                 </span>
                 <span className="flex-1 flex flex-col justify-center text-white text-xs">
-                  {unixTimestampToDate(
-                    game.first_release_date
-                  ).toLocaleDateString()}
+                  {convertToDate(game.first_release_date)}
                 </span>
               </div>
             </Link>

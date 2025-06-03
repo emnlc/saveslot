@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import HighlyRated from "./HighlyRated";
 import LandingFeatures from "./LandingFeatures";
 
 export default function LandingPage() {
+  useEffect(() => {
+    document.title = "SaveSlot";
+  });
+
   return (
     <div className="flex items-center justify-center min-h-screen flex-col">
       <main className="flex-1">

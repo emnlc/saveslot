@@ -1,21 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchHighlyRated } from "../services/api";
-
-interface Games {
-  id: string;
-  name: string;
-  cover: {
-    id: string;
-    url: string;
-  };
-  first_release_date: number;
-  slug: string;
-}
+import type { Game } from "../Interface";
 
 export function useHighlyRated() {
-  return useQuery<Games[]>({
+  return useQuery<Game[]>({
     queryKey: ["highly-rated"],
-    queryFn: () => fetchHighlyRated<Games[]>(),
+    queryFn: () => fetchHighlyRated<Game[]>(),
     staleTime: 1000 * 60,
     retry: 1,
   });

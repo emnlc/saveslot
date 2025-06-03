@@ -8,3 +8,13 @@ export async function fetchHighlyRated<T>(): Promise<T> {
 
   return res.json();
 }
+
+export async function fetchGame<T>(gameSlug: string): Promise<T> {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}games/${gameSlug}`
+  );
+  if (!res.ok) {
+    throw new Error("Failed to fetch game info");
+  }
+  return res.json();
+}

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import GamePage from "../../pages/GamePage/GamePage";
 
 export const Route = createFileRoute("/games/$gamesSlug")({
@@ -6,5 +6,7 @@ export const Route = createFileRoute("/games/$gamesSlug")({
 });
 
 function RouteComponent() {
-  return <GamePage />;
+  const { gamesSlug } = useParams({ from: "/games/$gamesSlug" });
+
+  return <GamePage gamesSlug={gamesSlug} />;
 }
