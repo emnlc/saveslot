@@ -44,6 +44,7 @@ gamesRoutes.get("/upcoming", async (c) => {
     const body = `
     fields 
       name,
+      cover.image_id,
       total_rating,
       total_rating_count,
       rating,
@@ -51,11 +52,12 @@ gamesRoutes.get("/upcoming", async (c) => {
       aggregated_rating,
       aggregated_rating_count,
       hypes,
+      slug,
       first_release_date;
     where
       first_release_date > ${Math.floor(Date.now() / 1000)};
     sort hypes desc;
-    limit 25;
+    limit 30;
     `;
 
     const upcoming = await fetchIGDB("games", body);

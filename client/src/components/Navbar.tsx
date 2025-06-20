@@ -35,12 +35,12 @@ const Navbar = () => {
             >
               Lists
             </Link>
-            <Link
+            {/* <Link
               to="/"
               className="text-sm font-medium transition-colors hover:text-primary"
             >
               Activity
-            </Link>
+            </Link> */}
 
             <div className="relative max-w-36">
               <input

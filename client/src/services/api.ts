@@ -30,3 +30,13 @@ export async function fetchGames<T>(page?: number): Promise<T> {
 
   return res.json();
 }
+
+export async function fetchUpcomingGames<T>(): Promise<T> {
+  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}games/upcoming`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch game list");
+  }
+
+  return res.json();
+}
