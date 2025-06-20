@@ -5,16 +5,16 @@ const Footer = () => {
   return (
     <>
       <footer className="w-full bg-base-200/80 py-6">
-        <div className="container mx-auto flex flex-row items-center justify-between gap-4 ">
+        <div className="container mx-auto flex flex-row items-center justify-between gap-4 px-4 md:px-0">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start md:items-center gap-2">
               <Link to="/" className="hover:brightness-[90%] transition-all">
                 <span className="font-semibold">
                   <span className="text-primary">Save</span>Slot
                 </span>
               </Link>
             </div>
-            <p className="text-center text-sm text-muted-foreground md:text-left">
+            <p className="text-left text-xs md:text-sm text-muted-foreground ">
               &copy; {new Date().getFullYear()} SaveSlot. All rights reserved.
             </p>
           </div>
@@ -25,10 +25,10 @@ const Footer = () => {
                 target="_blank"
                 href="https://github.com/emnlc/saveslot"
               >
-                <Github className="h-5 w-5" />
+                <Github className="h-4 w-4 md:h-5 md:w-5" />
               </a>
             </div>
-            <span className="text-sm">
+            <span className="text-xs md:text-sm">
               Powered by{" "}
               <a
                 className="hover:text-[#9047FE] transition-colors"

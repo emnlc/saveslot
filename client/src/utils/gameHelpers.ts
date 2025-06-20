@@ -8,3 +8,9 @@ export const convertToDate = (timestamp: number): string => {
     timeZone: "UTC",
   });
 };
+
+export const decodeTag = (tag: number) => {
+  const typeID = tag >>> 28;
+  const objectID = tag & 0x0ffffff;
+  return { typeID, objectID };
+};

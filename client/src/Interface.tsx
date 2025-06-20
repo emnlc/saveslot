@@ -10,12 +10,52 @@ export interface Game {
   involved_companies: InvolvedCompanies[];
   platforms: Platforms[];
   artworks: Artwork[];
-
+  summary: string;
+  storyline: string;
   rating: number;
   rating_count: number;
   aggregated_rating: number;
   url: string;
   videos: Video[];
+  game_type: number;
+  genres: [
+    {
+      id: number;
+      name: string;
+    },
+  ];
+  screenshots: [
+    {
+      id: number;
+      image_id: string;
+    },
+  ];
+  tags: number[];
+  age_ratings: [
+    {
+      id: number;
+      rating_category: {
+        id: number;
+        organization: {
+          id: number;
+          name: string;
+        };
+        rating: string;
+        rating_cover_url: string;
+      };
+    },
+  ];
+  websites: [
+    {
+      id: number;
+      url: string;
+      type: {
+        id: number;
+        type: string;
+      };
+    },
+  ];
+  collections: [{ games: [Game] }];
 }
 
 interface Video {
@@ -43,4 +83,9 @@ interface InvolvedCompanies {
 interface Platforms {
   id: number;
   name: string;
+  abbreviation: string;
+  platform_logo: {
+    id: number;
+    image_id: string;
+  };
 }

@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { useGameInfo } from "../../hooks/useGameInfo";
-import { convertToDate } from "../../utils/gameHelpers";
+import LightboxGallery from "./LightboxGallery";
 
-import { Star, Heart, ListPlus } from "lucide-react";
+import GamePageHeader from "./GamePageHeader";
+import GamePageDetails from "./GamePageDetails";
+import GamePageStores from "./GamePageStores";
+import GamePageTrailer from "./GamePageTrailer";
 
 type Props = {
   gamesSlug: string;
@@ -20,22 +23,8 @@ const GamePage = (props: Props) => {
   }, [data]);
 
   if (isLoading) return <p>Loading...</p>;
-  if (isError || !data) return <p>Error fetching users.</p>;
+  if (isError || !data) return <p>Error fetching game data.</p>;
   console.log(data);
-
-  const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover.image_id}.jpg`;
-
-  const trailer =
-    data.videos.find(
-      (video) =>
-        video.name && video.name.trim().toLowerCase().includes("cinematic")
-    ) ||
-    data.videos.find(
-      (video) => video.name && video.name.toLowerCase().includes("story")
-    ) ||
-    data.videos.find(
-      (video) => video.name && video.name.toLowerCase().includes("launch")
-    );
 
   return (
     <div className="relative w-full min-h-screen">
@@ -43,128 +32,53 @@ const GamePage = (props: Props) => {
       <div
         className="max-w-6xl mx-auto h-[450px] bg-cover bg-center bg-no-repeat relative"
         style={{
-          backgroundImage: `url(https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks[0].image_id}.jpg)`,
+          backgroundImage: `url(https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks ? data.artworks[0].image_id : data.cover.image_id}.jpg)`,
         }}
       >
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-base-100/60 via-base-100/70 to-base-100/90" />
-
-        {/* Fade to page background */}
-        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-base-100" />
-
-        {/* Left fade */}
-        <div className="absolute top-0 left-0 h-full w-48 bg-gradient-to-r from-base-100 to-transparent" />
-
-        {/* Right fade */}
-        <div className="absolute top-0 right-0 h-full w-48 bg-gradient-to-l from-base-100 to-transparent" />
+        <div className=" absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-base-100" />
+        <div className="absolute top-0 left-0 h-full w-48 md:bg-gradient-to-r md:from-base-100 md:to-transparent" />
+        <div className="absolute top-0 right-0 h-full w-48 md:bg-gradient-to-l md:from-base-100 md:to-transparent" />
       </div>
 
       {/* Game Info Section */}
-      <div className="absolute top-72 left-1/2 transform -translate-x-1/2 w-full px-4 md:px-6 max-w-5xl">
-        <div className="flex flex-row gap-8 items-start ">
-          <img
-            src={`${cover_url}`}
-            className="w-60 h-auto rounded-lg shadow-lg z-10"
-            alt={data.name}
-          />
-
-          <div className="w-full flex flex-col gap-4 z-10">
-            <h1 className="font-medium text-4xl">{data.name}</h1>
-
-            <div className="flex flex-row items-center gap-2 text-sm">
-              <span>{convertToDate(data.first_release_date)}</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-neutral"></span>
-              {data.involved_companies.map(
-                (company) =>
-                  company.developer && (
-                    <span
-                      className="hover:text-primary transition-colors"
-                      key={company.id}
-                    >
-                      {company.company.name}
-                    </span>
-                  )
-              )}
-            </div>
-
-            <div className="flex flex-row flex-wrap gap-2">
-              {data.platforms.map(
-                (platform) =>
-                  platform && (
-                    <span
-                      className="badge badge-neutral badge-sm w-fit text-xs hover:text-primary transition-colors"
-                      key={platform.id}
-                    >
-                      {platform.name}
-                    </span>
-                  )
-              )}
-            </div>
-
-            <div className="flex flex-row items-center  flex-wrap gap-2">
-              <div className="flex flex-col items-center justify-center">
-                <span className="flex items-center gap-2 text-xl">
-                  <Star fill="#FFD700" stroke="#FFD700" />
-                  N/A
-                </span>
-                <span className="text-xs">User Ratings</span>
-              </div>
-              <div className="h-12 w-px bg-base-300" />
-
-              <div className="flex flex-col items-center justify-center">
-                <span className="flex items-center gap-2 text-xl">
-                  <Star fill="#FFD700" stroke="#FFD700" />
-                  <div>
-                    <span>{(data.rating / 10).toFixed(1)}</span>
-                    <span>/10</span>
-                  </div>
-                </span>
-                <span className="text-xs">
-                  <a
-                    target="_blank"
-                    className="hover:text-[#9047FE] transition-all"
-                    href={`${data.url}`}
-                  >
-                    IGDB Rating
-                  </a>
-                </span>
-              </div>
-              <div className="h-12 w-px bg-base-300" />
-
-              <div className="flex flex-col items-center justify-center">
-                <span className="flex items-center gap-2 text-xl">
-                  {data.aggregated_rating.toFixed(0)}
-                </span>
-                <span className="text-xs">Metascore</span>
-              </div>
-            </div>
-
-            <div className="flex flex-row gap-4 ">
-              <button className="btn btn-primary btn-md ">
-                <Heart />
-                Favorite
-              </button>
-
-              <button className="btn btn-secondary">
-                <ListPlus />
-                Add to List
-              </button>
-
-              <button className="btn btn-info">
-                <ListPlus />
-                Write a Reivew
-              </button>
-            </div>
-          </div>
+      <div className="relative -mt-96 md:-mt-40 w-full px-4 md:px-6 max-w-5xl mx-auto ">
+        <div className="flex flex-col justify-center items-center md:flex-row gap-8 md:items-start">
+          <GamePageHeader data={data} />
         </div>
 
-        <div className="flex flex-col">
-          <iframe
-            width="560"
-            height="315"
-            src={`https://www.youtube.com/embed/${trailer?.video_id}`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          ></iframe>
+        {/* additional game info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-8 my-8">
+          {/* about / summary */}
+          <GamePageDetails data={data} />
+
+          {/* right of grid */}
+          <div className="col-span-1 flex flex-col gap-4">
+            {data.videos && (
+              <div className="flex flex-col gap-2 ">
+                <h2 className="text-lg font-bold">Trailer</h2>
+                <GamePageTrailer data={data} />
+              </div>
+            )}
+
+            {data.screenshots && (
+              <div className="flex flex-col gap-2">
+                <h2 className="text-lg font-bold">Screenshots</h2>
+                <LightboxGallery
+                  screenshots={data.screenshots}
+                ></LightboxGallery>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2">
+              <GamePageStores data={data} />
+            </div>
+          </div>
+
+          {/* reviews section */}
+          <div className="col-span-1 md:col-span-2 flex ">
+            <h1 className="text-xl font-bold">Reviews</h1>
+          </div>
         </div>
       </div>
     </div>

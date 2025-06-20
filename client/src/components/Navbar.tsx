@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <>
       <header className="sticky top-0 z-40 w-full backdrop-blur supports-[backdrop-filter]:bg-base-200/80 shadow-sm">
-        <div className="container mx-auto flex h-16 items-center justify-between">
+        <div className="container mx-auto flex h-16 items-center px-4 md:px-0 justify-between">
           <div className="flex items-center gap-2">
             <Link to="/" className="group relative inline-block">
               <span className="text-xl font-bold">

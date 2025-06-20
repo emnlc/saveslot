@@ -18,3 +18,15 @@ export async function fetchGame<T>(gameSlug: string): Promise<T> {
   }
   return res.json();
 }
+
+export async function fetchGames<T>(page?: number): Promise<T> {
+  const res = await fetch(
+    `${import.meta.env.VITE_BACKEND_URL}games/games?page=${page}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch game list");
+  }
+
+  return res.json();
+}

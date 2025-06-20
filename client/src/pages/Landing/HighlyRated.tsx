@@ -11,7 +11,7 @@ const HighlyRated = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-center items-center gap-2">
+      <div className="grid grid-cols-3 md:flex md:flex-row md:flex-wrap md:justify-start md:items-center gap-2">
         {data?.map((game) => {
           const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${game?.cover.image_id}.jpg`;
 
@@ -20,7 +20,7 @@ const HighlyRated = () => {
               key={game.id}
               to="/games/$gamesSlug"
               params={{ gamesSlug: game.slug }}
-              className="relative w-44 group rounded-lg overflow-hidden block"
+              className="relative w-28 md:w-44 group rounded-lg overflow-hidden block "
             >
               <img
                 className="w-full h-full object-fill rounded-lg transition duration-300 group-hover:brightness-25"
