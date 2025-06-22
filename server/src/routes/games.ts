@@ -6,6 +6,12 @@ export const gamesRoutes = new Hono();
 
 const NINETY_DAYS = Math.floor(Date.now() / 1000) - 7889238;
 
+import { newlyReleasedRoutes } from "./games/newlyReleased";
+import { upcomingRoutes } from "./games/upcoming";
+
+gamesRoutes.route("/newly-released", newlyReleasedRoutes);
+gamesRoutes.route("/upcoming", upcomingRoutes);
+
 // popular games
 gamesRoutes.get("/popular", async (c) => {
   try {
@@ -38,8 +44,7 @@ gamesRoutes.get("/popular", async (c) => {
   }
 });
 
-// upcoming games
-gamesRoutes.get("/upcoming", async (c) => {
+gamesRoutes.get("/critically-acclaimed", async (c) => {
   try {
     const body = `
     fields 
@@ -55,42 +60,13 @@ gamesRoutes.get("/upcoming", async (c) => {
       slug,
       first_release_date;
     where
-      first_release_date > ${Math.floor(Date.now() / 1000)};
-    sort hypes desc;
+      total_rating > 90;
+    sort total_rating_count desc;
     limit 30;
     `;
 
     const upcoming = await fetchIGDB("games", body);
     return c.json(upcoming);
-  } catch (err) {
-    console.error("Error fetching popular games:", err);
-    return c.json({ error: "Failed to fetch popular games" }, 500);
-  }
-});
-
-// recently released games
-gamesRoutes.get("/releases", async (c) => {
-  try {
-    const body = `
-    fields 
-      name,
-      total_rating,
-      total_rating_count,
-      rating,
-      rating_count,
-      aggregated_rating,
-      aggregated_rating_count,
-      hypes,
-      first_release_date;
-    where 
-      first_release_date > ${NINETY_DAYS} &
-      first_release_date < ${Math.floor(Date.now() / 1000)};
-    sort hypes desc;
-    limit 25;
-    `;
-
-    const releases = await fetchIGDB("games", body);
-    return c.json(releases);
   } catch (err) {
     console.error("Error fetching popular games:", err);
     return c.json({ error: "Failed to fetch popular games" }, 500);
@@ -201,6 +177,7 @@ gamesRoutes.get("/get-games", async (c) => {
   }
 });
 
+// FROM SUPABASE
 gamesRoutes.get("/games", async (c) => {
   try {
     const page = parseInt(c.req.query("page") || "1", 10);
