@@ -23,7 +23,7 @@ const Navbar = () => {
             >
               Games
             </Link>
-            <Link
+            {/* <Link
               to="/"
               className="text-sm font-medium transition-colors hover:text-primary"
             >
@@ -34,7 +34,7 @@ const Navbar = () => {
               className="text-sm font-medium transition-colors hover:text-primary"
             >
               Lists
-            </Link>
+            </Link> */}
             {/* <Link
               to="/"
               className="text-sm font-medium transition-colors hover:text-primary"
