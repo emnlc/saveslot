@@ -1,6 +1,6 @@
-import { useUpcomingGames } from "../../hooks/useUpcomingGames";
-import { useNewlyReleasedGames } from "@/hooks/useNewlyReleased";
-import { useCriticallyAcclaimedGames } from "@/hooks/useCriticallyAcclaimedGames";
+import { useUpcomingGames } from "../../hooks/GameHooks/useUpcomingGames";
+import { useNewlyReleasedGames } from "@/hooks/GameHooks/useNewlyReleased";
+import { useCriticallyAcclaimedGames } from "@/hooks/GameHooks/useCriticallyAcclaimedGames";
 import { Link } from "@tanstack/react-router";
 
 import GameCarousel from "@/components/GameCarousel";
@@ -43,7 +43,7 @@ const Games = () => {
           <h1 className="font-bold text-2xl">Upcoming Games</h1>
           <Link
             to="/upcoming"
-            className="self-end hover:text-accent transition-all"
+            className="self-end hover:text-secondary transition-all"
             search={{ page: 1, sort: "popularity", order: "desc" }}
           >
             More
@@ -58,8 +58,8 @@ const Games = () => {
           <h1 className="font-bold text-2xl">Newly Released</h1>
           <Link
             to="/newly-released"
-            className="self-end hover:text-accent transition-all"
-            search={{ page: 1, sort: "popularity", order: "desc" }}
+            className="self-end hover:text-secondary transition-all"
+            search={{ page: 1, sort: "first_release_date", order: "desc" }}
           >
             More
           </Link>

@@ -1,4 +1,4 @@
-import { useHighlyRated } from "../../hooks/useHighlyRated";
+import { useHighlyRated } from "../../hooks/GameHooks/useHighlyRated";
 import { Link } from "@tanstack/react-router";
 
 import { convertToDate } from "../../utils/gameHelpers";

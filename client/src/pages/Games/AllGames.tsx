@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useGames } from "../../hooks/useGames";
+import { useGames } from "../../hooks/GameHooks/useGames";
 import { useEffect, useState } from "react";
 
 const AllGames = () => {

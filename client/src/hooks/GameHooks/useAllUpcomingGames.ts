@@ -1,5 +1,5 @@
+import { fetchAllUpcoming } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
-import { fetchGames } from "../services/api";
 
 type GamesData = {
   page: number;
@@ -20,11 +20,11 @@ type GamesData = {
   ];
 };
 
-export function useGames(page: number) {
+export function useAllUpcomingGames(page: number, sort: string, order: string) {
   return useQuery<GamesData>({
-    queryKey: ["games", page],
-    queryFn: () => fetchGames<GamesData>(page),
-    staleTime: 1000 * 60,
+    queryKey: ["all-upcoming", page, sort, order],
+    queryFn: () => fetchAllUpcoming<GamesData>(page, sort, order),
+    staleTime: 1000 * 60 * 15,
     retry: 1,
   });
 }

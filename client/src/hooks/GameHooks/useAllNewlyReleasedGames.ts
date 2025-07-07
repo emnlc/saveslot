@@ -28,7 +28,7 @@ export function useAllNewlyReleasedGames(
   return useQuery<GamesData>({
     queryKey: ["all-newly-released", page, sort, order],
     queryFn: () => fetchAllNewlyReleased<GamesData>(page, sort, order),
-    staleTime: 1000 * 60,
+    staleTime: 1000 * 60 * 15,
     retry: 1,
   });
 }

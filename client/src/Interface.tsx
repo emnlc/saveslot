@@ -1,3 +1,22 @@
+export interface Profile {
+  id: string;
+  username: string;
+  full_name: string;
+  avatar_url: string | null;
+  created_at: string;
+
+  display_name: string | null;
+  bio: string | null;
+}
+
+export type GameList = {
+  id: string;
+  user_id: string;
+  name: string;
+  is_private: boolean;
+  created_at: string;
+};
+
 export interface Game {
   id: number;
   name: string;

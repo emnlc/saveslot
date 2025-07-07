@@ -52,12 +52,14 @@ newlyReleasedRoutes.get("/all", async (c) => {
     const { count } = await supabase
       .from("games")
       .select("*", { count: "exact", head: true })
+      .eq("released", true)
       .gte("first_release_date", cutoffDate);
 
     const query = supabase
       .from("games")
       .select("*")
       .gte("first_release_date", cutoffDate)
+      .eq("released", true)
       .order(sort1, { ascending: sort1Order === "asc" })
       .range(offset, offset + pageSize - 1);
 
@@ -85,63 +87,62 @@ newlyReleasedRoutes.get("/all", async (c) => {
   }
 });
 
-// TODO: schedule this to run on its own
-newlyReleasedRoutes.get("/get", async (c) => {
-  try {
-    const gamesBody = `
-    fields 
-      name,
-      cover.image_id,
-      total_rating,
-      total_rating_count,
-      rating,
-      rating_count,
-      aggregated_rating,
-      aggregated_rating_count,
-      hypes,
-      slug,
-      first_release_date;
-    where 
-      total_rating_count > 1 &
-      first_release_date > ${NINETY_DAYS} &
-      first_release_date < ${Math.floor(Date.now() / 1000)};
-    sort hypes desc;
-    limit 500;
-    `;
+// newlyReleasedRoutes.get("/get", async (c) => {
+//   try {
+//     const gamesBody = `
+//     fields
+//       name,
+//       cover.image_id,
+//       total_rating,
+//       total_rating_count,
+//       rating,
+//       rating_count,
+//       aggregated_rating,
+//       aggregated_rating_count,
+//       hypes,
+//       slug,
+//       first_release_date;
+//     where
+//       total_rating_count > 1 &
+//       first_release_date > ${NINETY_DAYS} &
+//       first_release_date < ${Math.floor(Date.now() / 1000)};
+//     sort hypes desc;
+//     limit 500;
+//     `;
 
-    const newlyReleasedGames = await fetchIGDB("games", gamesBody);
+//     const newlyReleasedGames = await fetchIGDB("games", gamesBody);
 
-    const formattedGames = newlyReleasedGames.map((game: any) => {
-      const rating = game.total_rating || 0;
-      const count = game.total_rating_count || 0;
+//     const formattedGames = newlyReleasedGames.map((game: any) => {
+//       const rating = game.total_rating || 0;
+//       const count = game.total_rating_count || 0;
 
-      return {
-        id: game.id,
-        name: game.name,
-        slug: game.slug,
-        cover_id: game.cover?.image_id ? game.cover.image_id : null,
-        igdb_total_rating: game.total_rating,
-        igdb_total_rating_count: game.total_rating_count,
-        updated_at: game.updated_at,
-        popularity: count * (rating / 100),
-        first_release_date: new Date(
-          game.first_release_date * 1000
-        ).toISOString(),
-      };
-    });
+//       return {
+//         id: game.id,
+//         name: game.name,
+//         slug: game.slug,
+//         cover_id: game.cover?.image_id ? game.cover.image_id : null,
+//         igdb_total_rating: game.total_rating,
+//         igdb_total_rating_count: game.total_rating_count,
+//         updated_at: game.updated_at,
+//         popularity: count * (rating / 100),
+//         first_release_date: new Date(
+//           game.first_release_date * 1000
+//         ).toISOString(),
+//       };
+//     });
 
-    const { error } = await supabase
-      .from("games")
-      .upsert(formattedGames, { onConflict: "id" });
+//     const { error } = await supabase
+//       .from("games")
+//       .upsert(formattedGames, { onConflict: "id" });
 
-    if (error) {
-      console.error("Supabase insert error (games):", error);
-      return c.json({ error: "Failed to save upcoming games" }, 500);
-    }
+//     if (error) {
+//       console.error("Supabase insert error (games):", error);
+//       return c.json({ error: "Failed to save upcoming games" }, 500);
+//     }
 
-    return c.json(newlyReleasedGames);
-  } catch (err) {
-    console.error("Error fetching upcoming games:", err);
-    return c.json({ error: "Failed to fetch upcoming games" }, 500);
-  }
-});
+//     return c.json(newlyReleasedGames);
+//   } catch (err) {
+//     console.error("Error fetching upcoming games:", err);
+//     return c.json({ error: "Failed to fetch upcoming games" }, 500);
+//   }
+// });

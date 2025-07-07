@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UpcomingIndexRouteImport } from './routes/upcoming/index'
+import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
 import { Route as NewlyReleasedIndexRouteImport } from './routes/newly-released/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as AllGamesIndexRouteImport } from './routes/all-games/index'
 import { Route as GamesGamesSlugRouteImport } from './routes/games/$gamesSlug'
+import { Route as UUsernameIndexRouteImport } from './routes/u/$username/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,9 +29,19 @@ const UpcomingIndexRoute = UpcomingIndexRouteImport.update({
   path: '/upcoming/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignUpIndexRoute = SignUpIndexRouteImport.update({
+  id: '/sign-up/',
+  path: '/sign-up/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NewlyReleasedIndexRoute = NewlyReleasedIndexRouteImport.update({
   id: '/newly-released/',
   path: '/newly-released/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesIndexRoute = GamesIndexRouteImport.update({
@@ -46,22 +59,33 @@ const GamesGamesSlugRoute = GamesGamesSlugRouteImport.update({
   path: '/games/$gamesSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UUsernameIndexRoute = UUsernameIndexRouteImport.update({
+  id: '/u/$username/',
+  path: '/u/$username/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
+  '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
+  '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
+  '/u/$username': typeof UUsernameIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
+  '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
+  '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
+  '/u/$username': typeof UUsernameIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +93,11 @@ export interface FileRoutesById {
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
   '/all-games/': typeof AllGamesIndexRoute
   '/games/': typeof GamesIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/newly-released/': typeof NewlyReleasedIndexRoute
+  '/sign-up/': typeof SignUpIndexRoute
   '/upcoming/': typeof UpcomingIndexRoute
+  '/u/$username/': typeof UUsernameIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -79,24 +106,33 @@ export interface FileRouteTypes {
     | '/games/$gamesSlug'
     | '/all-games'
     | '/games'
+    | '/login'
     | '/newly-released'
+    | '/sign-up'
     | '/upcoming'
+    | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/games/$gamesSlug'
     | '/all-games'
     | '/games'
+    | '/login'
     | '/newly-released'
+    | '/sign-up'
     | '/upcoming'
+    | '/u/$username'
   id:
     | '__root__'
     | '/'
     | '/games/$gamesSlug'
     | '/all-games/'
     | '/games/'
+    | '/login/'
     | '/newly-released/'
+    | '/sign-up/'
     | '/upcoming/'
+    | '/u/$username/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -104,8 +140,11 @@ export interface RootRouteChildren {
   GamesGamesSlugRoute: typeof GamesGamesSlugRoute
   AllGamesIndexRoute: typeof AllGamesIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
+  LoginIndexRoute: typeof LoginIndexRoute
   NewlyReleasedIndexRoute: typeof NewlyReleasedIndexRoute
+  SignUpIndexRoute: typeof SignUpIndexRoute
   UpcomingIndexRoute: typeof UpcomingIndexRoute
+  UUsernameIndexRoute: typeof UUsernameIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -124,11 +163,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpcomingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-up/': {
+      id: '/sign-up/'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/newly-released/': {
       id: '/newly-released/'
       path: '/newly-released'
       fullPath: '/newly-released'
       preLoaderRoute: typeof NewlyReleasedIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/': {
@@ -152,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesGamesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/u/$username/': {
+      id: '/u/$username/'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -160,8 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   GamesGamesSlugRoute: GamesGamesSlugRoute,
   AllGamesIndexRoute: AllGamesIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
+  LoginIndexRoute: LoginIndexRoute,
   NewlyReleasedIndexRoute: NewlyReleasedIndexRoute,
+  SignUpIndexRoute: SignUpIndexRoute,
   UpcomingIndexRoute: UpcomingIndexRoute,
+  UUsernameIndexRoute: UUsernameIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

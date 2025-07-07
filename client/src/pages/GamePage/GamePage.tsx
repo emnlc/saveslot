@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGameInfo } from "../../hooks/useGameInfo";
+import { useGameInfo } from "../../hooks/GameHooks/useGameInfo";
 import LightboxGallery from "./LightboxGallery";
 
 import GamePageHeader from "./GamePageHeader";

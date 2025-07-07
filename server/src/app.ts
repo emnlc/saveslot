@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 
+import { addNewGames, addUpcomingGames } from "./services/gameUpdater";
+
 import { gamesRoutes } from "./routes/games";
 // import { usersRoutes } from "./routes/users";
 // import { authRoutes } from "./routes/auth";
@@ -23,5 +25,14 @@ app.route("/games", gamesRoutes);
 // app.route("/auth", authRoutes);
 // app.route("/lists", listsRoutes);
 // app.route("/reviews", reviewsRoutes);
+
+app.post("/update-games", async (c) => {
+  return c.json({ success: true });
+});
+
+// scheduled routes
+addNewGames();
+addUpcomingGames();
+setInterval(addNewGames, 24 * 60 * 60 * 1000); // every 24 hours
 
 export default app;

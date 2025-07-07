@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useAllNewlyReleasedGames } from "@/hooks/useAllNewlyReleasedGames";
+import { useAllNewlyReleasedGames } from "@/hooks/GameHooks/useAllNewlyReleasedGames";
 
 import { useEffect } from "react";
 import { Route as NewlyReleasedRoute } from "../../routes/newly-released";

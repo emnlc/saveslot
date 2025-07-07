@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useAllUpcomingGames } from "../../hooks/useAllUpcomingGames";
+import { useAllUpcomingGames } from "../../hooks/GameHooks/useAllUpcomingGames";
 import { useEffect } from "react";
 import { Route as UpcomingRoute } from "../../routes/upcoming";
 type SortOption = "popularity" | "name" | "first_release_date";
