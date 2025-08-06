@@ -1,50 +1,13 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/services/supabase";
 import { Link } from "@tanstack/react-router";
-import { Search, UserCircle2 } from "lucide-react";
+import { Search } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
+import { UserAuth } from "@/context/AuthContext";
+
+import Dropdown from "./Dropdown";
+
 const Navbar = () => {
-  const [username, setUsername] = useState<string | null>(null);
-
-  // Helper to fetch profile username by user ID
-  const fetchUsername = async (userId: string) => {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", userId)
-      .single();
-    if (profile?.username) {
-      setUsername(profile.username);
-    }
-  };
-
-  useEffect(() => {
-    // 1️⃣ Initial load: see if there's already a session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUsername(session.user.id);
-      }
-    });
-
-    // 2️⃣ Subscribe to auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        // signed in (or user refreshed)
-        fetchUsername(session.user.id);
-      } else {
-        // signed out
-        setUsername(null);
-      }
-    });
-
-    // 3️⃣ Cleanup on unmount
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  const { profile, session, loading } = UserAuth();
 
   return (
     <header className="sticky top-0 z-40 w-full backdrop-blur supports-[backdrop-filter]:bg-base-200/80 shadow-sm">
@@ -71,7 +34,11 @@ const Navbar = () => {
         </nav>
 
         <div className="flex items-center gap-4">
-          {!username ? (
+          {!loading && profile && session ? (
+            <>
+              <Dropdown />
+            </>
+          ) : (
             <>
               <Link
                 to="/login"
@@ -86,14 +53,6 @@ const Navbar = () => {
                 Sign up
               </Link>
             </>
-          ) : (
-            <Link
-              to="/u/$username"
-              params={{ username }}
-              className="hover:text-primary transition-colors"
-            >
-              <UserCircle2 className="w-6 h-6" />
-            </Link>
           )}
           <ThemeToggle />
         </div>

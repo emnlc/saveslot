@@ -38,51 +38,53 @@ const Games = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
-        <div className="flex flex-row justify-between">
-          <h1 className="font-bold text-2xl">Upcoming Games</h1>
-          <Link
-            to="/upcoming"
-            className="self-end hover:text-secondary transition-all"
-            search={{ page: 1, sort: "popularity", order: "desc" }}
-          >
-            More
-          </Link>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+          <div className="flex flex-row justify-between">
+            <h1 className="font-bold text-2xl">Upcoming Games</h1>
+            <Link
+              to="/upcoming"
+              className="self-end hover:text-secondary transition-all"
+              search={{ page: 1, sort: "popularity", order: "desc" }}
+            >
+              More
+            </Link>
+          </div>
+
+          <GameCarousel data={upcomingData} date={true} />
         </div>
 
-        <GameCarousel data={upcomingData} date={true} />
-      </div>
+        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+          <div className="flex flex-row justify-between">
+            <h1 className="font-bold text-2xl">Newly Released</h1>
+            <Link
+              to="/newly-released"
+              className="self-end hover:text-secondary transition-all"
+              search={{ page: 1, sort: "first_release_date", order: "desc" }}
+            >
+              More
+            </Link>
+          </div>
 
-      <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
-        <div className="flex flex-row justify-between">
-          <h1 className="font-bold text-2xl">Newly Released</h1>
-          <Link
-            to="/newly-released"
-            className="self-end hover:text-secondary transition-all"
-            search={{ page: 1, sort: "first_release_date", order: "desc" }}
-          >
-            More
-          </Link>
+          <GameCarousel data={newlyData} />
         </div>
 
-        <GameCarousel data={newlyData} />
-      </div>
-
-      <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
-        <div className="flex flex-row justify-between">
-          <h1 className="font-bold text-2xl">Critically Acclaimed</h1>
-          {/* <Link to="/" className="self-end hover:text-accent transition-all">
+        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+          <div className="flex flex-row justify-between">
+            <h1 className="font-bold text-2xl">Critically Acclaimed</h1>
+            {/* <Link to="/" className="self-end hover:text-accent transition-all">
             More
           </Link> */}
+          </div>
+
+          <GameCarousel data={criticallyData} />
         </div>
 
-        <GameCarousel data={criticallyData} />
-      </div>
-
-      <div className="mx-auto w-fit my-16">
-        <Link to="/all-games" className="btn btn-primary btn-md lg:btn-lg ">
-          View All Games
-        </Link>
+        <div className="mx-auto w-fit my-16">
+          <Link to="/all-games" className="btn btn-primary btn-md lg:btn-lg ">
+            View All Games
+          </Link>
+        </div>
       </div>
     </>
   );

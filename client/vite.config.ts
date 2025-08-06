@@ -5,15 +5,28 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import path from "path";
 
 // https://vite.dev/config/
-export default defineConfig({
-  plugins: [
-    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
-    react(),
-    tailwindcss(),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"), // 👈 This is what enables "@/..." imports
+export default defineConfig(({ mode }) => {
+  const dev = mode === "development";
+  return {
+    plugins: [
+      TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+      react(),
+      tailwindcss(),
+    ],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"), // 👈 This is what enables "@/..." imports
+      },
     },
-  },
+    server: dev
+      ? {
+          host: true,
+          port: 5173,
+          strictPort: true,
+          watch: {
+            usePolling: true,
+          },
+        }
+      : undefined,
+  };
 });

@@ -3,10 +3,14 @@ export interface Profile {
   username: string;
   full_name: string;
   avatar_url: string | null;
+  banner_url: string | null;
   created_at: string;
 
   display_name: string | null;
   bio: string | null;
+
+  followers: number;
+  following: number;
 }
 
 export type GameList = {

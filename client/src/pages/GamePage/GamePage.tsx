@@ -35,10 +35,17 @@ const GamePage = (props: Props) => {
           backgroundImage: `url(https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks ? data.artworks[0].image_id : data.cover.image_id}.jpg)`,
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-base-100/60 via-base-100/70 to-base-100/90" />
+        {/* <div className="absolute inset-0 bg-gradient-to-b from-base-100/60 via-base-100/70 to-base-100/90" />
         <div className=" absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-base-100" />
         <div className="absolute top-0 left-0 h-full w-48 md:bg-gradient-to-r md:from-base-100 md:to-transparent" />
-        <div className="absolute top-0 right-0 h-full w-48 md:bg-gradient-to-l md:from-base-100 md:to-transparent" />
+        <div className="absolute top-0 right-0 h-full w-48 md:bg-gradient-to-l md:from-base-100 md:to-transparent" /> */}
+        <div className="absolute inset-0 bg-gradient-to-b from-base-100/50 via-base-100/60 to-base-100/80" />
+        {/* bottom gradient */}
+        <div className="absolute bottom-0 left-0 w-full h-12 md:h-24 bg-gradient-to-b from-transparent to-base-100" />
+        {/* left gradient */}
+        <div className="hidden sm:block absolute top-0 left-0 h-full sm:w-12 md:w-24 sm:bg-gradient-to-r sm:from-base-100 sm:to-transparent" />
+        {/* right gradient */}
+        <div className="hidden sm:block absolute top-0 right-0 h-full sm:w-12 md:w-24 sm:bg-gradient-to-l sm:from-base-100 sm:to-transparent" />
       </div>
 
       {/* Game Info Section */}

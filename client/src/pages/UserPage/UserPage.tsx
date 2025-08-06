@@ -1,215 +1,191 @@
-import { useParams, useNavigate } from "@tanstack/react-router";
+import { useParams } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import type { Profile } from "@/Interface";
 
 import FavoriteSection from "./FavoriteSection";
-
-import {
-  fetchProfile as fetchProfileHelper,
-  handleSignOut,
-  getFollowerCount,
-  getFollowingCount,
-  followUser,
-  unfollowUser,
-} from "@/utils/authHelpers";
-import { supabase } from "@/services/supabase";
 import EditModal from "./EditModal";
+
+import { UserAuth } from "@/context/AuthContext";
+import { supabase } from "@/services/supabase";
+import type { Profile } from "@/Interface";
+import FollowButton from "@/components/FollowButton";
 
 const UserPage = () => {
   const { username } = useParams({ from: "/u/$username/" });
-  const navigate = useNavigate();
-  const AVATAR_PLACEHOLDER = `https://ui-avatars.com/api/?name=${username}&background=random`;
+  const { profile, getFollowStats } = UserAuth();
 
+  const AVATAR_PLACEHOLDER = `https://ui-avatars.com/api/?name=${username}&background=FE9FA1&color=fff`;
+
+  const [viewedProfile, setViewedProfile] = useState<Profile | null>(null);
+  const [notFound, setNotFound] = useState(false);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
 
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [followerCount, setFollowerCount] = useState<number | null>(null);
-  const [followingCount, setFollowingCount] = useState<number | null>(null);
-
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [isFollowing, setIsFollowing] = useState<boolean>(false);
-
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProfile = async () =>
-    fetchProfileHelper(username, setError, setProfile);
-
   useEffect(() => {
-    if (isEditModalOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
+    document.body.style.overflow = isEditModalOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
   }, [isEditModalOpen]);
 
   useEffect(() => {
-    const loadData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setCurrentUserId(user?.id ?? null);
+    const fetchProfileData = async () => {
+      setNotFound(false);
 
-      await fetchProfile();
+      if (!username) return;
 
-      if (!profile || !user?.id) return;
-
-      const { data: existingFollow } = await supabase
-        .from("follows")
+      const { data, error } = await supabase
+        .from("profiles")
         .select("*")
-        .match({ follower_id: user.id, following_id: profile.id })
-        .maybeSingle();
+        .ilike("username", username)
+        .single();
 
-      setIsFollowing(!!existingFollow);
+      if (error || !data) {
+        setNotFound(true);
+        setViewedProfile(null);
+        return;
+      }
 
-      const followerCount = await getFollowerCount(profile);
-      setFollowerCount(followerCount ?? 0);
-
-      const followingCount = await getFollowingCount(profile);
-      setFollowingCount(followingCount ?? 0);
+      const followStats = await getFollowStats(data.id);
+      setViewedProfile({ ...data, ...followStats });
     };
 
-    loadData();
-  });
+    fetchProfileData();
+  }, [getFollowStats, profile, username]);
 
-  if (error) return <div>{error}</div>;
-  if (!profile || followerCount === null || followingCount === null)
-    return <div>Loading...</div>;
+  useEffect(() => {
+    if (viewedProfile) {
+      document.title = `${viewedProfile.display_name} @${viewedProfile.username}`;
+    } else {
+      document.title = "User Page";
+    }
+  }, [viewedProfile]);
+
+  if (notFound)
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-semibold mb-2">User not found</h1>
+        <p className="text-muted-foreground">
+          The profile for @{username} doesn&apos;t exist.
+        </p>
+      </div>
+    );
+
+  if (!viewedProfile) return null;
+
+  const isOwnProfile = profile?.id === viewedProfile.id;
 
   return (
     <>
-      <div className="flex flex-col container md:mx-auto px-4 my-16 max-w-5xl ">
+      <div className="flex flex-col container mx-auto md:max-w-5xl ">
+        <div
+          className="w-full max-w-6xl -z-10 mx-auto aspect-[3/1] bg-cover bg-center bg-no-repeat relative "
+          style={
+            viewedProfile.banner_url
+              ? {
+                  backgroundImage: `url(${viewedProfile.banner_url})`,
+                }
+              : {
+                  backgroundColor: "#333333",
+                }
+          }
+        >
+          {/* base overlay */}
+          <div className="absolute inset-0 [data-theme=saveslot]:bg-gradient-to-b [data-theme=saveslot]:from-base-100/10 [data-theme=saveslot]:via-base-100/20 [data-theme=saveslot]:to-base-100/30" />
+
+          {/* bottom gradient */}
+          <div className="absolute bottom-0 left-0 w-full h-6 md:h-20 bg-gradient-to-b from-transparent to-base-100" />
+          {/* left gradient */}
+          <div className="hidden sm:block absolute top-0 left-0 h-full sm:w-12 md:w-20 sm:bg-gradient-to-r sm:from-base-100 sm:to-transparent" />
+          {/* right gradient */}
+          <div className="hidden sm:block absolute top-0 right-0 h-full sm:w-12 md:w-20 sm:bg-gradient-to-l sm:from-base-100 sm:to-transparent" />
+        </div>
         {/* Profile Header */}
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-8 ">
+        <div className="flex flex-col md:flex-row items-start gap-4 md:gap-8 mb-8 w-full px-4 md:px-0 relative -mt-12 md:-mt-16">
           {/* Avatar */}
-          <div className="flex-shrink-0 ">
+          <div className="flex-shrink-0">
             <img
-              src={profile.avatar_url || AVATAR_PLACEHOLDER}
+              src={viewedProfile.avatar_url || AVATAR_PLACEHOLDER}
               alt="Avatar"
-              className="w-32 h-32 rounded-full object-cover border-2 border-primary"
+              className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover ring-4 ring-base-100 "
             />
           </div>
 
           {/* User Info */}
-          <div className="flex-1 flex flex-col justify-center items-start gap-1 ">
-            <div className="flex flex-row justify-between items-center w-full">
+          <div className="flex-1 flex flex-col md:justify-center gap-1 md:mt-16 w-full">
+            <div className="flex flex-row justify-between items-center w-full ">
               <h1 className="text-2xl font-semibold">
-                {profile.display_name ? profile.display_name : profile.username}
+                {viewedProfile.display_name || viewedProfile.username}
               </h1>
-              {currentUserId === profile.id && (
+
+              {isOwnProfile ? (
                 <button
                   onClick={() => setEditModalOpen(true)}
-                  className="btn btn-sm bg-primary text-white"
+                  className="btn btn-sm bg-primary text-white -mt-24 md:mt-0"
                 >
                   Edit
                 </button>
-              )}
-
-              {currentUserId && currentUserId !== profile.id && (
-                <button
-                  onClick={async () => {
-                    if (isFollowing) {
-                      await unfollowUser(currentUserId, profile.id);
-                      setIsFollowing(false);
-                      setFollowerCount((prev) => (prev ?? 1) - 1);
-                    } else {
-                      await followUser(currentUserId, profile.id);
-                      setIsFollowing(true);
-                      setFollowerCount((prev) => (prev ?? 0) + 1);
-                    }
+              ) : (
+                <FollowButton
+                  userId={viewedProfile.id}
+                  onFollowChange={async () => {
+                    // Refresh the viewed profile's follower stats when follow status changes
+                    const followStats = await getFollowStats(viewedProfile.id);
+                    setViewedProfile((prev) =>
+                      prev ? { ...prev, ...followStats } : null
+                    );
                   }}
-                  className={`btn btn-sm   ${
-                    isFollowing ? "btn-secondary" : "btn-primary"
-                  }`}
-                >
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </button>
+                />
               )}
             </div>
-            <h2 className="text-md text-muted-foreground">
-              @{profile.username}
-            </h2>
 
-            {/* Follower Stats */}
-            <div className="flex items-center gap-4 mt-2 text-sm text-base-content/70">
-              <span>
-                <strong>{followingCount}</strong> Following
-              </span>
-              <span>
-                <strong>{followerCount}</strong> Followers
-              </span>
-            </div>
+            <h2 className="text-md text-muted-foreground">
+              @{viewedProfile.username}
+            </h2>
 
             <div className="mt-2">
               <p>
-                {profile.bio ? (
-                  profile.bio
+                {viewedProfile.bio ? (
+                  viewedProfile.bio
                 ) : (
                   <span className="italic text-sm">No bio</span>
                 )}
               </p>
             </div>
 
-            {currentUserId === profile.id && (
-              <button
-                onClick={() => handleSignOut(navigate)}
-                className="btn mt-4 px-6 py-2 text-white btn-sm"
-              >
-                Sign Out
-              </button>
-            )}
+            {/* Follower Stats */}
+            <div className="mt-2 flex flex-row gap-4 text-sm text-base-content font-medium">
+              <span className="hover:underline underline-offset-2">
+                {viewedProfile.followers}{" "}
+                <span className="text-base-content/80 font-normal">
+                  Followers
+                </span>{" "}
+              </span>
+              <span className="hover:underline underline-offset-2">
+                {viewedProfile.following}{" "}
+                <span className="text-base-content/80 font-normal">
+                  Following
+                </span>
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Favorite Games */}
-        <section className="mb-10">
-          <FavoriteSection userId={profile.id} />
+        <section className="flex items-center justify-center">
+          <FavoriteSection userId={viewedProfile.id} />
         </section>
 
         {/* Recent Reviews */}
-        <section className="mb-10">
-          <h3 className="text-xl font-semibold mb-2">📝 Recent Reviews</h3>
-          <div className="space-y-4">
-            {[1, 2].map((id) => (
-              <div
-                key={id}
-                className="bg-base-200 p-4 rounded-lg shadow-sm space-y-2"
-              >
-                <p className="font-semibold">Game Title #{id}</p>
-                <p className="text-sm text-base-content/80">
-                  This game was really fun. I loved the combat system and the
-                  storyline. Would definitely recommend!
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Game List */}
-        <section>
-          <h3 className="text-xl font-semibold mb-2">📚 Game List</h3>
-          <div className="space-y-2">
-            {[1, 2, 3].map((id) => (
-              <div
-                key={id}
-                className="p-3 rounded-lg border border-base-300 flex justify-between items-center"
-              >
-                <span>Game Title #{id}</span>
-                <span className="text-sm text-muted-foreground">⭐ 4.5</span>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
 
-      <EditModal
-        isOpen={isEditModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        profile={profile}
-      />
+      {profile && (
+        <EditModal
+          isOpen={isEditModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          profile={profile}
+        />
+      )}
     </>
   );
 };

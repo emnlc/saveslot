@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { supabase } from "@/services/supabase";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+
+import { UserAuth } from "@/context/AuthContext";
+
 const SignUp = () => {
+  const { signUpNewUser } = UserAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
@@ -11,74 +14,16 @@ const SignUp = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    const { data: existingUsername, error: usernameCheckError } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("username", username)
-      .single();
-
-    if (existingUsername) {
-      setError("Username is already taken.");
-      return;
+    const result = await signUpNewUser(email, password, username);
+    if (result.success) {
+      navigate({ to: "/u/$username", params: { username } });
+    } else {
+      setError(result.error ? result.error : "Error signing up");
     }
-
-    if (usernameCheckError && usernameCheckError.code !== "PGRST116") {
-      setError("Error checking username.");
-      return;
-    }
-
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
-    }
-
-    const userId = data.user?.id;
-
-    const sessionResult = await supabase.auth.getSession();
-    console.log("Auth session:", sessionResult.data.session);
-
-    if (!sessionResult.data.session) {
-      setError("No active session — profile insert blocked by RLS.");
-      return;
-    }
-
-    if (userId) {
-      const { error: profileError } = await supabase.from("profiles").insert({
-        id: userId,
-        username,
-        display_name: username,
-      });
-
-      if (profileError) {
-        setError(profileError.message);
-        return;
-      }
-
-      // Create default lists
-      const { error: listError } = await supabase.from("game_lists").insert([
-        { user_id: userId, name: "Favorites", is_public: true },
-        { user_id: userId, name: "Backlog", is_public: true },
-        { user_id: userId, name: "Wishlist", is_public: true },
-      ]);
-
-      if (listError) {
-        setError("Failed to create default lists: " + listError.message);
-        return;
-      }
-    }
-
-    navigate({ to: "/games" });
   };
 
   return (
-    <div className="flex flex-col gap-4 items-center justify-center my-48 min-w-72">
+    <div className="flex flex-col gap-4 items-center justify-center min-w-72">
       <h2 className="text-3xl">Sign Up</h2>
       <form
         className="flex flex-col gap-8 bg-base-200 px-6 py-4 rounded-xl min-w-72"

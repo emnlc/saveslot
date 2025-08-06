@@ -2,6 +2,7 @@ import { supabase } from "@/services/supabase";
 import { useEffect, useState } from "react";
 
 import GameCard from "@/components/GameCard";
+import React from "react";
 
 type Props = {
   userId: string;
@@ -93,7 +94,7 @@ const FavoritesListFetcher = ({ userId }: Props) => {
 
           <div className=" grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto container mb-16 gap-4 place-items-center join">
             {listItems.map((item) => (
-              <>
+              <React.Fragment key={item.id}>
                 {item.games ? (
                   <GameCard
                     name={item.games.name}
@@ -104,7 +105,7 @@ const FavoritesListFetcher = ({ userId }: Props) => {
                 ) : (
                   <></>
                 )}
-              </>
+              </React.Fragment>
             ))}
           </div>
         </>

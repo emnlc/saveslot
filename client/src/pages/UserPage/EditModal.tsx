@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { supabase } from "@/services/supabase";
 import { Profile } from "@/Interface";
 import { useRef, useState } from "react";
+import { UserProfile } from "@/context/ProfileContext";
+import { UserAuth } from "@/context/AuthContext";
 
 type Props = {
   isOpen: boolean;
@@ -10,6 +11,8 @@ type Props = {
 };
 
 const EditModal = (props: Props) => {
+  const { updateImage, updateDisplayName, updateBio } = UserProfile();
+  const { refreshProfile } = UserAuth();
   const [displayName, setDisplayName] = useState(props.profile.display_name);
   const [bio, setBio] = useState(props.profile.bio);
   const [loading, setLoading] = useState(false);
@@ -17,70 +20,70 @@ const EditModal = (props: Props) => {
   const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(
     null
   );
+  const [selectedBannerFile, setSelectedBannerFile] = useState<File | null>(
+    null
+  );
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(
     props.profile.avatar_url || null
   );
+  const [bannerPreviewUrl, setBannerPreviewUrl] = useState<string | null>(
+    props.profile.banner_url || null
+  );
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   if (!props.isOpen) return null;
 
   const handleSave = async () => {
     setLoading(true);
-    let avatarUrl = props.profile.avatar_url;
+
+    if (selectedBannerFile) {
+      const { success, error } = await updateImage(
+        selectedBannerFile,
+        "banner"
+      );
+
+      if (!success) {
+        console.error("Banner update failed: ", error);
+        setLoading(false);
+        return;
+      }
+    }
 
     if (selectedAvatarFile) {
-      const filePath = `${props.profile.id}/avatar.png`;
-
-      const { data: existingFiles } = await supabase.storage
-        .from("avatars")
-        .list(props.profile.id);
-      if (existingFiles?.length) {
-        const paths = existingFiles.map((f) => `${props.profile.id}/${f.name}`);
-        await supabase.storage.from("avatars").remove(paths);
-      }
-
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, selectedAvatarFile, {
-          contentType: selectedAvatarFile.type,
-          upsert: true,
-        });
-
-      if (uploadError) {
-        console.error("Upload failed:", uploadError.message);
+      const { success, error } = await updateImage(
+        selectedAvatarFile,
+        "avatar"
+      );
+      if (!success) {
+        console.error("Avatar update failed: ", error);
         setLoading(false);
         return;
       }
-
-      const { data: publicData } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-      if (!publicData?.publicUrl) {
-        console.error("Failed to get avatar public URL");
-        setLoading(false);
-        return;
-      }
-
-      avatarUrl = `${publicData.publicUrl}?t=${Date.now()}`;
     }
 
-    // Update profile
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        display_name: displayName,
-        bio,
-        avatar_url: avatarUrl,
-      })
-      .eq("id", props.profile.id);
+    if (bio !== props.profile.bio) {
+      const { success, error } = await updateBio(bio);
+      if (!success) {
+        console.error("Bio update failed: ", error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (displayName !== props.profile.display_name) {
+      const { success, error } = await updateDisplayName(displayName);
+      if (!success) {
+        console.error("Display name update failed: ", error);
+        setLoading(false);
+        return;
+      }
+    }
 
     setLoading(false);
-
-    if (error) {
-      console.error("Error updating profile: ", error.message);
-    } else {
-      props.onClose();
-    }
+    refreshProfile();
+    props.onClose();
   };
 
   return (
@@ -100,15 +103,57 @@ const EditModal = (props: Props) => {
         exit={{ scale: 0.8, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex mx-2 md:mx-0 flex-col justify-between max-h-[28rem] min-h-[28rem] md:max-h-[32rem] md:min-h-[32rem] h-full bg-base-200 p-6 rounded-xl">
+        <div className="flex mx-2 md:mx-0 flex-col justify-between gap-4 min-h-[28rem]  md:min-h-[32rem]  bg-base-200 p-6 rounded-xl">
           <div id="edit-inputs" className="flex flex-col gap-4">
             <div className="flex flex-col items-center">
+              <div
+                className="aspect-[3/1] w-full border-2 border-primary cursor-pointer bg-no-repeat bg-center"
+                style={
+                  bannerPreviewUrl
+                    ? {
+                        backgroundImage: `url(${bannerPreviewUrl})`,
+                        backgroundSize: "cover",
+                      }
+                    : {
+                        backgroundColor: "#333333",
+                      }
+                }
+                onClick={() => bannerInputRef.current?.click()}
+              />
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={bannerInputRef}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setSelectedBannerFile(file);
+                    setBannerPreviewUrl(URL.createObjectURL(file));
+                  }
+                }}
+                className="hidden"
+              />
+              <span className="text-sm text-muted-foreground mt-1">
+                Optimal size:{" "}
+                <span className="text-accent">1500x500 (3:1)</span> |{" "}
+                <a
+                  href="https://redketchup.io/image-resizer"
+                  target="_blank"
+                  className="hover:text-primary transition-all"
+                >
+                  RedKetchup Resize Tool
+                </a>
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center self-start">
               <img
                 src={
                   avatarPreviewUrl ||
-                  `https://ui-avatars.com/api/?name=${props.profile.username}&background=random`
+                  `https://ui-avatars.com/api/?name=${props.profile.username}&background=FE9FA1&color=fff`
                 }
-                className="w-24 h-24 rounded-full object-cover border-2 border-primary cursor-pointer"
+                className="w-20 h-20 rounded-full object-cover border-2 border-primary cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               />
               <input
@@ -178,6 +223,7 @@ const EditModal = (props: Props) => {
               className="btn bg-black hover:bg-black/65 transition-all text-white"
               onClick={() => {
                 setAvatarPreviewUrl(props.profile.avatar_url);
+                setBannerPreviewUrl(props.profile.banner_url);
                 setDisplayName(props.profile.display_name);
                 setBio(props.profile.bio);
                 props.onClose();

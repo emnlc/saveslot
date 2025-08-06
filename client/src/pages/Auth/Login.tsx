@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { supabase } from "@/services/supabase";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 
+import { UserAuth } from "@/context/AuthContext";
+
 const Login = () => {
+  const { signInUser } = UserAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -11,88 +14,62 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setError(error.message);
-      return;
+    const result = await signInUser(email, password);
+    if (result.success && result.username) {
+      navigate({ to: "/u/$username", params: { username: result.username } });
+    } else {
+      setError(result.error ? result.error : "Error signing in");
     }
-
-    const userId = data.user?.id;
-    if (!userId) {
-      setError("Login succeeded but user info was not found.");
-      return;
-    }
-
-    // Fetch username from profiles table
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("username")
-      .eq("id", userId)
-      .single();
-
-    if (profileError || !profile?.username) {
-      setError("Could not find user profile.");
-      return;
-    }
-
-    // Redirect to /u/$username
-    navigate({
-      to: "/u/$username",
-      params: { username: profile.username },
-    });
   };
 
   return (
-    <div className="flex flex-col gap-4 items-center justify-center my-56">
-      <h2 className="text-3xl">Log back in!</h2>
-      <form
-        className="flex flex-col gap-8 bg-base-200 px-6 py-4 rounded-xl min-w-72"
-        onSubmit={handleLogin}
-      >
-        <div className="flex flex-col gap-2 ">
-          <label htmlFor="emailInput">Email</label>
-          <input
-            id="emailInput"
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="self-start input input-primary "
-          />
-        </div>
+    <>
+      <div className="flex flex-col gap-4 items-center justify-center min-h-full">
+        <h2 className="text-3xl">Log back in!</h2>
+        <form
+          className="flex flex-col gap-8 bg-base-200 px-6 py-4 rounded-xl min-w-72"
+          onSubmit={handleLogin}
+        >
+          <div className="flex flex-col gap-2 ">
+            <label htmlFor="emailInput">Email</label>
+            <input
+              id="emailInput"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="self-start input input-primary "
+            />
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <label htmlFor="passwordInput">Password</label>
-          <input
-            id="passwordInput"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="self-start input input-primary"
-          />
-        </div>
-        <button className="btn btn-primary" type="submit">
-          Log In
-        </button>
-      </form>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="passwordInput">Password</label>
+            <input
+              id="passwordInput"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="self-start input input-primary"
+            />
+          </div>
+          <button className="btn btn-primary" type="submit">
+            Log In
+          </button>
+        </form>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <span className="text-xs">
-        Not a member?{" "}
-        <Link to="/sign-up" className="hover:text-primary transition-all ">
-          Join Now
-        </Link>
-      </span>
-    </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <span className="text-xs">
+          Not a member?{" "}
+          <Link to="/sign-up" className="hover:text-primary transition-all ">
+            Join Now
+          </Link>
+        </span>
+      </div>
+    </>
   );
 };
 

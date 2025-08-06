@@ -4,7 +4,7 @@ import { Github } from "lucide-react";
 const Footer = () => {
   return (
     <>
-      <footer className="w-full bg-base-200/80 py-6">
+      <footer className="w-full bg-base-200/80 py-6 self-end">
         <div className="container mx-auto flex flex-row items-center justify-between gap-4 px-4 md:px-0">
           <div>
             <div className="flex items-start md:items-center gap-2">
