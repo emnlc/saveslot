@@ -1,0 +1,24 @@
+services:
+  client:
+    container_name: saveslot-client
+    build:
+      context: ./client
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    command: bun run dev
+
+  server:
+    container_name: saveslot-server
+    build:
+      context: ./server
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    command: bun run dev
