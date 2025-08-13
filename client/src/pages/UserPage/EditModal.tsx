@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { UserProfile } from "@/context/ProfileContext";
 import { UserAuth } from "@/context/AuthContext";
 
+// TODO: remove this and move profile customization into settings
 type Props = {
   isOpen: boolean;
   onClose: () => void;
@@ -214,12 +215,6 @@ const EditModal = (props: Props) => {
 
           <div id="edit-btns" className="flex flex-row gap-4 justify-end">
             <button
-              onClick={handleSave}
-              className={`btn btn-primary ${loading ? "btn-disabled" : ""}`}
-            >
-              Save
-            </button>
-            <button
               className="btn bg-black hover:bg-black/65 transition-all text-white"
               onClick={() => {
                 setAvatarPreviewUrl(props.profile.avatar_url);
@@ -230,6 +225,12 @@ const EditModal = (props: Props) => {
               }}
             >
               Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className={`btn btn-primary ${loading ? "btn-disabled" : ""}`}
+            >
+              Save
             </button>
           </div>
         </div>

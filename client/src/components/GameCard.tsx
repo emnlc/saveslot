@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { X } from "lucide-react";
 
 type Props = {
   id: number;
@@ -6,9 +7,22 @@ type Props = {
   slug: string;
   coverId: string;
   first_release_date?: string;
+
+  editMode?: boolean;
+  onRemoveClick?: () => void;
+  isMarkedForRemoval?: boolean;
+  showAsMarkedForRemoval?: boolean;
 };
 
 const GameCard = (props: Props) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (props.editMode && props.onRemoveClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      props.onRemoveClick();
+    }
+  };
+
   return (
     <>
       <Link
@@ -16,7 +30,21 @@ const GameCard = (props: Props) => {
         to="/games/$gamesSlug"
         params={{ gamesSlug: props.slug }}
         className="group relative rounded-lg overflow-hidden border border-neutral hover:border-primary transition-colors w-full"
+        onClick={handleClick}
       >
+        {/* Remove indicator in edit mode */}
+        {props.editMode && (
+          <div
+            className={`absolute top-2 right-2 z-10 bg-red-500 text-white rounded-full p-1 transition-opacity ${
+              props.showAsMarkedForRemoval
+                ? "opacity-100"
+                : "opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            <X className="w-4 h-4" />
+          </div>
+        )}
+
         <div className="aspect-[3/4] w-full">
           <img
             src={`https://images.igdb.com/igdb/image/upload/t_1080p/${props.coverId}.jpg`}

@@ -41,11 +41,11 @@ const Dropdown = () => {
       <div className="group">
         <button
           type="button"
-          className="inline-flex justify-center items-center w-full cursor-pointer"
+          className="inline-flex overflow-clip justify-center items-center rounded cursor-pointer border border-base-300 hover:border-primary w-8 h-8 md:w-10 md:h-10"
           onClick={() => setIsOpen(!isOpen)}
         >
           <img
-            className="w-8 h-8 md:w-10 md:h-10 rounded-full border hover:border-primary transition-all"
+            className="object-cover"
             src={profile?.avatar_url ? profile?.avatar_url : AVATAR_PLACEHOLDER}
             alt="User avatar"
           />

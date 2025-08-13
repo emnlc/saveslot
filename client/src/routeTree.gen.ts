@@ -8,6 +8,8 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UpcomingIndexRouteImport } from './routes/upcoming/index'
@@ -16,8 +18,15 @@ import { Route as NewlyReleasedIndexRouteImport } from './routes/newly-released/
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as AllGamesIndexRouteImport } from './routes/all-games/index'
+import { Route as UUsernameRouteImport } from './routes/u/$username'
 import { Route as GamesGamesSlugRouteImport } from './routes/games/$gamesSlug'
-import { Route as UUsernameIndexRouteImport } from './routes/u/$username/index'
+import { Route as UUsernameProfileRouteImport } from './routes/u/$username/_profile'
+import { Route as UUsernameProfileIndexRouteImport } from './routes/u/$username/_profile.index'
+import { Route as UUsernameListListRouteImport } from './routes/u/$username/list/_list'
+import { Route as UUsernameProfileListsRouteImport } from './routes/u/$username/_profile.lists'
+import { Route as UUsernameListListListslugRouteImport } from './routes/u/$username/list/_list.$listslug'
+
+const UUsernameListRouteImport = createFileRoute('/u/$username/list')()
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,97 +63,152 @@ const AllGamesIndexRoute = AllGamesIndexRouteImport.update({
   path: '/all-games/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UUsernameRoute = UUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GamesGamesSlugRoute = GamesGamesSlugRouteImport.update({
   id: '/games/$gamesSlug',
   path: '/games/$gamesSlug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UUsernameIndexRoute = UUsernameIndexRouteImport.update({
-  id: '/u/$username/',
-  path: '/u/$username/',
-  getParentRoute: () => rootRouteImport,
+const UUsernameListRoute = UUsernameListRouteImport.update({
+  id: '/list',
+  path: '/list',
+  getParentRoute: () => UUsernameRoute,
 } as any)
+const UUsernameProfileRoute = UUsernameProfileRouteImport.update({
+  id: '/_profile',
+  getParentRoute: () => UUsernameRoute,
+} as any)
+const UUsernameProfileIndexRoute = UUsernameProfileIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UUsernameProfileRoute,
+} as any)
+const UUsernameListListRoute = UUsernameListListRouteImport.update({
+  id: '/_list',
+  getParentRoute: () => UUsernameListRoute,
+} as any)
+const UUsernameProfileListsRoute = UUsernameProfileListsRouteImport.update({
+  id: '/lists',
+  path: '/lists',
+  getParentRoute: () => UUsernameProfileRoute,
+} as any)
+const UUsernameListListListslugRoute =
+  UUsernameListListListslugRouteImport.update({
+    id: '/$listslug',
+    path: '/$listslug',
+    getParentRoute: () => UUsernameListListRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/u/$username': typeof UUsernameProfileRouteWithChildren
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
-  '/u/$username': typeof UUsernameIndexRoute
+  '/u/$username/lists': typeof UUsernameProfileListsRoute
+  '/u/$username/list': typeof UUsernameListListRouteWithChildren
+  '/u/$username/': typeof UUsernameProfileIndexRoute
+  '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/u/$username': typeof UUsernameProfileIndexRoute
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
-  '/u/$username': typeof UUsernameIndexRoute
+  '/u/$username/lists': typeof UUsernameProfileListsRoute
+  '/u/$username/list': typeof UUsernameListListRouteWithChildren
+  '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/u/$username': typeof UUsernameRouteWithChildren
   '/all-games/': typeof AllGamesIndexRoute
   '/games/': typeof GamesIndexRoute
   '/login/': typeof LoginIndexRoute
   '/newly-released/': typeof NewlyReleasedIndexRoute
   '/sign-up/': typeof SignUpIndexRoute
   '/upcoming/': typeof UpcomingIndexRoute
-  '/u/$username/': typeof UUsernameIndexRoute
+  '/u/$username/_profile': typeof UUsernameProfileRouteWithChildren
+  '/u/$username/_profile/lists': typeof UUsernameProfileListsRoute
+  '/u/$username/list': typeof UUsernameListRouteWithChildren
+  '/u/$username/list/_list': typeof UUsernameListListRouteWithChildren
+  '/u/$username/_profile/': typeof UUsernameProfileIndexRoute
+  '/u/$username/list/_list/$listslug': typeof UUsernameListListListslugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/games/$gamesSlug'
+    | '/u/$username'
     | '/all-games'
     | '/games'
     | '/login'
     | '/newly-released'
     | '/sign-up'
     | '/upcoming'
-    | '/u/$username'
+    | '/u/$username/lists'
+    | '/u/$username/list'
+    | '/u/$username/'
+    | '/u/$username/list/$listslug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/games/$gamesSlug'
+    | '/u/$username'
     | '/all-games'
     | '/games'
     | '/login'
     | '/newly-released'
     | '/sign-up'
     | '/upcoming'
-    | '/u/$username'
+    | '/u/$username/lists'
+    | '/u/$username/list'
+    | '/u/$username/list/$listslug'
   id:
     | '__root__'
     | '/'
     | '/games/$gamesSlug'
+    | '/u/$username'
     | '/all-games/'
     | '/games/'
     | '/login/'
     | '/newly-released/'
     | '/sign-up/'
     | '/upcoming/'
-    | '/u/$username/'
+    | '/u/$username/_profile'
+    | '/u/$username/_profile/lists'
+    | '/u/$username/list'
+    | '/u/$username/list/_list'
+    | '/u/$username/_profile/'
+    | '/u/$username/list/_list/$listslug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesGamesSlugRoute: typeof GamesGamesSlugRoute
+  UUsernameRoute: typeof UUsernameRouteWithChildren
   AllGamesIndexRoute: typeof AllGamesIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   NewlyReleasedIndexRoute: typeof NewlyReleasedIndexRoute
   SignUpIndexRoute: typeof SignUpIndexRoute
   UpcomingIndexRoute: typeof UpcomingIndexRoute
-  UUsernameIndexRoute: typeof UUsernameIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -198,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AllGamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/u/$username': {
+      id: '/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof UUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/games/$gamesSlug': {
       id: '/games/$gamesSlug'
       path: '/games/$gamesSlug'
@@ -205,26 +276,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GamesGamesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/u/$username/': {
-      id: '/u/$username/'
-      path: '/u/$username'
+    '/u/$username/list': {
+      id: '/u/$username/list'
+      path: '/list'
+      fullPath: '/u/$username/list'
+      preLoaderRoute: typeof UUsernameListRouteImport
+      parentRoute: typeof UUsernameRoute
+    }
+    '/u/$username/_profile': {
+      id: '/u/$username/_profile'
+      path: ''
       fullPath: '/u/$username'
-      preLoaderRoute: typeof UUsernameIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UUsernameProfileRouteImport
+      parentRoute: typeof UUsernameRoute
+    }
+    '/u/$username/_profile/': {
+      id: '/u/$username/_profile/'
+      path: '/'
+      fullPath: '/u/$username/'
+      preLoaderRoute: typeof UUsernameProfileIndexRouteImport
+      parentRoute: typeof UUsernameProfileRoute
+    }
+    '/u/$username/list/_list': {
+      id: '/u/$username/list/_list'
+      path: '/list'
+      fullPath: '/u/$username/list'
+      preLoaderRoute: typeof UUsernameListListRouteImport
+      parentRoute: typeof UUsernameListRoute
+    }
+    '/u/$username/_profile/lists': {
+      id: '/u/$username/_profile/lists'
+      path: '/lists'
+      fullPath: '/u/$username/lists'
+      preLoaderRoute: typeof UUsernameProfileListsRouteImport
+      parentRoute: typeof UUsernameProfileRoute
+    }
+    '/u/$username/list/_list/$listslug': {
+      id: '/u/$username/list/_list/$listslug'
+      path: '/$listslug'
+      fullPath: '/u/$username/list/$listslug'
+      preLoaderRoute: typeof UUsernameListListListslugRouteImport
+      parentRoute: typeof UUsernameListListRoute
     }
   }
 }
 
+interface UUsernameProfileRouteChildren {
+  UUsernameProfileListsRoute: typeof UUsernameProfileListsRoute
+  UUsernameProfileIndexRoute: typeof UUsernameProfileIndexRoute
+}
+
+const UUsernameProfileRouteChildren: UUsernameProfileRouteChildren = {
+  UUsernameProfileListsRoute: UUsernameProfileListsRoute,
+  UUsernameProfileIndexRoute: UUsernameProfileIndexRoute,
+}
+
+const UUsernameProfileRouteWithChildren =
+  UUsernameProfileRoute._addFileChildren(UUsernameProfileRouteChildren)
+
+interface UUsernameListListRouteChildren {
+  UUsernameListListListslugRoute: typeof UUsernameListListListslugRoute
+}
+
+const UUsernameListListRouteChildren: UUsernameListListRouteChildren = {
+  UUsernameListListListslugRoute: UUsernameListListListslugRoute,
+}
+
+const UUsernameListListRouteWithChildren =
+  UUsernameListListRoute._addFileChildren(UUsernameListListRouteChildren)
+
+interface UUsernameListRouteChildren {
+  UUsernameListListRoute: typeof UUsernameListListRouteWithChildren
+}
+
+const UUsernameListRouteChildren: UUsernameListRouteChildren = {
+  UUsernameListListRoute: UUsernameListListRouteWithChildren,
+}
+
+const UUsernameListRouteWithChildren = UUsernameListRoute._addFileChildren(
+  UUsernameListRouteChildren,
+)
+
+interface UUsernameRouteChildren {
+  UUsernameProfileRoute: typeof UUsernameProfileRouteWithChildren
+  UUsernameListRoute: typeof UUsernameListRouteWithChildren
+}
+
+const UUsernameRouteChildren: UUsernameRouteChildren = {
+  UUsernameProfileRoute: UUsernameProfileRouteWithChildren,
+  UUsernameListRoute: UUsernameListRouteWithChildren,
+}
+
+const UUsernameRouteWithChildren = UUsernameRoute._addFileChildren(
+  UUsernameRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamesGamesSlugRoute: GamesGamesSlugRoute,
+  UUsernameRoute: UUsernameRouteWithChildren,
   AllGamesIndexRoute: AllGamesIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   NewlyReleasedIndexRoute: NewlyReleasedIndexRoute,
   SignUpIndexRoute: SignUpIndexRoute,
   UpcomingIndexRoute: UpcomingIndexRoute,
-  UUsernameIndexRoute: UUsernameIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

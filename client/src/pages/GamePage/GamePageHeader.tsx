@@ -3,8 +3,7 @@ import type { Game } from "../../Interface";
 import { convertToDate } from "../../utils/gameHelpers";
 
 import AddToListModal from "./AddToListModal";
-import { useEffect, useState } from "react";
-import { addGameToFavorites, isGameInFavorites } from "@/utils/listHelpers";
+import { useState } from "react";
 
 type Props = {
   data: Game;
@@ -13,30 +12,15 @@ type Props = {
 const GamePageHeader = ({ data }: Props) => {
   const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover.image_id}.jpg`;
   const [showModal, setShowModal] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  useEffect(() => {
-    const checkFavorite = async () => {
-      const result = await isGameInFavorites(data.id);
-      setIsFavorite(result);
-    };
-
-    checkFavorite();
-  }, [data.id]);
-
-  const handleAddToFavorites = async () => {
-    try {
-      await addGameToFavorites(data.id);
-      alert("Game added to Favorites!");
-    } catch (err) {
-      alert((err as Error).message);
-    }
-  };
 
   return (
     <>
       {showModal && (
-        <AddToListModal gameId={data.id} onClose={() => setShowModal(false)} />
+        <AddToListModal
+          gameId={data.id}
+          gameTitle={data.name}
+          onClose={() => setShowModal(false)}
+        />
       )}
 
       <img
@@ -119,14 +103,8 @@ const GamePageHeader = ({ data }: Props) => {
         </div>
 
         <div className="flex flex-row gap-4 flex-wrap">
-          <button
-            onClick={async () => {
-              await handleAddToFavorites();
-              setIsFavorite(true);
-            }}
-            className="btn btn-primary btn-sm md:btn-md"
-          >
-            <Heart fill={isFavorite ? "white" : "none"} stroke="white" />
+          <button className="btn btn-primary btn-sm md:btn-md">
+            <Heart fill={"none"} stroke="white" />
             Favorite
           </button>
 
