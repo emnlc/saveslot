@@ -187,7 +187,7 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
                       </span>
                       <span className="text-sm opacity-50">
                         {list.game_count}{" "}
-                        {list.game_count === 1 ? "film" : "films"}
+                        {list.game_count === 1 ? "game" : "games"}
                       </span>
                     </button>
                   ))
@@ -246,7 +246,7 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
                   Creating and adding...
                 </>
               ) : (
-                "Create list and add film"
+                "Create list and add game"
               )}
             </button>
           </div>
@@ -267,7 +267,7 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
                 </>
               ) : (
                 <>
-                  <span>ADD</span>
+                  <span>Add to List</span>
                 </>
               )}
             </button>
