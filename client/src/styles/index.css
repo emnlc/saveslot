@@ -4,6 +4,47 @@
 @plugin "daisyui" {
   themes: saveslot, saveslotlight;
 }
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Toast enter animation */
+.toast-animate-enter {
+  animation: toastSlideIn 0.4s ease-out forwards;
+}
+
+/* Toast exit animation */
+.toast-animate-exit {
+  animation: toastSlideOut 0.4s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
 
 @plugin "daisyui/theme" {
   name: "saveslot";

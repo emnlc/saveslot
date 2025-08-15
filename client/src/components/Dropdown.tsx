@@ -70,8 +70,7 @@ const Dropdown = () => {
 
             <Link
               className="block px-4 py-2 text-sm hover:bg-base-100/40 text-base-content/80 hover:text-base-content transition-all"
-              to={"/u/$username"}
-              params={{ username: profile!.username }}
+              to={"/settings"}
               onClick={() => setIsOpen(false)}
             >
               <span className="flex flex-row items-center gap-2 w-fit">

@@ -6,15 +6,9 @@ type Props = {
   profile: Profile;
   isOwnProfile: boolean;
   setViewedProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
-  setEditModalOpen: (editModalOpen: boolean) => void;
 };
 
-const ProfileHeader = ({
-  profile,
-  isOwnProfile,
-  setViewedProfile,
-  setEditModalOpen,
-}: Props) => {
+const ProfileHeader = ({ profile, isOwnProfile, setViewedProfile }: Props) => {
   const { getFollowStats } = UserAuth();
   const AVATAR_PLACEHOLDER = `https://ui-avatars.com/api/?name=${profile.username}&background=FE9FA1&color=fff`;
   return (
@@ -61,18 +55,10 @@ const ProfileHeader = ({
               {profile.display_name || profile.username}
             </h1>
 
-            {isOwnProfile ? (
-              <button
-                onClick={() => setEditModalOpen(true)}
-                className="btn btn-sm bg-primary text-white -mt-24 md:mt-0"
-              >
-                Edit
-              </button>
-            ) : (
+            {!isOwnProfile && (
               <FollowButton
                 userId={profile.id}
                 onFollowChange={async () => {
-                  // Refresh the viewed profile's follower stats when follow status changes
                   const followStats = await getFollowStats(profile.id);
                   setViewedProfile((prev) =>
                     prev ? { ...prev, ...followStats } : null

@@ -1,8 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import ProfileHeader from "@/pages/UserPage/Sections/ProfileHeader";
-import EditModal from "@/pages/UserPage/EditModal";
-import { UserAuth } from "@/context/AuthContext";
-import { useEffect, useState } from "react";
+
+import { useEffect } from "react";
 import { UseProfileContext } from "@/context/ViewedProfileContext";
 
 export const Route = createFileRoute("/u/$username/_profile")({
@@ -10,18 +9,8 @@ export const Route = createFileRoute("/u/$username/_profile")({
 });
 
 function RouteComponent() {
-  const { profile } = UserAuth();
-  const [isEditModalOpen, setEditModalOpen] = useState(false);
-
   const { viewedProfile, setViewedProfile, notFound, isOwnProfile, username } =
     UseProfileContext();
-
-  useEffect(() => {
-    document.body.style.overflow = isEditModalOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isEditModalOpen]);
 
   useEffect(() => {
     if (viewedProfile) {
@@ -52,7 +41,6 @@ function RouteComponent() {
           profile={viewedProfile}
           isOwnProfile={isOwnProfile}
           setViewedProfile={setViewedProfile}
-          setEditModalOpen={setEditModalOpen}
         />
 
         {/* sections */}
@@ -85,17 +73,8 @@ function RouteComponent() {
           </ul>
         </div>
 
-        {/* Simple Outlet without context */}
         <Outlet />
       </div>
-
-      {profile && (
-        <EditModal
-          isOpen={isEditModalOpen}
-          onClose={() => setEditModalOpen(false)}
-          profile={profile}
-        />
-      )}
     </>
   );
 }

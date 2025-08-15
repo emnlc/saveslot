@@ -19,15 +19,24 @@ import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as AllGamesIndexRouteImport } from './routes/all-games/index'
 import { Route as UUsernameRouteImport } from './routes/u/$username'
+import { Route as SettingsSettingsRouteImport } from './routes/settings/_settings'
 import { Route as GamesGamesSlugRouteImport } from './routes/games/$gamesSlug'
+import { Route as SettingsSettingsIndexRouteImport } from './routes/settings/_settings.index'
 import { Route as UUsernameProfileRouteImport } from './routes/u/$username/_profile'
+import { Route as SettingsSettingsAccountRouteImport } from './routes/settings/_settings.account'
 import { Route as UUsernameProfileIndexRouteImport } from './routes/u/$username/_profile.index'
 import { Route as UUsernameListListRouteImport } from './routes/u/$username/list/_list'
 import { Route as UUsernameProfileListsRouteImport } from './routes/u/$username/_profile.lists'
 import { Route as UUsernameListListListslugRouteImport } from './routes/u/$username/list/_list.$listslug'
 
+const SettingsRouteImport = createFileRoute('/settings')()
 const UUsernameListRouteImport = createFileRoute('/u/$username/list')()
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -68,6 +77,10 @@ const UUsernameRoute = UUsernameRouteImport.update({
   path: '/u/$username',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsSettingsRoute = SettingsSettingsRouteImport.update({
+  id: '/_settings',
+  getParentRoute: () => SettingsRoute,
+} as any)
 const GamesGamesSlugRoute = GamesGamesSlugRouteImport.update({
   id: '/games/$gamesSlug',
   path: '/games/$gamesSlug',
@@ -78,9 +91,19 @@ const UUsernameListRoute = UUsernameListRouteImport.update({
   path: '/list',
   getParentRoute: () => UUsernameRoute,
 } as any)
+const SettingsSettingsIndexRoute = SettingsSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsSettingsRoute,
+} as any)
 const UUsernameProfileRoute = UUsernameProfileRouteImport.update({
   id: '/_profile',
   getParentRoute: () => UUsernameRoute,
+} as any)
+const SettingsSettingsAccountRoute = SettingsSettingsAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => SettingsSettingsRoute,
 } as any)
 const UUsernameProfileIndexRoute = UUsernameProfileIndexRouteImport.update({
   id: '/',
@@ -106,6 +129,7 @@ const UUsernameListListListslugRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/settings': typeof SettingsSettingsRouteWithChildren
   '/u/$username': typeof UUsernameProfileRouteWithChildren
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
@@ -113,6 +137,8 @@ export interface FileRoutesByFullPath {
   '/newly-released': typeof NewlyReleasedIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
+  '/settings/account': typeof SettingsSettingsAccountRoute
+  '/settings/': typeof SettingsSettingsIndexRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
   '/u/$username/': typeof UUsernameProfileIndexRoute
@@ -121,6 +147,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/settings': typeof SettingsSettingsIndexRoute
   '/u/$username': typeof UUsernameProfileIndexRoute
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
@@ -128,6 +155,7 @@ export interface FileRoutesByTo {
   '/newly-released': typeof NewlyReleasedIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
+  '/settings/account': typeof SettingsSettingsAccountRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
   '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
@@ -136,6 +164,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/games/$gamesSlug': typeof GamesGamesSlugRoute
+  '/settings': typeof SettingsRouteWithChildren
+  '/settings/_settings': typeof SettingsSettingsRouteWithChildren
   '/u/$username': typeof UUsernameRouteWithChildren
   '/all-games/': typeof AllGamesIndexRoute
   '/games/': typeof GamesIndexRoute
@@ -143,7 +173,9 @@ export interface FileRoutesById {
   '/newly-released/': typeof NewlyReleasedIndexRoute
   '/sign-up/': typeof SignUpIndexRoute
   '/upcoming/': typeof UpcomingIndexRoute
+  '/settings/_settings/account': typeof SettingsSettingsAccountRoute
   '/u/$username/_profile': typeof UUsernameProfileRouteWithChildren
+  '/settings/_settings/': typeof SettingsSettingsIndexRoute
   '/u/$username/_profile/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListRouteWithChildren
   '/u/$username/list/_list': typeof UUsernameListListRouteWithChildren
@@ -155,6 +187,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/games/$gamesSlug'
+    | '/settings'
     | '/u/$username'
     | '/all-games'
     | '/games'
@@ -162,6 +195,8 @@ export interface FileRouteTypes {
     | '/newly-released'
     | '/sign-up'
     | '/upcoming'
+    | '/settings/account'
+    | '/settings/'
     | '/u/$username/lists'
     | '/u/$username/list'
     | '/u/$username/'
@@ -170,6 +205,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/games/$gamesSlug'
+    | '/settings'
     | '/u/$username'
     | '/all-games'
     | '/games'
@@ -177,6 +213,7 @@ export interface FileRouteTypes {
     | '/newly-released'
     | '/sign-up'
     | '/upcoming'
+    | '/settings/account'
     | '/u/$username/lists'
     | '/u/$username/list'
     | '/u/$username/list/$listslug'
@@ -184,6 +221,8 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/games/$gamesSlug'
+    | '/settings'
+    | '/settings/_settings'
     | '/u/$username'
     | '/all-games/'
     | '/games/'
@@ -191,7 +230,9 @@ export interface FileRouteTypes {
     | '/newly-released/'
     | '/sign-up/'
     | '/upcoming/'
+    | '/settings/_settings/account'
     | '/u/$username/_profile'
+    | '/settings/_settings/'
     | '/u/$username/_profile/lists'
     | '/u/$username/list'
     | '/u/$username/list/_list'
@@ -202,6 +243,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesGamesSlugRoute: typeof GamesGamesSlugRoute
+  SettingsRoute: typeof SettingsRouteWithChildren
   UUsernameRoute: typeof UUsernameRouteWithChildren
   AllGamesIndexRoute: typeof AllGamesIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
@@ -213,6 +255,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -269,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UUsernameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/_settings': {
+      id: '/settings/_settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsSettingsRouteImport
+      parentRoute: typeof SettingsRoute
+    }
     '/games/$gamesSlug': {
       id: '/games/$gamesSlug'
       path: '/games/$gamesSlug'
@@ -283,12 +339,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UUsernameListRouteImport
       parentRoute: typeof UUsernameRoute
     }
+    '/settings/_settings/': {
+      id: '/settings/_settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsSettingsIndexRouteImport
+      parentRoute: typeof SettingsSettingsRoute
+    }
     '/u/$username/_profile': {
       id: '/u/$username/_profile'
       path: ''
       fullPath: '/u/$username'
       preLoaderRoute: typeof UUsernameProfileRouteImport
       parentRoute: typeof UUsernameRoute
+    }
+    '/settings/_settings/account': {
+      id: '/settings/_settings/account'
+      path: '/account'
+      fullPath: '/settings/account'
+      preLoaderRoute: typeof SettingsSettingsAccountRouteImport
+      parentRoute: typeof SettingsSettingsRoute
     }
     '/u/$username/_profile/': {
       id: '/u/$username/_profile/'
@@ -320,6 +390,31 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface SettingsSettingsRouteChildren {
+  SettingsSettingsAccountRoute: typeof SettingsSettingsAccountRoute
+  SettingsSettingsIndexRoute: typeof SettingsSettingsIndexRoute
+}
+
+const SettingsSettingsRouteChildren: SettingsSettingsRouteChildren = {
+  SettingsSettingsAccountRoute: SettingsSettingsAccountRoute,
+  SettingsSettingsIndexRoute: SettingsSettingsIndexRoute,
+}
+
+const SettingsSettingsRouteWithChildren =
+  SettingsSettingsRoute._addFileChildren(SettingsSettingsRouteChildren)
+
+interface SettingsRouteChildren {
+  SettingsSettingsRoute: typeof SettingsSettingsRouteWithChildren
+}
+
+const SettingsRouteChildren: SettingsRouteChildren = {
+  SettingsSettingsRoute: SettingsSettingsRouteWithChildren,
+}
+
+const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
+  SettingsRouteChildren,
+)
 
 interface UUsernameProfileRouteChildren {
   UUsernameProfileListsRoute: typeof UUsernameProfileListsRoute
@@ -374,6 +469,7 @@ const UUsernameRouteWithChildren = UUsernameRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamesGamesSlugRoute: GamesGamesSlugRoute,
+  SettingsRoute: SettingsRouteWithChildren,
   UUsernameRoute: UUsernameRouteWithChildren,
   AllGamesIndexRoute: AllGamesIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
