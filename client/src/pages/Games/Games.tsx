@@ -38,8 +38,8 @@ const Games = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+      <div className="flex container flex-col gap-16 my-12">
+        <div className="flex flex-col gap-2 px-4">
           <div className="flex flex-row justify-between">
             <h1 className="font-bold text-2xl">Upcoming Games</h1>
             <Link
@@ -54,7 +54,7 @@ const Games = () => {
           <GameCarousel data={upcomingData} date={true} />
         </div>
 
-        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+        <div className="flex flex-col gap-2 px-4">
           <div className="flex flex-row justify-between">
             <h1 className="font-bold text-2xl">Newly Released</h1>
             <Link
@@ -69,18 +69,15 @@ const Games = () => {
           <GameCarousel data={newlyData} />
         </div>
 
-        <div className="flex flex-col gap-2  container md:mx-auto px-4 my-16">
+        <div className="flex flex-col gap-2 px-4">
           <div className="flex flex-row justify-between">
             <h1 className="font-bold text-2xl">Critically Acclaimed</h1>
-            {/* <Link to="/" className="self-end hover:text-accent transition-all">
-            More
-          </Link> */}
           </div>
 
           <GameCarousel data={criticallyData} />
         </div>
 
-        <div className="mx-auto w-fit my-16">
+        <div className="mx-auto w-fit">
           <Link to="/all-games" className="btn btn-primary btn-md lg:btn-lg ">
             View All Games
           </Link>

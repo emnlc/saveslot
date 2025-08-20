@@ -27,6 +27,7 @@ const GameCarousel = ({ data, date }: Props) => {
           pagination: false,
           arrows: true,
           rewind: false,
+          flickMaxPages: 1,
           breakpoints: {
             1024: { perPage: 4 },
             768: { perPage: 3, arrows: false },

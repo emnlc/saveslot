@@ -25,7 +25,7 @@ const ListCard = ({ list }: Props) => {
     <Link
       to="/u/$username/list/$listslug"
       params={{ listslug: list.slug, username: viewedProfile?.username || "" }}
-      className="flex flex-col border border-base-300 rounded-lg p-4 hover:border-primary transition-all cursor-pointer h-full "
+      className="flex flex-col border border-base-300 rounded-lg p-2 md:p-4 hover:border-primary transition-all cursor-pointer h-full "
     >
       <div className="flex justify-between items-center mb-3">
         <div className="flex flex-row items-center gap-2">
@@ -40,17 +40,17 @@ const ListCard = ({ list }: Props) => {
 
       {/* Game Previews */}
       {list.game_count > 0 ? (
-        <div className=" w-fit">
-          <div className="flex justify-between sm:-space-x-5">
+        <div className=" w-full">
+          <div className="flex gap-[1px] sm:gap-0 w-full sm:-space-x-5 ">
             {list.preview_games.slice(0, 5).map((game, index) => (
               <div
                 key={game.id}
-                className="w-16 h-24 md:w-18 md:h-26 rounded bg-gray-200 flex items-center justify-center text-sm font-medium overflow-hidden flex-shrink-0 border-2 border-base-300 shadow-md"
+                className="w-16 h-24 md:w-18 md:h-26 rounded bg-gray-200 flex items-center justify-center text-sm font-medium overflow-hidden flex-shrink-0 border border-base-300 shadow-md"
                 style={{ zIndex: 10 - index }}
               >
                 {game.cover_id ? (
                   <img
-                    src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover_id}.jpg`}
+                    src={`https://images.igdb.com/igdb/image/upload/t_1080p/${game.cover_id}.jpg`}
                     alt={game.name}
                     className="w-full h-full object-cover"
                   />

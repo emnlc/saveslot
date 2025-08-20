@@ -92,7 +92,7 @@ const AvatarForm = ({ profile }: Props) => {
       </div>
       <div className="flex gap-4">
         <div
-          className={`w-48 h-48 rounded border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+          className={`w-30 h-30 md:w-48 md:h-48 rounded border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
             isDragOver
               ? "border-primary bg-primary/10 "
               : "border-base-content/30 hover:border-primary hover:bg-base-100/20 "
@@ -104,7 +104,7 @@ const AvatarForm = ({ profile }: Props) => {
         >
           <div className="text-center">
             <CloudUpload className="mx-auto text-base-content/70" />
-            <p className="text-sm text-base-content/70 text-center px-2">
+            <p className="text-xs md:text-sm text-base-content/70 text-center px-2">
               Drag & drop or click to upload avatar
             </p>
           </div>
@@ -115,7 +115,7 @@ const AvatarForm = ({ profile }: Props) => {
               avatarPreviewUrl ||
               `https://ui-avatars.com/api/?name=${profile?.username}&background=FE9FA1&color=fff`
             }
-            className="w-48 h-48 rounded object-cover border-2 border-primary"
+            className="w-32 h-32 md:w-48 md:h-48 rounded object-cover border-2 border-primary"
             alt="Current avatar"
           />
         </div>

@@ -91,9 +91,9 @@ const BannerForm = ({ profile }: Props) => {
           Allowed Formats: JPEG, PNG. Max size: 6mb. Optimal aspect ratio: 3:1
         </span>
       </div>
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         <div
-          className={`min-w-48 h-48 rounded border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+          className={`w-32 h-32 md:min-w-48 md:h-48 rounded border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
             isDragOver
               ? "border-primary bg-primary/10 "
               : "border-base-content/30 hover:border-primary hover:bg-base-100/20 "
@@ -105,7 +105,7 @@ const BannerForm = ({ profile }: Props) => {
         >
           <div className="text-center">
             <CloudUpload className="mx-auto text-base-content/70" />
-            <p className="text-sm text-base-content/70 text-center px-2">
+            <p className="text-xs md:text-sm text-base-content/70 text-center px-2">
               Drag & drop or click to upload banner
             </p>
           </div>

@@ -17,8 +17,8 @@ function RouteComponent() {
   if (!profile) {
     return (
       <>
-        <div className="flex flex-row container mx-auto md:max-w-5xl gap-4 my-12">
-          <div className="p-4">
+        <div className="flex flex-col md:flex-row container mx-auto md:max-w-5xl gap-4 my-12">
+          <div className="p-4 mx-4 md:mx-0">
             <nav>
               <span className="text-sm">Settings</span>
               <ul className="flex flex-col ml-4 mt-4 gap-2 w-full">
@@ -50,7 +50,7 @@ function RouteComponent() {
             </nav>
           </div>
 
-          <div className="flex-1 bg-base-200 p-8 rounded-lg">
+          <div className="flex-1 bg-base-200 mx-4 md:mx-0 p-8 rounded-lg">
             <div className="skeleton h-8 w-full mb-4" />
           </div>
         </div>
@@ -60,8 +60,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="flex flex-row container mx-auto md:max-w-5xl gap-4 my-12 ">
-        <div className="p-4">
+      <div className="flex flex-col md:flex-row container mx-auto md:max-w-5xl gap-4 my-12 ">
+        <div className="p-4 mx-4 md:mx-0">
           <nav>
             <span className="text-sm">Settings</span>
             <ul className="flex flex-col ml-4 mt-4 gap-2 w-full">
@@ -93,7 +93,7 @@ function RouteComponent() {
           </nav>
         </div>
 
-        <div className="flex-1 bg-base-200 p-8 rounded-lg">
+        <div className="flex-1 bg-base-200 mx-4 md:mx-0 p-8 rounded-lg">
           <Outlet />
         </div>
       </div>

@@ -28,7 +28,7 @@ const GamePageHeader = ({ data }: Props) => {
         alt={data.name}
       />
       <div className="w-full flex flex-col gap-4 z-10">
-        <div className="flex flex-row gap-2 justify-center md:justify-center">
+        <div className="flex flex-row gap-2 justify-center md:justify-start">
           <h1 className="font-medium text-center md:text-left text-2xl md:text-4xl">
             {data.name}
           </h1>
