@@ -68,7 +68,13 @@ const GamePageDetails = ({ data }: Props) => {
           <h2 className="text-lg font-bold">Release Date</h2>
           <div className="flex flex-row flex-wrap gap-2">
             <span className="text-sm">
-              {convertToDate(data.first_release_date)}
+              {data.first_release_date ? (
+                <>{convertToDate(data.first_release_date)}</>
+              ) : (
+                <>
+                  <span>TBD</span>
+                </>
+              )}
             </span>
           </div>
         </div>
@@ -80,48 +86,57 @@ const GamePageDetails = ({ data }: Props) => {
           </span>
         </div>
 
-        <div className="flex flex-col items-start gap-2 col-span-1  ">
-          <h2 className="text-lg font-bold">Developers</h2>
-          {data.involved_companies.map(
-            (company) =>
-              company.developer && (
-                <a
-                  className="text-sm hover:text-primary transition-colors"
-                  key={company.id}
-                >
-                  {company.company.name}
-                </a>
-              )
-          )}
-        </div>
+        {data.involved_companies[0].developer && (
+          <>
+            <div className="flex flex-col items-start gap-2 col-span-1  ">
+              <h2 className="text-lg font-bold">Developers</h2>
+              {data.involved_companies.map(
+                (company) =>
+                  company.developer && (
+                    <a
+                      className="text-sm hover:text-primary transition-colors"
+                      key={company.id}
+                    >
+                      {company.company.name}
+                    </a>
+                  )
+              )}
+            </div>
+          </>
+        )}
 
-        <div className="flex flex-col items-start gap-2 col-span-1  ">
-          <h2 className="text-lg font-bold">Publishers</h2>
+        {data.involved_companies[0].publisher && (
+          <>
+            <div className="flex flex-col items-start gap-2 col-span-1  ">
+              <h2 className="text-lg font-bold">Publishers</h2>
 
-          {data.involved_companies.map(
-            (company) =>
-              company.publisher && (
-                <a
-                  className="text-sm hover:text-primary transition-colors"
-                  key={company.id}
-                >
-                  {company.company.name}
-                </a>
-              )
-          )}
-        </div>
+              {data.involved_companies.map(
+                (company) =>
+                  company.publisher && (
+                    <a
+                      className="text-sm hover:text-primary transition-colors"
+                      key={company.id}
+                    >
+                      {company.company.name}
+                    </a>
+                  )
+              )}
+            </div>
+          </>
+        )}
 
         <div className="md:hidden flex flex-col gap-2 col-span-2  ">
           <h2 className="text-lg font-bold">Platforms</h2>
           <div className="flex flex-row flex-wrap gap-2">
-            {data.platforms.map((platform, index) => (
-              <a
-                className="text-sm text-base-content/60 underline underline-offset-2 hover:text-primary transition-all cursor-pointer"
-                key={index}
-              >
-                {platform.name}
-              </a>
-            ))}
+            {data.platforms &&
+              data.platforms.map((platform, index) => (
+                <a
+                  className="text-sm text-base-content/60 underline underline-offset-2 hover:text-primary transition-all cursor-pointer"
+                  key={index}
+                >
+                  {platform.name}
+                </a>
+              ))}
           </div>
         </div>
 

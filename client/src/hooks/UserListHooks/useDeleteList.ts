@@ -1,4 +1,3 @@
-// hooks/useDeleteList.ts - Create this new hook
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabase";
 

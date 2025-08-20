@@ -44,8 +44,8 @@ function RouteComponent() {
         />
 
         {/* sections */}
-        <div className="flex flex-wrap flex-row justify-center">
-          <ul className="flex flex-row gap-8 border-base-200 border-2 md:px-16 py-2 rounded-lg">
+        <div className="flex flex-wrap flex-row justify-center text-sm">
+          <ul className="flex flex-row gap-8 border-base-200 border-2 px-4 md:px-16 py-2 rounded-lg overflow-x-auto mx-8">
             <li>
               <Link
                 to="/u/$username"
@@ -57,6 +57,18 @@ function RouteComponent() {
                 Profile
               </Link>
             </li>
+
+            <li>
+              <Link
+                to="/u/$username/games"
+                params={{ username }}
+                activeProps={{ className: "text-primary" }}
+                className="text-base-content hover:text-primary transition-all"
+              >
+                Games
+              </Link>
+            </li>
+
             <li>
               <Link
                 to="/u/$username/lists"

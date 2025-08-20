@@ -1,8 +1,5 @@
-// hooks/useListItemsQuery.ts
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabase";
-
-// Define the Game type
 interface Game {
   id: string;
   name: string;
@@ -10,14 +7,12 @@ interface Game {
   slug: string;
 }
 
-// Define the GameListItem type (the nested structure) - now includes rank
 interface GameListItem {
-  id: string; // The game_list_items id for updating rank
+  id: string;
   rank: number;
   games: Game;
 }
 
-// Define the main return type for the query
 export interface ListData {
   id: string;
   name: string;
@@ -38,7 +33,6 @@ export const useListItems = (listSlug: string, profile: string) => {
 
       if (listError) throw listError;
 
-      // Then get the games with their list items (this can return empty array)
       const { data: gameListItems, error: itemsError } = await supabase
         .from("game_list_items")
         .select(

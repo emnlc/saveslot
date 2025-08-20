@@ -3,8 +3,8 @@ import { useRef, useEffect } from "react";
 import LoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 // import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import Navbar from "@/components/navbar/Navbar";
+import Footer from "@/components/Footer";
 
 function RootComponent() {
   const loadingBarRef = useRef<LoadingBarRef>(null);

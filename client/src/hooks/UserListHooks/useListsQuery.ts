@@ -1,4 +1,3 @@
-// hooks/useListsQuery.ts
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/services/supabase";
 
@@ -79,6 +78,6 @@ export const useUserLists = (userId: string) => {
       return enrichedLists;
     },
     enabled: !!userId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 15 * 60 * 1000,
   });
 };

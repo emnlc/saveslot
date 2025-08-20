@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { X } from "lucide-react";
 
 type Props = {
-  id: number;
+  id: string;
   name: string;
   slug: string;
   coverId: string;

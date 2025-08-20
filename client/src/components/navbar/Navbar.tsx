@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "../ThemeToggle";
 
 import { UserAuth } from "@/context/AuthContext";
 
-import Dropdown from "./Dropdown";
+import Dropdown from "./NavbarDropdown";
 
 const Navbar = () => {
   const { profile, session, loading } = UserAuth();

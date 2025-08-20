@@ -8,9 +8,8 @@ interface Game {
   slug: string;
 }
 
-// Define the GameListItem type (the nested structure) - now includes rank
 interface GameListItem {
-  id: string; // The game_list_items id for updating rank
+  id: string;
   rank: number;
   games: Game;
 }
@@ -57,7 +56,6 @@ const ListHeader = ({
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        {/* List Title - Input in edit mode, heading otherwise */}
         {editMode ? (
           <input
             type="text"
@@ -85,7 +83,7 @@ const ListHeader = ({
                     removeGameMutation.isPending ||
                     updateRanksMutation.isPending
                   }
-                  className="flex items-center gap-2 px-4 py-2 btn btn-success btn-sm"
+                  className="flex items-center gap-2 px-4 py-2 btn btn-success btn-sm md:btn-md"
                 >
                   {updateListMutation.isPending ||
                   removeGameMutation.isPending ||
@@ -105,7 +103,7 @@ const ListHeader = ({
                 {/* Delete Button - only visible in edit mode */}
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="flex items-center gap-2 px-4 py-2 btn btn-error btn-sm"
+                  className="flex items-center gap-2 px-4 py-2 btn btn-error btn-sm md:btn-md"
                   disabled={deleteListMutation.isPending}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -115,7 +113,7 @@ const ListHeader = ({
                 {/* Cancel Button */}
                 <button
                   onClick={cancelEdit}
-                  className="flex items-center gap-2 px-4 py-2 btn btn-neutral btn-sm"
+                  className="flex items-center gap-2 px-4 py-2 btn btn-neutral btn-sm md:btn-md"
                   disabled={
                     updateListMutation.isPending ||
                     removeGameMutation.isPending ||
@@ -127,10 +125,10 @@ const ListHeader = ({
                 </button>
               </>
             ) : (
-              /* Edit Button - only visible when not in edit mode */
+              /* Edit Button */
               <button
                 onClick={enterEditMode}
-                className="flex items-center gap-2 px-4 py-2 btn btn-secondary btn-sm"
+                className="flex items-center gap-2 px-4 py-2 btn btn-secondary btn-sm md:btn-md"
               >
                 <Edit3 className="w-4 h-4" />
                 Edit List

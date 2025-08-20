@@ -83,7 +83,7 @@ const Lists = () => {
         {isOwnProfile && (
           <button
             onClick={() => setIsModalOpen(true)}
-            className="btn btn-secondary btn-sm"
+            className="btn btn-secondary btn-sm md:btn-md"
           >
             New List
           </button>

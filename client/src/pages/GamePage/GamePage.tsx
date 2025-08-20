@@ -29,16 +29,12 @@ const GamePage = (props: Props) => {
   return (
     <div className="relative w-full min-h-screen">
       {/* Background Image Header */}
-      <div
-        className="max-w-6xl mx-auto h-[450px] bg-cover bg-center bg-no-repeat relative"
-        style={{
-          backgroundImage: `url(https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks ? data.artworks[0].image_id : data.cover.image_id}.jpg)`,
-        }}
-      >
-        {/* <div className="absolute inset-0 bg-gradient-to-b from-base-100/60 via-base-100/70 to-base-100/90" />
-        <div className=" absolute bottom-0 left-0 w-full h-32 bg-gradient-to-b from-transparent to-base-100" />
-        <div className="absolute top-0 left-0 h-full w-48 md:bg-gradient-to-r md:from-base-100 md:to-transparent" />
-        <div className="absolute top-0 right-0 h-full w-48 md:bg-gradient-to-l md:from-base-100 md:to-transparent" /> */}
+      <div className="max-w-6xl mx-auto h-[450px] relative overflow-hidden">
+        <img
+          src={`https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks ? data.artworks[0].image_id : data.cover.image_id}.jpg`}
+          alt="Game artwork"
+          className="w-full h-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-base-100/50 via-base-100/60 to-base-100/80" />
         {/* bottom gradient */}
         <div className="absolute bottom-0 left-0 w-full h-12 md:h-24 bg-gradient-to-b from-transparent to-base-100" />
@@ -49,7 +45,7 @@ const GamePage = (props: Props) => {
       </div>
 
       {/* Game Info Section */}
-      <div className="relative -mt-96 md:-mt-40 w-full px-4 md:px-6 max-w-5xl mx-auto ">
+      <div className="relative -mt-[26rem] md:-mt-40 w-full px-4 md:px-6 max-w-5xl mx-auto ">
         <div className="flex flex-col justify-center items-center md:flex-row gap-8 md:items-start">
           <GamePageHeader data={data} />
         </div>

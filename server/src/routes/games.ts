@@ -12,6 +12,17 @@ import { upcomingRoutes } from "./games/upcoming";
 gamesRoutes.route("/newly-released", newlyReleasedRoutes);
 gamesRoutes.route("/upcoming", upcomingRoutes);
 
+const artworkTypeOrder: Record<number, number> = {
+  1: 0, // Artwork
+  2: 1, // Key art without logo
+  3: 2, // Key art with logo
+  4: 3, // Concept art
+  8: 4, // Infographic
+  7: 5, // Game logo (color)
+  5: 6, // Game logo (white)
+  6: 7, // Game logo (black)
+};
+
 // popular games
 gamesRoutes.get("/popular", async (c) => {
   try {
@@ -245,6 +256,11 @@ gamesRoutes.get("/:game_slug", async (c) => {
       involved_companies.developer,
       involved_companies.publisher,
       artworks.image_id,
+      artworks.animated,
+      artworks.artwork_type,
+      artworks.height,
+      artworks.width,
+      artworks.url,
       screenshots.image_id,
       storyline,
       summary,
@@ -271,6 +287,58 @@ gamesRoutes.get("/:game_slug", async (c) => {
 
     const gameContent = await fetchIGDB("games", body);
     const game = gameContent[0];
+
+    if (game?.artworks) {
+      // filter first
+      const filteredArtworks = game.artworks.filter(
+        (a: any) => a.height >= 500
+      );
+
+      // group artworks by type
+      const groupedByType: Record<number, any[]> = {};
+      filteredArtworks.forEach((a: any) => {
+        const type = a.artwork_type;
+        if (!groupedByType[type]) groupedByType[type] = [];
+        groupedByType[type].push(a);
+      });
+
+      // get a sorted list of types, prioritizing those with landscapes
+      const sortedTypes = Object.keys(groupedByType)
+        .map(Number)
+        .sort((typeA, typeB) => {
+          const groupA = groupedByType[typeA];
+          const groupB = groupedByType[typeB];
+
+          // check if group has at least one landscape
+          const hasLandscapeA = groupA.some((a) => a.width > a.height);
+          const hasLandscapeB = groupB.some((b) => b.width > b.height);
+
+          if (hasLandscapeA && !hasLandscapeB) return -1;
+          if (!hasLandscapeA && hasLandscapeB) return 1;
+
+          // fallback: use your custom type order
+          const orderA = artworkTypeOrder[typeA] ?? 999;
+          const orderB = artworkTypeOrder[typeB] ?? 999;
+          return orderA - orderB;
+        });
+
+      // flatten artworks, sorting within each type
+      game.artworks = sortedTypes.flatMap((type) =>
+        groupedByType[type].sort((a: any, b: any) => {
+          // 1️⃣ orientation (landscape first)
+          const orientationA = a.width > a.height ? 0 : 1;
+          const orientationB = b.width > b.height ? 0 : 1;
+          if (orientationA !== orientationB) return orientationA - orientationB;
+
+          // 2️⃣ largest height first
+          // if (b.height !== a.height) return b.height - a.height;
+
+          // 3️⃣ largest width next
+          return b.width - a.width;
+        })
+      );
+    }
+
     return c.json(game);
   } catch (err) {
     console.error("Error fetching popular games:", err);

@@ -27,6 +27,7 @@ import { Route as SettingsSettingsAccountRouteImport } from './routes/settings/_
 import { Route as UUsernameProfileIndexRouteImport } from './routes/u/$username/_profile.index'
 import { Route as UUsernameListListRouteImport } from './routes/u/$username/list/_list'
 import { Route as UUsernameProfileListsRouteImport } from './routes/u/$username/_profile.lists'
+import { Route as UUsernameProfileGamesRouteImport } from './routes/u/$username/_profile.games'
 import { Route as UUsernameListListListslugRouteImport } from './routes/u/$username/list/_list.$listslug'
 
 const SettingsRouteImport = createFileRoute('/settings')()
@@ -119,6 +120,11 @@ const UUsernameProfileListsRoute = UUsernameProfileListsRouteImport.update({
   path: '/lists',
   getParentRoute: () => UUsernameProfileRoute,
 } as any)
+const UUsernameProfileGamesRoute = UUsernameProfileGamesRouteImport.update({
+  id: '/games',
+  path: '/games',
+  getParentRoute: () => UUsernameProfileRoute,
+} as any)
 const UUsernameListListListslugRoute =
   UUsernameListListListslugRouteImport.update({
     id: '/$listslug',
@@ -139,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
   '/settings/': typeof SettingsSettingsIndexRoute
+  '/u/$username/games': typeof UUsernameProfileGamesRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
   '/u/$username/': typeof UUsernameProfileIndexRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
+  '/u/$username/games': typeof UUsernameProfileGamesRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
   '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
@@ -176,6 +184,7 @@ export interface FileRoutesById {
   '/settings/_settings/account': typeof SettingsSettingsAccountRoute
   '/u/$username/_profile': typeof UUsernameProfileRouteWithChildren
   '/settings/_settings/': typeof SettingsSettingsIndexRoute
+  '/u/$username/_profile/games': typeof UUsernameProfileGamesRoute
   '/u/$username/_profile/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListRouteWithChildren
   '/u/$username/list/_list': typeof UUsernameListListRouteWithChildren
@@ -197,6 +206,7 @@ export interface FileRouteTypes {
     | '/upcoming'
     | '/settings/account'
     | '/settings/'
+    | '/u/$username/games'
     | '/u/$username/lists'
     | '/u/$username/list'
     | '/u/$username/'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/upcoming'
     | '/settings/account'
+    | '/u/$username/games'
     | '/u/$username/lists'
     | '/u/$username/list'
     | '/u/$username/list/$listslug'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/settings/_settings/account'
     | '/u/$username/_profile'
     | '/settings/_settings/'
+    | '/u/$username/_profile/games'
     | '/u/$username/_profile/lists'
     | '/u/$username/list'
     | '/u/$username/list/_list'
@@ -381,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UUsernameProfileListsRouteImport
       parentRoute: typeof UUsernameProfileRoute
     }
+    '/u/$username/_profile/games': {
+      id: '/u/$username/_profile/games'
+      path: '/games'
+      fullPath: '/u/$username/games'
+      preLoaderRoute: typeof UUsernameProfileGamesRouteImport
+      parentRoute: typeof UUsernameProfileRoute
+    }
     '/u/$username/list/_list/$listslug': {
       id: '/u/$username/list/_list/$listslug'
       path: '/$listslug'
@@ -417,11 +436,13 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
 )
 
 interface UUsernameProfileRouteChildren {
+  UUsernameProfileGamesRoute: typeof UUsernameProfileGamesRoute
   UUsernameProfileListsRoute: typeof UUsernameProfileListsRoute
   UUsernameProfileIndexRoute: typeof UUsernameProfileIndexRoute
 }
 
 const UUsernameProfileRouteChildren: UUsernameProfileRouteChildren = {
+  UUsernameProfileGamesRoute: UUsernameProfileGamesRoute,
   UUsernameProfileListsRoute: UUsernameProfileListsRoute,
   UUsernameProfileIndexRoute: UUsernameProfileIndexRoute,
 }

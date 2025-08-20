@@ -1,8 +1,6 @@
-// hooks/useListMutations.ts - Create this new file
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/services/supabase";
 
-// Helper function to create slug from name
 const createSlug = (name: string): string => {
   return name
     .toLowerCase()
