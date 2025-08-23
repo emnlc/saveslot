@@ -49,33 +49,3 @@ export const useGameStatus = (userId: string, gameId: number) => {
     },
   });
 };
-
-// Get all games with a specific status for a user
-export const useGamesByStatus = (userId: string, status?: GameStatus) => {
-  return useQuery({
-    queryKey: ["games-by-status", userId, status],
-    queryFn: async (): Promise<UserGame[]> => {
-      if (!userId) return [];
-
-      let query = supabase
-        .from("user_games")
-        .select("*")
-        .eq("user_id", userId)
-        .order("last_updated", { ascending: false });
-
-      if (status) {
-        query = query.eq("status", status);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching games by status:", error);
-        throw new Error(`Failed to fetch games: ${error.message}`);
-      }
-
-      return data || [];
-    },
-    enabled: !!userId,
-  });
-};

@@ -29,9 +29,16 @@ import { Route as UUsernameListListRouteImport } from './routes/u/$username/list
 import { Route as UUsernameProfileListsRouteImport } from './routes/u/$username/_profile.lists'
 import { Route as UUsernameProfileGamesRouteImport } from './routes/u/$username/_profile.games'
 import { Route as UUsernameListListListslugRouteImport } from './routes/u/$username/list/_list.$listslug'
+import { Route as UUsernameProfileLikesLikesRouteImport } from './routes/u/$username/_profile.likes/_likes'
+import { Route as UUsernameProfileLikesLikesIndexRouteImport } from './routes/u/$username/_profile.likes/_likes.index'
+import { Route as UUsernameProfileLikesLikesListsRouteImport } from './routes/u/$username/_profile.likes/_likes.lists'
+import { Route as UUsernameProfileLikesLikesGamesRouteImport } from './routes/u/$username/_profile.likes/_likes.games'
 
 const SettingsRouteImport = createFileRoute('/settings')()
 const UUsernameListRouteImport = createFileRoute('/u/$username/list')()
+const UUsernameProfileLikesRouteImport = createFileRoute(
+  '/u/$username/_profile/likes',
+)()
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -106,6 +113,11 @@ const SettingsSettingsAccountRoute = SettingsSettingsAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => SettingsSettingsRoute,
 } as any)
+const UUsernameProfileLikesRoute = UUsernameProfileLikesRouteImport.update({
+  id: '/likes',
+  path: '/likes',
+  getParentRoute: () => UUsernameProfileRoute,
+} as any)
 const UUsernameProfileIndexRoute = UUsernameProfileIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -131,6 +143,29 @@ const UUsernameListListListslugRoute =
     path: '/$listslug',
     getParentRoute: () => UUsernameListListRoute,
   } as any)
+const UUsernameProfileLikesLikesRoute =
+  UUsernameProfileLikesLikesRouteImport.update({
+    id: '/_likes',
+    getParentRoute: () => UUsernameProfileLikesRoute,
+  } as any)
+const UUsernameProfileLikesLikesIndexRoute =
+  UUsernameProfileLikesLikesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => UUsernameProfileLikesLikesRoute,
+  } as any)
+const UUsernameProfileLikesLikesListsRoute =
+  UUsernameProfileLikesLikesListsRouteImport.update({
+    id: '/lists',
+    path: '/lists',
+    getParentRoute: () => UUsernameProfileLikesLikesRoute,
+  } as any)
+const UUsernameProfileLikesLikesGamesRoute =
+  UUsernameProfileLikesLikesGamesRouteImport.update({
+    id: '/games',
+    path: '/games',
+    getParentRoute: () => UUsernameProfileLikesLikesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -149,7 +184,11 @@ export interface FileRoutesByFullPath {
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
   '/u/$username/': typeof UUsernameProfileIndexRoute
+  '/u/$username/likes': typeof UUsernameProfileLikesLikesRouteWithChildren
   '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
+  '/u/$username/likes/games': typeof UUsernameProfileLikesLikesGamesRoute
+  '/u/$username/likes/lists': typeof UUsernameProfileLikesLikesListsRoute
+  '/u/$username/likes/': typeof UUsernameProfileLikesLikesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -166,7 +205,10 @@ export interface FileRoutesByTo {
   '/u/$username/games': typeof UUsernameProfileGamesRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
   '/u/$username/list': typeof UUsernameListListRouteWithChildren
+  '/u/$username/likes': typeof UUsernameProfileLikesLikesIndexRoute
   '/u/$username/list/$listslug': typeof UUsernameListListListslugRoute
+  '/u/$username/likes/games': typeof UUsernameProfileLikesLikesGamesRoute
+  '/u/$username/likes/lists': typeof UUsernameProfileLikesLikesListsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -189,7 +231,12 @@ export interface FileRoutesById {
   '/u/$username/list': typeof UUsernameListRouteWithChildren
   '/u/$username/list/_list': typeof UUsernameListListRouteWithChildren
   '/u/$username/_profile/': typeof UUsernameProfileIndexRoute
+  '/u/$username/_profile/likes': typeof UUsernameProfileLikesRouteWithChildren
+  '/u/$username/_profile/likes/_likes': typeof UUsernameProfileLikesLikesRouteWithChildren
   '/u/$username/list/_list/$listslug': typeof UUsernameListListListslugRoute
+  '/u/$username/_profile/likes/_likes/games': typeof UUsernameProfileLikesLikesGamesRoute
+  '/u/$username/_profile/likes/_likes/lists': typeof UUsernameProfileLikesLikesListsRoute
+  '/u/$username/_profile/likes/_likes/': typeof UUsernameProfileLikesLikesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -210,7 +257,11 @@ export interface FileRouteTypes {
     | '/u/$username/lists'
     | '/u/$username/list'
     | '/u/$username/'
+    | '/u/$username/likes'
     | '/u/$username/list/$listslug'
+    | '/u/$username/likes/games'
+    | '/u/$username/likes/lists'
+    | '/u/$username/likes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,7 +278,10 @@ export interface FileRouteTypes {
     | '/u/$username/games'
     | '/u/$username/lists'
     | '/u/$username/list'
+    | '/u/$username/likes'
     | '/u/$username/list/$listslug'
+    | '/u/$username/likes/games'
+    | '/u/$username/likes/lists'
   id:
     | '__root__'
     | '/'
@@ -249,7 +303,12 @@ export interface FileRouteTypes {
     | '/u/$username/list'
     | '/u/$username/list/_list'
     | '/u/$username/_profile/'
+    | '/u/$username/_profile/likes'
+    | '/u/$username/_profile/likes/_likes'
     | '/u/$username/list/_list/$listslug'
+    | '/u/$username/_profile/likes/_likes/games'
+    | '/u/$username/_profile/likes/_likes/lists'
+    | '/u/$username/_profile/likes/_likes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -372,6 +431,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsSettingsAccountRouteImport
       parentRoute: typeof SettingsSettingsRoute
     }
+    '/u/$username/_profile/likes': {
+      id: '/u/$username/_profile/likes'
+      path: '/likes'
+      fullPath: '/u/$username/likes'
+      preLoaderRoute: typeof UUsernameProfileLikesRouteImport
+      parentRoute: typeof UUsernameProfileRoute
+    }
     '/u/$username/_profile/': {
       id: '/u/$username/_profile/'
       path: '/'
@@ -407,6 +473,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UUsernameListListListslugRouteImport
       parentRoute: typeof UUsernameListListRoute
     }
+    '/u/$username/_profile/likes/_likes': {
+      id: '/u/$username/_profile/likes/_likes'
+      path: '/likes'
+      fullPath: '/u/$username/likes'
+      preLoaderRoute: typeof UUsernameProfileLikesLikesRouteImport
+      parentRoute: typeof UUsernameProfileLikesRoute
+    }
+    '/u/$username/_profile/likes/_likes/': {
+      id: '/u/$username/_profile/likes/_likes/'
+      path: '/'
+      fullPath: '/u/$username/likes/'
+      preLoaderRoute: typeof UUsernameProfileLikesLikesIndexRouteImport
+      parentRoute: typeof UUsernameProfileLikesLikesRoute
+    }
+    '/u/$username/_profile/likes/_likes/lists': {
+      id: '/u/$username/_profile/likes/_likes/lists'
+      path: '/lists'
+      fullPath: '/u/$username/likes/lists'
+      preLoaderRoute: typeof UUsernameProfileLikesLikesListsRouteImport
+      parentRoute: typeof UUsernameProfileLikesLikesRoute
+    }
+    '/u/$username/_profile/likes/_likes/games': {
+      id: '/u/$username/_profile/likes/_likes/games'
+      path: '/games'
+      fullPath: '/u/$username/likes/games'
+      preLoaderRoute: typeof UUsernameProfileLikesLikesGamesRouteImport
+      parentRoute: typeof UUsernameProfileLikesLikesRoute
+    }
   }
 }
 
@@ -435,16 +529,49 @@ const SettingsRouteWithChildren = SettingsRoute._addFileChildren(
   SettingsRouteChildren,
 )
 
+interface UUsernameProfileLikesLikesRouteChildren {
+  UUsernameProfileLikesLikesGamesRoute: typeof UUsernameProfileLikesLikesGamesRoute
+  UUsernameProfileLikesLikesListsRoute: typeof UUsernameProfileLikesLikesListsRoute
+  UUsernameProfileLikesLikesIndexRoute: typeof UUsernameProfileLikesLikesIndexRoute
+}
+
+const UUsernameProfileLikesLikesRouteChildren: UUsernameProfileLikesLikesRouteChildren =
+  {
+    UUsernameProfileLikesLikesGamesRoute: UUsernameProfileLikesLikesGamesRoute,
+    UUsernameProfileLikesLikesListsRoute: UUsernameProfileLikesLikesListsRoute,
+    UUsernameProfileLikesLikesIndexRoute: UUsernameProfileLikesLikesIndexRoute,
+  }
+
+const UUsernameProfileLikesLikesRouteWithChildren =
+  UUsernameProfileLikesLikesRoute._addFileChildren(
+    UUsernameProfileLikesLikesRouteChildren,
+  )
+
+interface UUsernameProfileLikesRouteChildren {
+  UUsernameProfileLikesLikesRoute: typeof UUsernameProfileLikesLikesRouteWithChildren
+}
+
+const UUsernameProfileLikesRouteChildren: UUsernameProfileLikesRouteChildren = {
+  UUsernameProfileLikesLikesRoute: UUsernameProfileLikesLikesRouteWithChildren,
+}
+
+const UUsernameProfileLikesRouteWithChildren =
+  UUsernameProfileLikesRoute._addFileChildren(
+    UUsernameProfileLikesRouteChildren,
+  )
+
 interface UUsernameProfileRouteChildren {
   UUsernameProfileGamesRoute: typeof UUsernameProfileGamesRoute
   UUsernameProfileListsRoute: typeof UUsernameProfileListsRoute
   UUsernameProfileIndexRoute: typeof UUsernameProfileIndexRoute
+  UUsernameProfileLikesRoute: typeof UUsernameProfileLikesRouteWithChildren
 }
 
 const UUsernameProfileRouteChildren: UUsernameProfileRouteChildren = {
   UUsernameProfileGamesRoute: UUsernameProfileGamesRoute,
   UUsernameProfileListsRoute: UUsernameProfileListsRoute,
   UUsernameProfileIndexRoute: UUsernameProfileIndexRoute,
+  UUsernameProfileLikesRoute: UUsernameProfileLikesRouteWithChildren,
 }
 
 const UUsernameProfileRouteWithChildren =

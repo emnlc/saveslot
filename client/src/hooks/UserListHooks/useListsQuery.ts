@@ -17,6 +17,7 @@ export interface GameList {
   game_count: number;
   slug: string;
   preview_games: Game[];
+  likes: number;
 }
 
 export const useUserLists = (userId: string) => {
@@ -68,10 +69,16 @@ export const useUserLists = (userId: string) => {
         const previewGames =
           items?.map((item) => item.games).filter(Boolean) || [];
 
+        const { count: likes } = await supabase
+          .from("likes")
+          .select("*", { count: "exact", head: true })
+          .eq("target_id", list.id);
+
         enrichedLists.push({
           ...list,
           game_count: count || 0,
           preview_games: previewGames,
+          likes: likes,
         });
       }
 

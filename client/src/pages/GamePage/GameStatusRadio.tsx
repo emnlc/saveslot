@@ -83,13 +83,13 @@ const GameStatusRadio = ({ gameId }: Props) => {
             onClick={() => handleStatusClick(status.key)}
             disabled={isUpdating || statusLoading}
             className={`cursor-pointer flex flex-col items-center transition-all ${
-              selected ? "text-primary" : "text-base-content/60"
-            } ${isUpdating ? "opacity-50 cursor-not-allowed" : "hover:text-primary"}`}
+              selected ? "text-accent" : "text-base-content/60"
+            } ${isUpdating ? "opacity-50 cursor-not-allowed" : "hover:text-accent"}`}
           >
             <Icon
               strokeWidth={2}
               size={32}
-              className={`${selected ? "fill-primary/20" : ""}`}
+              className={`${selected ? "fill-accent/20" : ""}`}
             />
             <span className="text-xs">{status.label}</span>
           </button>

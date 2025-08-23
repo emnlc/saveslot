@@ -1,9 +1,12 @@
-import { Heart, ListPlus, Star } from "lucide-react";
+import { ListPlus, Star, Gamepad2, Heart, LayoutGrid } from "lucide-react";
 import type { Game } from "../../Interface";
 import { convertToDate } from "../../utils/gameHelpers";
 import AddToListModal from "./AddToListModal";
 import { useState } from "react";
 import GameStatusDropdown from "./GameStatusRadio";
+
+import LikeButton from "@/components/LikeButton";
+import { useGameLikeCount } from "@/hooks/UserLikeHooks/useGameLikeCount";
 
 type Props = {
   data: Game;
@@ -12,6 +15,7 @@ type Props = {
 const GamePageHeader = ({ data }: Props) => {
   const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover.image_id}.jpg`;
   const [showModal, setShowModal] = useState(false);
+  const { data: likeCount } = useGameLikeCount(data.id.toString());
 
   return (
     <>
@@ -22,11 +26,27 @@ const GamePageHeader = ({ data }: Props) => {
           onClose={() => setShowModal(false)}
         />
       )}
-      <img
-        src={`${cover_url}`}
-        className="w-52 md:w-60 h-auto rounded-lg shadow-lg z-10"
-        alt={data.name}
-      />
+      <div className="min-w-52 md:min-w-60 flex flex-col items-center gap-2 -mb-5">
+        <img
+          className="w-52 md:w-60 h-auto rounded-lg shadow-lg z-10"
+          src={`${cover_url}`}
+          alt={data.name}
+        />
+        <div className="flex flex-row gap-2">
+          <span className="flex flex-row items-center gap-1">
+            <Gamepad2 className="w-5 text-accent fill-accent/20" />{" "}
+            <span className="text-base-content/60">0</span>
+          </span>
+          <span className="flex flex-row items-center gap-1">
+            <LayoutGrid className="w-5 text-secondary fill-secondary" />
+            <span className="text-base-content/60">0</span>
+          </span>
+          <span className="flex flex-row items-center gap-1">
+            <Heart className="w-5 text-primary fill-primary" />
+            <span className="text-base-content/60">{likeCount ?? 0}</span>
+          </span>
+        </div>
+      </div>
       <div className="w-full flex flex-col gap-4 z-10">
         <div className="flex flex-row gap-2 justify-center md:justify-start">
           <h1 className="font-medium text-center md:text-left text-2xl md:text-4xl">
@@ -115,9 +135,7 @@ const GamePageHeader = ({ data }: Props) => {
             <ListPlus />
             Review or Log
           </button>
-          <button className="btn btn-primary btn-square btn-sm md:btn-md">
-            <Heart fill={"none"} stroke="white" className="h-5 md:h-auto" />
-          </button>
+          <LikeButton targetId={data.id.toString()} targetType="game" />
         </div>
         <GameStatusDropdown gameId={data.id} />
       </div>

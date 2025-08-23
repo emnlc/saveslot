@@ -1,6 +1,6 @@
 import { UseProfileContext } from "@/context/ViewedProfileContext";
 import { Link } from "@tanstack/react-router";
-import { Lock } from "lucide-react";
+import { Lock, Heart } from "lucide-react";
 
 type Props = {
   list: {
@@ -16,6 +16,7 @@ type Props = {
       cover_id: string | null;
       slug: string;
     }>;
+    likes: number;
   };
 };
 
@@ -40,7 +41,7 @@ const ListCard = ({ list }: Props) => {
 
       {/* Game Previews */}
       {list.game_count > 0 ? (
-        <div className=" w-full">
+        <div className=" w-full mb-3">
           <div className="flex gap-[1px] sm:gap-0 w-full sm:-space-x-5 ">
             {list.preview_games.slice(0, 5).map((game, index) => (
               <div
@@ -65,11 +66,15 @@ const ListCard = ({ list }: Props) => {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-center w-full h-full ">
+          <div className="flex items-center justify-center w-full h-full mb-3">
             <span className="text-base-content/60">No games...</span>
           </div>
         </>
       )}
+
+      <span className="flex flex-row items-center gap-2 text-sm text-gray-500">
+        {list.likes} <Heart className="w-[14px]" fill={"#6a7282"} />
+      </span>
     </Link>
   );
 };

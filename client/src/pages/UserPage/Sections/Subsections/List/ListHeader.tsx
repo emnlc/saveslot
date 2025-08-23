@@ -1,5 +1,6 @@
 import { Edit3, Save, Trash2, X } from "lucide-react";
 import { UseProfileContext } from "@/context/ViewedProfileContext";
+import LikeButton from "@/components/LikeButton";
 
 interface Game {
   id: string;
@@ -66,7 +67,12 @@ const ListHeader = ({
             maxLength={50}
           />
         ) : (
-          <h1 className="text-2xl font-bold">{data.name}</h1>
+          <>
+            <div className="flex flex-row gap-2 md:gap-4 items-center">
+              <h1 className="text-2xl md:text-3xl font-bold">{data.name}</h1>
+              <LikeButton targetId={data.id} targetType="list" />
+            </div>
+          </>
         )}
 
         {/* Action Buttons */}
