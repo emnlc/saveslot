@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { useAllNewlyReleasedGames } from "@/hooks/GameHooks/useAllNewlyReleasedGames";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Route as NewlyReleasedRoute } from "../../routes/newly-released";
 type SortOption = "popularity" | "name" | "first_release_date";
 
 import { ArrowDown, ArrowUp } from "lucide-react";
+import Pagination from "@/components/controls/Pagination";
 
 const sortLabels: Record<SortOption, string> = {
   popularity: "Popularity",
@@ -17,7 +18,7 @@ const NewlyReleased = () => {
   const search = NewlyReleasedRoute.useSearch();
   const navigate = NewlyReleasedRoute.useNavigate();
 
-  const page = search.page ?? 1;
+  const [page, setPage] = useState(1);
   const sort = search.sort ?? "popularity";
   const order = search.order ?? "desc";
 
@@ -30,10 +31,6 @@ const NewlyReleased = () => {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [page]);
-
-  const handlePageChange = (newPage: number) => {
-    navigate({ search: (prev) => ({ ...prev, page: newPage }) });
-  };
 
   if (isLoading) return <div className="min-h-screen" />;
   if (isError || !data) return <p>Error fetching game data.</p>;
@@ -129,15 +126,11 @@ const NewlyReleased = () => {
           ))}
 
           <div className="col-span-full join mt-8 flex justify-center">
-            {[...Array(data.totalPages)].map((_, i) => (
-              <button
-                key={i}
-                className={`btn ${page === i + 1 ? "btn-active text-primary" : ""}`}
-                onClick={() => handlePageChange(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
+            <Pagination
+              currentPage={page}
+              totalPages={data.totalPages}
+              onPageChange={setPage}
+            />
           </div>
         </div>
       </div>

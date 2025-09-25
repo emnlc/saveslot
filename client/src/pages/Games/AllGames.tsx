@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useGames } from "../../hooks/GameHooks/useGames";
 import { useEffect, useState } from "react";
+import Pagination from "@/components/controls/Pagination";
 
 const AllGames = () => {
   const [page, setPage] = useState(1);
@@ -12,9 +13,10 @@ const AllGames = () => {
 
   if (isLoading) return <div className="min-h-screen" />;
   if (isError || !data) return <p>Error fetching game data.</p>;
+
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container my-16 gap-4 place-items-center join">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container my-16 gap-4 place-items-center">
         {data.games.map((game) => (
           <Link
             className="group rounded-lg overflow-hidden border border-neutral hover:border-primary transition-colors"
@@ -29,16 +31,12 @@ const AllGames = () => {
           </Link>
         ))}
 
-        <div className="col-span-full join mt-8 flex justify-center">
-          {[...Array(data.totalPages)].map((_, i) => (
-            <button
-              key={i}
-              className={`btn ${page === i + 1 ? "btn-active text-primary" : ""}`}
-              onClick={() => setPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
+        <div className="col-span-full">
+          <Pagination
+            currentPage={page}
+            totalPages={data.totalPages}
+            onPageChange={setPage}
+          />
         </div>
       </div>
     </>
