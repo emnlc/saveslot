@@ -19,6 +19,7 @@ export type GameList = {
   name: string;
   is_private: boolean;
   created_at: string;
+  slug: string;
 };
 
 export interface Game {
@@ -212,3 +213,10 @@ export type GameStatus =
   | "dropped"
   | "plan_to_play"
   | "abandoned";
+
+export interface GameListWithGames extends GameList {
+  item_count: number;
+  like_count: number;
+  top_games: Game[];
+  profile: Profile;
+}

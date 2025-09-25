@@ -9,6 +9,7 @@ import { gamesRoutes } from "./routes/games";
 // import { authRoutes } from "./routes/auth";
 // import { listsRoutes } from "./routes/lists";
 import { reviewsRoutes } from "./routes/reviews";
+import { landingRoutes } from "./routes/landing";
 
 const app = new Hono();
 
@@ -25,6 +26,7 @@ app.route("/games", gamesRoutes);
 // app.route("/auth", authRoutes);
 // app.route("/lists", listsRoutes);
 app.route("/reviews", reviewsRoutes);
+app.route("/landing", landingRoutes);
 
 app.post("/update-games", async (c) => {
   return c.json({ success: true });
