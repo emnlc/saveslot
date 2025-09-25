@@ -3,7 +3,7 @@ import { useUserLists } from "@/hooks/UserListHooks/useListsQuery";
 import { useCreateList } from "@/hooks/UserListHooks/useCreateListMutation";
 import { useAddGameToList } from "@/hooks/UserListHooks/useAddGameMutation";
 import { supabase } from "@/services/supabase";
-import { ArrowLeft, Plus, Search } from "lucide-react";
+import { ArrowLeft, Plus, Search, X } from "lucide-react";
 
 type Props = {
   gameId: number;
@@ -114,12 +114,8 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
               : "Create new list"}
           </h3>
 
-          <button
-            onClick={onClose}
-            className="btn btn-ghost btn-sm p-1"
-            disabled={isLoading}
-          >
-            ✕
+          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
+            <X className="w-4 h-4" />
           </button>
         </div>
 

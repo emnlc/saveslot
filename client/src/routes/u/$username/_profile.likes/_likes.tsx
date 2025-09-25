@@ -18,7 +18,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="my-12 flex flex-col gap-8 px-4 md:px-0">
+      <div className="p-6 my-12 flex flex-col gap-8 ">
         <div className="flex flex-row justify-between gap-4">
           <h2 className="text-2xl font-bold">
             {isOwnProfile
@@ -52,6 +52,19 @@ function RouteComponent() {
               }}
             >
               Lists
+            </Link>
+            <Link
+              to="/u/$username/likes/reviews"
+              params={{ username }}
+              className="btn btn-sm md:btn-md"
+              activeProps={{
+                className: "btn-secondary",
+              }}
+              inactiveProps={{
+                className: "btn-ghost hover:btn-secondary",
+              }}
+            >
+              Reviews
             </Link>
           </div>
         </div>

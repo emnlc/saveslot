@@ -5,6 +5,7 @@
       "name": "server",
       "dependencies": {
         "@supabase/supabase-js": "^2.50.0",
+        "bad-words": "^4.0.0",
         "dotenv": "^16.5.0",
         "hono": "^4.7.10",
       },
@@ -35,6 +36,10 @@
     "@types/phoenix": ["@types/phoenix@1.6.6", "", {}, "sha512-PIzZZlEppgrpoT2QgbnDU+MMzuR6BbCjllj0bM70lWoejMeNJAxCchxnv7J3XFkI8MpygtRpzXrIlmWUBclP5A=="],
 
     "@types/ws": ["@types/ws@8.18.1", "", { "dependencies": { "@types/node": "*" } }, "sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg=="],
+
+    "bad-words": ["bad-words@4.0.0", "", { "dependencies": { "badwords-list": "^2.0.1-4" } }, "sha512-fLjG/I0N3I7xhurqGnGitSRD10UeEE63a7hyXtutQDpxo4+Eal+i7veWeZxZJPNtsl6X1mUIoWPwt8gQ7NMQUw=="],
+
+    "badwords-list": ["badwords-list@2.0.1-4", "", {}, "sha512-FxfZUp7B9yCnesNtFQS9v6PvZdxTYa14Q60JR6vhjdQdWI4naTjJIyx22JzoER8ooeT8SAAKoHLjKfCV7XgYUQ=="],
 
     "bun-types": ["bun-types@1.2.15", "", { "dependencies": { "@types/node": "*" } }, "sha512-NarRIaS+iOaQU1JPfyKhZm4AsUOrwUOqRNHY0XxI8GI8jYxiLXLcdjYMG9UKS+fwWasc1uw1htV9AX24dD+p4w=="],
 

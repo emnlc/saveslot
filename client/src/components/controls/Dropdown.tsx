@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
@@ -20,23 +20,23 @@ interface DropdownProps {
 const Dropdown = ({
   buttonText,
   items,
-  buttonClass = "btn btn-secondary",
-  dropdownClass = "dropdown",
+  buttonClass,
+  dropdownClass,
   disabled = false,
 }: DropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleItemClick = (itemOnClick: () => void) => {
     if (disabled) return;
 
     itemOnClick();
+    setIsOpen(false);
+  };
 
-    if (dropdownRef.current) {
-      const activeElement = document.activeElement as HTMLElement;
-      if (activeElement) {
-        activeElement.blur();
-      }
-      document.body.click();
+  const toggleDropdown = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen);
     }
   };
 
@@ -46,56 +46,61 @@ const Dropdown = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        const activeElements = dropdownRef.current.querySelectorAll(":focus");
-        activeElements.forEach((el) => (el as HTMLElement).blur());
+        setIsOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [isOpen]);
+
+  const defaultButtonClass =
+    "flex items-center justify-between space-x-2 px-3 py-2 text-xs md:text-sm bg-base-100 border border-base-300 rounded-lg hover:border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 cursor-pointer";
+
+  const finalButtonClass = buttonClass || defaultButtonClass;
 
   return (
-    <div ref={dropdownRef} className={dropdownClass}>
-      <div
-        tabIndex={disabled ? -1 : 0}
-        role="button"
-        className={`${buttonClass} ${disabled ? "btn-disabled" : ""}`}
+    <div ref={dropdownRef} className={`relative ${dropdownClass || ""}`}>
+      <button
+        onClick={toggleDropdown}
+        disabled={disabled}
+        className={`${finalButtonClass} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
       >
-        {buttonText}
-        <ChevronDown size={24} />
-      </div>
-      <ul
-        tabIndex={0}
-        className="dropdown-content  bg-base-300 rounded-md overflow-clip z-[1] w-full shadow"
-      >
-        {items.map((item, index) => (
-          <li key={index}>
-            <a
+        <span className="text-base-content">{buttonText}</span>
+        <ChevronDown
+          className={`w-4 h-4 text-base-content/60 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-1 min-w-full bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 overflow-hidden">
+          {items.map((item, index) => (
+            <button
+              key={index}
               onClick={() => handleItemClick(item.onClick)}
-              className={`flex items-center justify-between gap-2 text-xs md:text-base p-2 ${
-                item.isSelected ? "bg-secondary/20 text-secondary" : ""
-              } ${disabled ? "pointer-events-none opacity-50" : ""}`}
+              disabled={disabled}
+              className={`w-full flex items-center justify-between px-3 py-2 text-xs md:text-sm hover:bg-base-200 transition-colors duration-150 cursor-pointer ${
+                item.isSelected
+                  ? "bg-primary/10 text-primary"
+                  : "text-base-content"
+              } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <div className="flex items-center gap-2">
-                {item.icon && (
-                  <>
-                    <item.icon className="" size={16} />
-                  </>
-                )}
-                <span>{item.label}</span>
+              <div className="flex items-center space-x-2 flex-1 text-left">
+                {item.icon && <item.icon className="w-4 h-4" />}
+                <span className="whitespace-nowrap">{item.label}</span>
               </div>
-              {item.isSelected && (
-                <>
-                  <Check size={16} className="" />
-                </>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
+              {item.isSelected && <Check className="w-4 h-4 text-primary" />}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

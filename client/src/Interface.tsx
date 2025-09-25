@@ -22,6 +22,7 @@ export type GameList = {
 };
 
 export interface Game {
+  cover_id?: string;
   id: number;
   name: string;
   cover: {
@@ -112,3 +113,102 @@ interface Platforms {
     image_id: string;
   };
 }
+
+// REVIEW TYPES
+export interface GameLogWithProfile extends GameLog {
+  profile: Profile;
+  game: Game;
+}
+
+export interface LogComment {
+  id: string;
+  log_id: string;
+  user_id: string;
+  comment_text: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LogCommentWithProfile extends LogComment {
+  profile: Profile;
+}
+
+export interface GameLog {
+  id: string;
+  user_id: string;
+  game_id: number;
+  rating?: number;
+  review_text?: string;
+  game_status?: string;
+  platform?: string;
+  play_start_date?: string;
+  play_end_date?: string;
+  hours_played: number;
+  minutes_played: number;
+  contains_spoilers: boolean;
+  created_at: string;
+  updated_at: string;
+  is_draft: boolean;
+}
+
+export interface CreateGameLogData {
+  game_id: number;
+  rating?: number;
+  review_text?: string;
+  game_status?: string;
+  platform?: string;
+  play_start_date?: string;
+  play_end_date?: string;
+  hours_played?: number;
+  minutes_played?: number;
+  contains_spoilers?: boolean;
+}
+
+export interface LogDraft {
+  id: string;
+  user_id: string;
+  game_id: number;
+  rating?: number;
+  review_text?: string;
+  game_status?: string;
+  platform?: string;
+  play_start_date?: string;
+  play_end_date?: string;
+  hours_played: number;
+  minutes_played: number;
+  contains_spoilers: boolean;
+  created_at: string;
+  updated_at: string;
+}
+export interface UpdateGameLogData extends Partial<CreateGameLogData> {
+  id: string;
+}
+
+export interface CreateLogCommentData {
+  log_id: string;
+  comment_text: string;
+}
+
+export interface GameRatingStats {
+  average_rating: number;
+  total_logs: number;
+  rating_distribution: {
+    [key: string]: number;
+  };
+  completion_rate: number;
+  recent_activity: number;
+  average_completion_time: string | null;
+}
+
+export interface LogFilters {
+  sort_by?: "newest" | "oldest" | "highest_rated" | "lowest_rated";
+  limit?: number;
+  offset?: number;
+}
+
+export type GameStatus =
+  | "completed"
+  | "playing"
+  | "dropped"
+  | "plan_to_play"
+  | "abandoned";

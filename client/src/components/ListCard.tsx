@@ -1,6 +1,7 @@
 import { UseProfileContext } from "@/context/ViewedProfileContext";
 import { Link } from "@tanstack/react-router";
 import { Lock, Heart } from "lucide-react";
+import { useListLikeCount } from "@/hooks/UserLikeHooks/useListLikeCount";
 
 type Props = {
   list: {
@@ -16,12 +17,13 @@ type Props = {
       cover_id: string | null;
       slug: string;
     }>;
-    likes: number;
   };
 };
 
 const ListCard = ({ list }: Props) => {
   const { viewedProfile } = UseProfileContext();
+  const { data: likeCount } = useListLikeCount(list.id);
+
   return (
     <Link
       to="/u/$username/list/$listslug"
@@ -73,7 +75,8 @@ const ListCard = ({ list }: Props) => {
       )}
 
       <span className="flex flex-row items-center gap-2 text-sm text-gray-500">
-        {list.likes} <Heart className="w-[14px]" fill={"#6a7282"} />
+        {likeCount}
+        <Heart className="w-[14px]" fill={"#6a7282"} />
       </span>
     </Link>
   );

@@ -5,8 +5,10 @@ export interface Like {
   id: string;
   user_id: string;
   target_type: "game" | "list" | "review";
-  target_id: string;
   liked_at: string;
+  game_id?: number;
+  list_id?: string;
+  review_id?: string;
 }
 
 export const useUnlikeMutation = (userId: string) => {
@@ -20,27 +22,53 @@ export const useUnlikeMutation = (userId: string) => {
       target_type: Like["target_type"];
       target_id: string;
     }) => {
-      const { error } = await supabase
-        .from("likes")
-        .delete()
-        .eq("user_id", userId)
-        .eq("target_type", target_type)
-        .eq("target_id", target_id);
+      let deleteQuery = supabase.from("likes").delete().eq("user_id", userId);
 
+      if (target_type === "review") {
+        deleteQuery = deleteQuery.eq("review_id", target_id);
+      } else if (target_type === "game") {
+        deleteQuery = deleteQuery.eq("game_id", parseInt(target_id));
+      } else if (target_type === "list") {
+        deleteQuery = deleteQuery.eq("list_id", target_id);
+      }
+
+      const { error } = await deleteQuery;
       if (error) throw error;
       return { target_type, target_id };
     },
     onSuccess: async ({ target_type, target_id }) => {
-      // Update user-likes cache
       queryClient.setQueryData<Like[]>(["user-likes", userId], (old = []) =>
-        old.filter(
-          (l) => !(l.target_type === target_type && l.target_id === target_id)
-        )
+        old.filter((l) => {
+          if (target_type === "game") {
+            return !(
+              l.target_type === "game" && l.game_id === parseInt(target_id)
+            );
+          } else if (target_type === "list") {
+            return !(l.target_type === "list" && l.list_id === target_id);
+          } else if (target_type === "review") {
+            return !(l.target_type === "review" && l.review_id === target_id);
+          }
+          return true;
+        })
       );
 
-      // If it's a list being unliked, we need to invalidate the list owner's cache
+      if (target_type === "game") {
+        queryClient.invalidateQueries({
+          queryKey: ["game-like-count", target_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user-liked-games", userId],
+        });
+      }
+
       if (target_type === "list") {
-        // Get the list to find its owner
+        queryClient.invalidateQueries({
+          queryKey: ["list-like-count", target_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user-liked-lists", userId],
+        });
+
         const { data: listData } = await supabase
           .from("game_lists")
           .select("user_id")
@@ -48,30 +76,25 @@ export const useUnlikeMutation = (userId: string) => {
           .single();
 
         if (listData?.user_id) {
-          // Invalidate the list owner's cache
           queryClient.invalidateQueries({
             queryKey: ["user-lists-fresh", listData.user_id],
-          });
-
-          queryClient.invalidateQueries({
-            queryKey: ["user-liked-lists", userId],
           });
         }
       }
 
-      // Also invalidate your own lists in case you're viewing your own profile
-      queryClient.invalidateQueries({
-        queryKey: ["user-lists-fresh", userId],
-      });
-
-      // Invalidate the game like count if it's a game being unliked
-      if (target_type === "game") {
+      if (target_type === "review") {
         queryClient.invalidateQueries({
-          queryKey: ["game-like-count", target_id],
+          queryKey: ["review-like-count", target_id],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user-liked-reviews", userId],
         });
 
         queryClient.invalidateQueries({
-          queryKey: ["user-liked-games", userId],
+          queryKey: ["game-logs"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["user-logs"],
         });
       }
     },

@@ -6,20 +6,19 @@ export interface LikedGame {
   name: string;
   cover_id: string | null;
   slug: string;
-  liked_at: string; // from the likes table
-  like_id: string; // the like record id
+  liked_at: string;
+  like_id: string;
 }
 
 export const useUserLikedGames = (userId: string) => {
   return useQuery({
     queryKey: ["user-liked-games", userId],
     queryFn: async (): Promise<LikedGame[]> => {
-      // First, get all game likes for this user
       const { data: likes, error: likesError } = await supabase
         .from("likes")
-        .select("id, liked_at, target_id")
+        .select("id, liked_at, game_id")
         .eq("user_id", userId)
-        .eq("target_type", "game")
+        .not("game_id", "is", null)
         .order("liked_at", { ascending: false });
 
       if (likesError) {
@@ -31,7 +30,7 @@ export const useUserLikedGames = (userId: string) => {
       }
 
       // Get all the game IDs that were liked
-      const gameIds = likes.map((like) => like.target_id);
+      const gameIds = likes.map((like) => like.game_id);
 
       // Fetch the actual game data
       const { data: games, error: gamesError } = await supabase
@@ -50,9 +49,7 @@ export const useUserLikedGames = (userId: string) => {
       // Combine the likes data with game data
       const result = likes
         .map((like) => {
-          const game = games.find(
-            (g) => String(g.id) === String(like.target_id)
-          );
+          const game = games.find((g) => g.id === like.game_id);
 
           if (!game) return null;
 
@@ -70,6 +67,6 @@ export const useUserLikedGames = (userId: string) => {
       return result;
     },
     enabled: !!userId,
-    staleTime: 15 * 60 * 1000, // 5 minutes
+    staleTime: 15 * 60 * 1000, // 15 minutes
   });
 };

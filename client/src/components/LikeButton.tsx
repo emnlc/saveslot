@@ -17,9 +17,16 @@ const LikeButton = ({ targetId, targetType }: Props) => {
   const likeMutation = useLikeMutation(userId || "");
   const unlikeMutation = useUnlikeMutation(userId || "");
 
-  const isLiked = likes?.some(
-    (l) => l.target_id === targetId && l.target_type === targetType
-  );
+  const isLiked = likes?.some((l) => {
+    if (targetType === "game") {
+      return l.target_type === "game" && l.game_id === parseInt(targetId);
+    } else if (targetType === "list") {
+      return l.target_type === "list" && l.list_id === targetId;
+    } else if (targetType === "review") {
+      return l.target_type === "review" && l.review_id === targetId;
+    }
+    return false;
+  });
 
   const isLoading = likeMutation.isPending || unlikeMutation.isPending;
 

@@ -122,7 +122,7 @@ const Games = ({ search, navigate }: GamesProps) => {
               onClick: () => updateFilter(s.key),
               isSelected: s.key === filter,
             }))}
-            buttonClass="btn btn-secondary btn-sm md:btn-md w-full"
+            buttonClass="btn btn-sm md:btn-md w-full"
           />
         </div>
       </div>

@@ -2,11 +2,14 @@ import { ListPlus, Star, Gamepad2, Heart, LayoutGrid } from "lucide-react";
 import type { Game } from "../../Interface";
 import { convertToDate } from "../../utils/gameHelpers";
 import AddToListModal from "./AddToListModal";
+import CreateLogModal from "./GameLogModal/CreateLogModal";
 import { useState } from "react";
 import GameStatusDropdown from "./GameStatusRadio";
 
 import LikeButton from "@/components/LikeButton";
 import { useGameLikeCount } from "@/hooks/UserLikeHooks/useGameLikeCount";
+import { useGameRatingStats } from "@/hooks/GameLogs/useGameLogs";
+import { UserAuth } from "@/context/AuthContext";
 
 type Props = {
   data: Game;
@@ -15,7 +18,12 @@ type Props = {
 const GamePageHeader = ({ data }: Props) => {
   const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover.image_id}.jpg`;
   const [showModal, setShowModal] = useState(false);
+  const [showLogModal, setShowLogModal] = useState(false);
+
+  const { profile } = UserAuth();
+
   const { data: likeCount } = useGameLikeCount(data.id.toString());
+  const { data: ratingStats } = useGameRatingStats(data.id);
 
   return (
     <>
@@ -26,6 +34,16 @@ const GamePageHeader = ({ data }: Props) => {
           onClose={() => setShowModal(false)}
         />
       )}
+
+      {/* Add the CreateLogModal */}
+      {showLogModal && profile && (
+        <CreateLogModal
+          game={data}
+          userId={profile.id}
+          onClose={() => setShowLogModal(false)}
+        />
+      )}
+
       <div className="min-w-52 md:min-w-60 flex flex-col items-center gap-2 -mb-5">
         <img
           className="w-52 md:w-60 h-auto rounded-lg shadow-lg z-10"
@@ -94,9 +112,14 @@ const GamePageHeader = ({ data }: Props) => {
           <div className="flex flex-col items-center justify-center">
             <span className="flex items-center gap-2 text-xl">
               <Star fill="#FFD700" stroke="#FFD700" />
-              N/A
+              {/* Update this to show actual user rating stats */}
+              {ratingStats && ratingStats.total_logs > 0
+                ? ratingStats.average_rating.toFixed(1)
+                : "N/A"}
             </span>
-            <span className="text-xs">User Ratings</span>
+            <span className="text-xs">
+              User Ratings {ratingStats && `(${ratingStats.total_logs})`}
+            </span>
           </div>
           {data.rating && (
             <>
@@ -131,7 +154,12 @@ const GamePageHeader = ({ data }: Props) => {
             <ListPlus />
             Add to List
           </button>
-          <button className="btn btn-accent btn-sm md:btn-md">
+          {/* Update the Review or Log button */}
+          <button
+            onClick={() => setShowLogModal(true)}
+            disabled={!profile?.id}
+            className="btn btn-accent btn-sm md:btn-md"
+          >
             <ListPlus />
             Review or Log
           </button>

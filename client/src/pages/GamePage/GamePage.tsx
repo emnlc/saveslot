@@ -7,6 +7,8 @@ import GamePageDetails from "./GamePageDetails";
 import GamePageStores from "./GamePageStores";
 import GamePageTrailer from "./GamePageTrailer";
 
+import GamePageReviewsSection from "./GameLogs/GamePageReviewsSection";
+
 type Props = {
   gamesSlug: string;
 };
@@ -79,9 +81,7 @@ const GamePage = (props: Props) => {
           </div>
 
           {/* reviews section */}
-          <div className="col-span-1 md:col-span-2 flex ">
-            <h1 className="text-xl font-bold">Reviews</h1>
-          </div>
+          <GamePageReviewsSection gameId={data.id} game={data} />
         </div>
       </div>
     </div>
