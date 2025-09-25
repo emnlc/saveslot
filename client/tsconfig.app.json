@@ -12,6 +12,7 @@
     /* Bundler mode */
     "moduleResolution": "node",
     // "allowImportingTsExtensions": true,
+    "ignoreDeprecations": "6.0",
 
     "isolatedModules": true,
     "moduleDetection": "force",
