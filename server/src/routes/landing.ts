@@ -3,12 +3,15 @@ import { supabase } from "../lib/supabase";
 
 export const landingRoutes = new Hono();
 
-// Get top reviews (most liked)
+const gameData =
+  "id, name, slug, cover_id, game_type, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human";
+
+// Get top reviews
 landingRoutes.get("/top-reviews", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
 
-    // Get all non-draft reviews with text
+    // Get all reviews with text
     const { data: reviews, error: reviewsError } = await supabase
       .from("game_logs")
       .select(
@@ -66,19 +69,39 @@ landingRoutes.get("/top-reviews", async (c) => {
 landingRoutes.get("/recently-released", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
+    const days = parseInt(c.req.query("days") || "7");
+
+    const daysAgo = new Date();
+    daysAgo.setDate(daysAgo.getDate() - days);
 
     const { data: games, error } = await supabase
       .from("games")
-      .select("*")
+      .select(gameData)
       .eq("released", true)
-      .not("first_release_date", "is", null)
+      .not("official_release_date", "is", null)
+      .not("themes", "cs", "{42}")
+      .not("game_type", "in", "(3, 1)")
       .not("cover_id", "is", null)
-      .order("first_release_date", { ascending: false })
+      .lte("official_release_date", new Date().toISOString())
+      .gte("official_release_date", daysAgo.toISOString())
+      .or(
+        "release_date_status.ilike.%Full Release%,release_date_status.is.null"
+      )
+      .order("popularity", { ascending: false })
+      .order("official_release_date", { ascending: false })
       .limit(limit);
 
     if (error) throw error;
 
-    return c.json(games || []);
+    // Sort by release date chronologically
+    const sortedGames =
+      games?.sort((a, b) => {
+        const dateA = new Date(a.official_release_date).getTime();
+        const dateB = new Date(b.official_release_date).getTime();
+        return dateB - dateA;
+      }) || [];
+
+    return c.json(sortedGames);
   } catch (err) {
     console.error("Error fetching recently released games:", err);
     return c.json({ error: "Failed to fetch recently released games" }, 500);
@@ -89,21 +112,31 @@ landingRoutes.get("/recently-released", async (c) => {
 landingRoutes.get("/upcoming", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
-    const now = new Date().toISOString();
+    const now = new Date();
+    const dateRange = new Date();
+    dateRange.setDate(dateRange.getDate() + 14);
 
     const { data: games, error } = await supabase
       .from("games")
-      .select("*")
+      .select(gameData)
+      .not("themes", "cs", "{42}")
       .eq("released", false)
-      .not("first_release_date", "is", null)
+      .not("official_release_date", "is", null)
       .not("cover_id", "is", null)
-      .gt("first_release_date", now)
-      .order("first_release_date", { ascending: true })
+      .gte("official_release_date", now.toISOString())
+      .lte("official_release_date", dateRange.toISOString())
+      .order("popularity", { ascending: false })
+      .order("official_release_date", { ascending: true })
       .limit(limit);
 
     if (error) throw error;
 
-    return c.json(games || []);
+    const upcomingGames = (games || []).sort(
+      (a, b) =>
+        new Date(a.official_release_date).getTime() -
+        new Date(b.official_release_date).getTime()
+    );
+    return c.json(upcomingGames || []);
   } catch (err) {
     console.error("Error fetching upcoming games:", err);
     return c.json({ error: "Failed to fetch upcoming games" }, 500);
@@ -170,17 +203,17 @@ landingRoutes.get("/most-rated", async (c) => {
 landingRoutes.get("/featured-game", async (c) => {
   try {
     // Calculate date 30 days ago
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
     const { data: game, error } = await supabase
       .from("games")
-      .select("*")
+      .select("id, name, slug, cover_id, release_date_human")
       .eq("released", true)
       .not("first_release_date", "is", null)
       .not("cover_id", "is", null)
       .not("popularity", "is", null)
-      .gte("first_release_date", thirtyDaysAgo.toISOString())
+      .gte("first_release_date", twoWeeksAgo.toISOString())
       .order("popularity", { ascending: false })
       .limit(1)
       .single();

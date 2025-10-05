@@ -1,5 +1,4 @@
 import { Hono } from "hono";
-import { fetchIGDB } from "../../services/igdb";
 import { supabase } from "../../lib/supabase";
 
 export const upcomingRoutes = new Hono();
@@ -7,31 +6,38 @@ export const upcomingRoutes = new Hono();
 // upcoming games
 upcomingRoutes.get("/", async (c) => {
   try {
-    const body = `
-    fields 
-      name,
-      cover.image_id,
-      total_rating,
-      total_rating_count,
-      rating,
-      rating_count,
-      aggregated_rating,
-      aggregated_rating_count,
-      hypes,
-      slug,
-      first_release_date;
-    where
-      hypes > 30 &
-      first_release_date > ${Math.floor(Date.now() / 1000)};
-    sort first_release_date asc;
-    limit 500;
-    `;
+    const limit = parseInt(c.req.query("limit") || "30");
+    const now = new Date();
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 14);
 
-    const upcoming = await fetchIGDB("games", body);
-    return c.json(upcoming);
+    const { data: upcoming, error } = await supabase
+      .from("games")
+      .select(
+        "id, name, slug, cover_id, game_type, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human"
+      )
+      .eq("released", false)
+      .not("themes", "cs", "{42}")
+      .not("cover_id", "is", null)
+      .not("official_release_date", "is", null)
+      .gte("official_release_date", now.toISOString())
+      .lte("official_release_date", thirtyDaysFromNow.toISOString())
+      .not("game_type", "in", "(9, 11,14)")
+      .order("popularity", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    const sortedUpcoming = (upcoming || []).sort(
+      (a, b) =>
+        new Date(a.official_release_date).getTime() -
+        new Date(b.official_release_date).getTime()
+    );
+
+    return c.json(sortedUpcoming);
   } catch (err) {
-    console.error("Error fetching popular games:", err);
-    return c.json({ error: "Failed to fetch popular games" }, 500);
+    console.error("Error fetching upcoming games:", err);
+    return c.json({ error: "Failed to fetch upcoming games" }, 500);
   }
 });
 
@@ -47,7 +53,6 @@ upcomingRoutes.get("/all", async (c) => {
     const sort1 = c.req.query("sort1") || "popularity";
     const sort1Order = c.req.query("order1") === "asc" ? "asc" : "desc";
 
-    // fallback to safe sort if invalid
     const sortKey = allowedSorts.includes(sort1) ? sort1 : "popularity";
 
     const { count } = await supabase
@@ -57,7 +62,10 @@ upcomingRoutes.get("/all", async (c) => {
 
     const query = supabase
       .from("games")
-      .select("*")
+      .select(
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, released"
+      )
+      .not("themes", "cs", "{42}")
       .eq("released", false)
       .gt("first_release_date", now)
       .order(sortKey, { ascending: sort1Order === "asc" })

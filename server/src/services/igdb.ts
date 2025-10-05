@@ -40,8 +40,9 @@ export const fetchIGDB = async (endpoint: string, body: string) => {
 
   if (!res.ok) {
     const error = await res.text();
-    console.error("IGDB error:", error);
-    throw new Error("Failed to fetch from IGDB");
+
+    const errorMessage = `Failed to fetch from IGDB (${res.status}): ${error}`;
+    throw new Error(errorMessage);
   }
 
   return res.json();

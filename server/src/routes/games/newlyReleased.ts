@@ -1,39 +1,43 @@
 import { Hono } from "hono";
-import { fetchIGDB } from "../../services/igdb";
 import { supabase } from "../../lib/supabase";
 
 export const newlyReleasedRoutes = new Hono();
-const NINETY_DAYS = Math.floor(Date.now() / 1000) - 7889238;
 
-// recently released games
+// Recently released games
 newlyReleasedRoutes.get("/", async (c) => {
   try {
-    const body = `
-    fields 
-      name,
-      cover.image_id,
-      total_rating,
-      total_rating_count,
-      rating,
-      rating_count,
-      aggregated_rating,
-      aggregated_rating_count,
-      hypes,
-      slug,
-      first_release_date;
-    where 
-      total_rating_count > 3 &
-      first_release_date > ${NINETY_DAYS} &
-      first_release_date < ${Math.floor(Date.now() / 1000)};
-    sort hypes desc;
-    limit 30;
-    `;
+    const limit = parseInt(c.req.query("limit") || "30");
+    const now = new Date();
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 14);
 
-    const releases = await fetchIGDB("games", body);
-    return c.json(releases);
+    const { data: releases, error } = await supabase
+      .from("games")
+      .select(
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human"
+      )
+      .eq("released", true)
+      .not("official_release_date", "is", null)
+      .not("cover_id", "is", null)
+      .not("themes", "cs", "{42}")
+      .gte("official_release_date", ninetyDaysAgo.toISOString())
+      .lte("official_release_date", now.toISOString())
+      .not("game_type", "in", "(3, 11,14)")
+      .order("popularity", { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+
+    const sortedReleases = (releases || []).sort(
+      (a, b) =>
+        new Date(b.official_release_date).getTime() -
+        new Date(a.official_release_date).getTime()
+    );
+
+    return c.json(sortedReleases);
   } catch (err) {
-    console.error("Error fetching popular games:", err);
-    return c.json({ error: "Failed to fetch popular games" }, 500);
+    console.error("Error fetching newly released games:", err);
+    return c.json({ error: "Failed to fetch newly released games" }, 500);
   }
 });
 
@@ -42,28 +46,37 @@ newlyReleasedRoutes.get("/all", async (c) => {
     const page = parseInt(c.req.query("page") || "1", 10);
     const pageSize = parseInt(c.req.query("limit") || "60", 10);
     const offset = (page - 1) * pageSize;
-
-    const sort1 = c.req.query("sort1") || "first_release_date";
+    const sort1 = c.req.query("sort1") || "official_release_date";
     const sort1Order = c.req.query("order1") === "asc" ? "asc" : "desc";
 
     const now = new Date();
-    const cutoffDate = new Date(now.setDate(now.getDate() - 90)).toISOString();
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
+    // Get total count
     const { count } = await supabase
       .from("games")
       .select("*", { count: "exact", head: true })
       .eq("released", true)
-      .gte("first_release_date", cutoffDate);
+      .not("official_release_date", "is", null)
+      .gte("official_release_date", ninetyDaysAgo.toISOString())
+      .lte("official_release_date", now.toISOString())
+      .not("game_type", "in", "(11,14)");
 
-    const query = supabase
+    // Get paginated results
+    const { data: games, error } = await supabase
       .from("games")
-      .select("*")
-      .gte("first_release_date", cutoffDate)
+      .select(
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, released"
+      )
       .eq("released", true)
+      .not("themes", "cs", "{42}")
+      .not("official_release_date", "is", null)
+      .gte("official_release_date", ninetyDaysAgo.toISOString())
+      .lte("official_release_date", now.toISOString())
+      .not("game_type", "in", "(11,14)")
       .order(sort1, { ascending: sort1Order === "asc" })
       .range(offset, offset + pageSize - 1);
-
-    const { data: games, error } = await query;
 
     if (error) {
       console.error("Supabase fetch error:", error);
@@ -86,63 +99,3 @@ newlyReleasedRoutes.get("/all", async (c) => {
     return c.json({ error: "Unexpected error" }, 500);
   }
 });
-
-// newlyReleasedRoutes.get("/get", async (c) => {
-//   try {
-//     const gamesBody = `
-//     fields
-//       name,
-//       cover.image_id,
-//       total_rating,
-//       total_rating_count,
-//       rating,
-//       rating_count,
-//       aggregated_rating,
-//       aggregated_rating_count,
-//       hypes,
-//       slug,
-//       first_release_date;
-//     where
-//       total_rating_count > 1 &
-//       first_release_date > ${NINETY_DAYS} &
-//       first_release_date < ${Math.floor(Date.now() / 1000)};
-//     sort hypes desc;
-//     limit 500;
-//     `;
-
-//     const newlyReleasedGames = await fetchIGDB("games", gamesBody);
-
-//     const formattedGames = newlyReleasedGames.map((game: any) => {
-//       const rating = game.total_rating || 0;
-//       const count = game.total_rating_count || 0;
-
-//       return {
-//         id: game.id,
-//         name: game.name,
-//         slug: game.slug,
-//         cover_id: game.cover?.image_id ? game.cover.image_id : null,
-//         igdb_total_rating: game.total_rating,
-//         igdb_total_rating_count: game.total_rating_count,
-//         updated_at: game.updated_at,
-//         popularity: count * (rating / 100),
-//         first_release_date: new Date(
-//           game.first_release_date * 1000
-//         ).toISOString(),
-//       };
-//     });
-
-//     const { error } = await supabase
-//       .from("games")
-//       .upsert(formattedGames, { onConflict: "id" });
-
-//     if (error) {
-//       console.error("Supabase insert error (games):", error);
-//       return c.json({ error: "Failed to save upcoming games" }, 500);
-//     }
-
-//     return c.json(newlyReleasedGames);
-//   } catch (err) {
-//     console.error("Error fetching upcoming games:", err);
-//     return c.json({ error: "Failed to fetch upcoming games" }, 500);
-//   }
-// });
