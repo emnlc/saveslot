@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UpcomingIndexRouteImport } from './routes/upcoming/index'
 import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
 import { Route as NewlyReleasedIndexRouteImport } from './routes/newly-released/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
@@ -60,6 +61,11 @@ const UpcomingIndexRoute = UpcomingIndexRouteImport.update({
 const SignUpIndexRoute = SignUpIndexRouteImport.update({
   id: '/sign-up/',
   path: '/sign-up/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchIndexRoute = SearchIndexRouteImport.update({
+  id: '/search/',
+  path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewlyReleasedIndexRoute = NewlyReleasedIndexRouteImport.update({
@@ -189,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
+  '/search': typeof SearchIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
   '/newly-released': typeof NewlyReleasedIndexRoute
+  '/search': typeof SearchIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/games/': typeof GamesIndexRoute
   '/login/': typeof LoginIndexRoute
   '/newly-released/': typeof NewlyReleasedIndexRoute
+  '/search/': typeof SearchIndexRoute
   '/sign-up/': typeof SignUpIndexRoute
   '/upcoming/': typeof UpcomingIndexRoute
   '/settings/_settings/account': typeof SettingsSettingsAccountRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/games'
     | '/login'
     | '/newly-released'
+    | '/search'
     | '/sign-up'
     | '/upcoming'
     | '/settings/account'
@@ -293,6 +303,7 @@ export interface FileRouteTypes {
     | '/games'
     | '/login'
     | '/newly-released'
+    | '/search'
     | '/sign-up'
     | '/upcoming'
     | '/settings/account'
@@ -316,6 +327,7 @@ export interface FileRouteTypes {
     | '/games/'
     | '/login/'
     | '/newly-released/'
+    | '/search/'
     | '/sign-up/'
     | '/upcoming/'
     | '/settings/_settings/account'
@@ -345,6 +357,7 @@ export interface RootRouteChildren {
   GamesIndexRoute: typeof GamesIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
   NewlyReleasedIndexRoute: typeof NewlyReleasedIndexRoute
+  SearchIndexRoute: typeof SearchIndexRoute
   SignUpIndexRoute: typeof SignUpIndexRoute
   UpcomingIndexRoute: typeof UpcomingIndexRoute
 }
@@ -377,6 +390,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-up'
       fullPath: '/sign-up'
       preLoaderRoute: typeof SignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/newly-released/': {
@@ -667,6 +687,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesIndexRoute: GamesIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
   NewlyReleasedIndexRoute: NewlyReleasedIndexRoute,
+  SearchIndexRoute: SearchIndexRoute,
   SignUpIndexRoute: SignUpIndexRoute,
   UpcomingIndexRoute: UpcomingIndexRoute,
 }

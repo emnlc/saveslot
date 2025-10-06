@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { useAllUpcomingGames } from "../../hooks/GameHooks/useAllUpcomingGames";
 import { useEffect, useState } from "react";
 import { Route as UpcomingRoute } from "../../routes/upcoming";
@@ -7,6 +6,7 @@ type SortOption = "popularity" | "name" | "first_release_date";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import Pagination from "@/components/controls/Pagination";
+import GameCard from "@/components/GameCard";
 
 const sortLabels: Record<SortOption, string> = {
   popularity: "Popularity",
@@ -95,29 +95,13 @@ const Upcoming = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container mb-16 gap-4 place-items-center join">
           {data.games.map((game) => (
-            <Link
-              key={game.id}
-              to="/games/$gamesSlug"
-              params={{ gamesSlug: game.slug }}
-              className="group relative rounded-lg overflow-hidden border border-neutral hover:border-primary transition-colors w-full"
-            >
-              <div className="aspect-[3/4] w-full">
-                <img
-                  src={`https://images.igdb.com/igdb/image/upload/t_1080p/${game.cover_id}.jpg`}
-                  className="w-full h-full object-cover rounded-lg transition duration-300 group-hover:brightness-25"
-                />
-
-                {/* Hover Info Overlay */}
-                <div className="absolute inset-0  text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <h3 className="text-sm font-semibold">{game.name}</h3>
-                  {game.first_release_date && (
-                    <p className="text-xs text-gray-300">
-                      {new Date(game.first_release_date).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </Link>
+            <GameCard
+              id={game.id.toString()}
+              name={game.name}
+              slug={game.slug}
+              coverId={game.cover_id}
+              release_date_human={game.release_date_human}
+            />
           ))}
 
           <div className="col-span-full join mt-8 flex justify-center">

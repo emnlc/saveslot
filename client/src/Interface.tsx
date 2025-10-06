@@ -30,11 +30,20 @@ export interface Game {
     id: string;
     image_id: string;
   };
-  first_release_date: number;
+  official_release_date?: Date;
+  release_date_human?: string;
+  first_release_date?: number;
+  store_links: {
+    number: string;
+  };
+  esrb_rating: string;
+  official_website: string;
+  video_ids: string[];
   slug: string;
   involved_companies: InvolvedCompanies[];
   platforms: Platforms[];
-  artworks: Artwork[];
+  artworks?: Artwork[];
+  artwork_ids: string[];
   summary: string;
   storyline: string;
   rating: number;
@@ -80,7 +89,8 @@ export interface Game {
       };
     },
   ];
-  collections: [{ games: [Game] }];
+  collections: { games: Game[] }[];
+  related_games: Game[];
 }
 
 interface Video {

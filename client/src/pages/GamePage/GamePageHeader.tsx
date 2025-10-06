@@ -1,6 +1,6 @@
 import { ListPlus, Star, Gamepad2, Heart, LayoutGrid } from "lucide-react";
 import type { Game } from "../../Interface";
-import { convertToDate } from "../../utils/gameHelpers";
+
 import AddToListModal from "./AddToListModal";
 import CreateLogModal from "./GameLogModal/CreateLogModal";
 import { useState } from "react";
@@ -10,13 +10,14 @@ import LikeButton from "@/components/LikeButton";
 import { useGameLikeCount } from "@/hooks/UserLikeHooks/useGameLikeCount";
 import { useGameRatingStats } from "@/hooks/GameLogs/useGameLogs";
 import { UserAuth } from "@/context/AuthContext";
+import React from "react";
 
 type Props = {
   data: Game;
 };
 
 const GamePageHeader = ({ data }: Props) => {
-  const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover.image_id}.jpg`;
+  const cover_url = `https://images.igdb.com/igdb/image/upload/t_1080p/${data.cover_id}.jpg`;
   const [showModal, setShowModal] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
 
@@ -72,27 +73,29 @@ const GamePageHeader = ({ data }: Props) => {
           </h1>
         </div>
         <div className="md:flex flex-row items-center gap-2 text-sm hidden">
-          {data.first_release_date ? (
+          {data.release_date_human ? (
             <>
-              <span>{convertToDate(data.first_release_date)}</span>
+              {/* <span>{convertToDate(data.first_release_date)}</span> */}
+              <span>{data.release_date_human}</span>
             </>
           ) : (
             <>
               <span>TBD</span>
             </>
           )}
-          <span className="w-1.5 h-1.5 rounded-full bg-neutral"></span>
-          {data.involved_companies.map(
-            (company) =>
-              company.developer && (
-                <span
-                  className="hover:text-primary transition-colors"
-                  key={company.id}
-                >
-                  {company.company.name}
-                </span>
-              )
-          )}
+
+          {data.involved_companies &&
+            data.involved_companies.map(
+              (company) =>
+                company.developer && (
+                  <React.Fragment key={company.id}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-neutral"></span>
+                    <span className="hover:text-primary transition-colors">
+                      {company.company.name}
+                    </span>
+                  </React.Fragment>
+                )
+            )}
         </div>
         <div className="md:flex flex-row flex-wrap gap-2 hidden">
           {data.platforms &&

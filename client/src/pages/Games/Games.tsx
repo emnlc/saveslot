@@ -1,9 +1,9 @@
 import { useUpcomingGames } from "../../hooks/GameHooks/useUpcomingGames";
 import { useNewlyReleasedGames } from "@/hooks/GameHooks/useNewlyReleased";
-import { useCriticallyAcclaimedGames } from "@/hooks/GameHooks/useCriticallyAcclaimedGames";
 import { Link } from "@tanstack/react-router";
 
 import GameCarousel from "@/components/GameCarousel";
+import { useHighlyRated } from "@/hooks/GameHooks/useHighlyRated";
 
 const Games = () => {
   const {
@@ -22,7 +22,7 @@ const Games = () => {
     data: criticallyData,
     isLoading: criticallyIsLoading,
     isError: criticallyIsError,
-  } = useCriticallyAcclaimedGames();
+  } = useHighlyRated();
 
   if (upcomingIsLoading || newlyIsLoading || criticallyIsLoading)
     return <div className="min-h-screen" />;
@@ -56,7 +56,7 @@ const Games = () => {
 
         <div className="flex flex-col gap-2 px-4">
           <div className="flex flex-row justify-between">
-            <h1 className="font-bold text-2xl">Newly Released</h1>
+            <h1 className="font-bold text-2xl">New Releases</h1>
             <Link
               to="/newly-released"
               className="self-end hover:text-secondary transition-all"
@@ -71,14 +71,14 @@ const Games = () => {
 
         <div className="flex flex-col gap-2 px-4">
           <div className="flex flex-row justify-between">
-            <h1 className="font-bold text-2xl">Critically Acclaimed</h1>
+            <h1 className="font-bold text-2xl">Highly Rated</h1>
           </div>
 
           <GameCarousel data={criticallyData} />
         </div>
 
         <div className="mx-auto w-fit">
-          <Link to="/all-games" className="btn btn-primary btn-md lg:btn-lg ">
+          <Link to="/all-games" className="btn btn-primary btn-md">
             View All Games
           </Link>
         </div>

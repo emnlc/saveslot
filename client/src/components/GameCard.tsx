@@ -3,10 +3,11 @@ import { X } from "lucide-react";
 
 type Props = {
   id: string;
-  name: string;
+  name?: string;
   slug: string;
   coverId: string;
   first_release_date?: string;
+  release_date_human?: string;
 
   editMode?: boolean;
   onRemoveClick?: () => void;
@@ -53,10 +54,13 @@ const GameCard = (props: Props) => {
 
           {/* Hover Info Overlay */}
           <div className="absolute inset-0  text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-            <h3 className="text-sm font-semibold">{props.name}</h3>
-            {props.first_release_date && (
+            {props.name && (
+              <h3 className="text-xs font-semibold">{props.name}</h3>
+            )}
+
+            {props.release_date_human && (
               <p className="text-xs text-gray-300">
-                {new Date(props.first_release_date).toLocaleDateString()}
+                {props.release_date_human}
               </p>
             )}
           </div>

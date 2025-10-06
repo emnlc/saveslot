@@ -47,7 +47,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
         {screenshots.slice(0, 3).map((screenshot, idx) => (
           <img
             key={screenshot.id}
-            src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshot.image_id}.jpg`}
+            src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshot}.jpg`}
             className="col-span-1 cursor-pointer rounded shadow-md hover:scale-105 transition-transform"
             onClick={() => openModal(idx)}
           />
@@ -59,7 +59,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
             onClick={() => openModal(3)}
           >
             <img
-              src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshots[3].image_id}.jpg`}
+              src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshots[3]}.jpg`}
               className="w-full h-full object-cover blur-sm brightness-50"
             />
             <div className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold">
@@ -91,7 +91,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
               </button>
 
               <img
-                src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshots[selectedIndex].image_id}.jpg`}
+                src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshots[selectedIndex]}.jpg`}
                 className="max-h-[70vh] object-contain rounded"
               />
 
@@ -112,7 +112,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
                     ref={(el) => {
                       thumbnailRefs.current[idx] = el;
                     }}
-                    src={`https://images.igdb.com/igdb/image/upload/t_thumb/${screenshot.image_id}.jpg`}
+                    src={`https://images.igdb.com/igdb/image/upload/t_thumb/${screenshot}.jpg`}
                     className={`w-20 h-20 object-cover rounded cursor-pointer border-2 ${
                       idx === selectedIndex
                         ? "border-primary"

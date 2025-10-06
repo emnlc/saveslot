@@ -32,11 +32,18 @@ const GamePage = (props: Props) => {
     <div className="relative w-full min-h-screen">
       {/* Background Image Header */}
       <div className="max-w-6xl mx-auto h-[450px] relative overflow-hidden">
-        <img
-          src={`https://images.igdb.com/igdb/image/upload/t_1080p/${data.artworks ? data.artworks[0].image_id : data.cover.image_id}.jpg`}
-          alt="Game artwork"
-          className="w-full h-full object-cover"
-        />
+        {data.artwork_ids && data.artwork_ids[0] ? (
+          <img
+            src={`https://images.igdb.com/igdb/image/upload/t_1080p/${data.artwork_ids[0]}.jpg`}
+            alt="Game artwork"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div
+            className="w-full h-full bg-gradient-to-b from-primary to-base-100"
+            aria-label="No artwork available"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-base-100/50 via-base-100/60 to-base-100/80" />
         {/* bottom gradient */}
         <div className="absolute bottom-0 left-0 w-full h-12 md:h-24 bg-gradient-to-b from-transparent to-base-100" />
@@ -69,9 +76,7 @@ const GamePage = (props: Props) => {
             {data.screenshots && (
               <div className="flex flex-col gap-2">
                 <h2 className="text-lg font-bold">Screenshots</h2>
-                <LightboxGallery
-                  screenshots={data.screenshots}
-                ></LightboxGallery>
+                <LightboxGallery screenshots={data.screenshots} />
               </div>
             )}
 

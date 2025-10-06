@@ -4,9 +4,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import "@splidejs/react-splide/css";
 import { Game } from "@/Interface";
-import { Link } from "@tanstack/react-router";
 import { useRef } from "react";
-import { convertToDate } from "@/utils/gameHelpers";
+
+import GameCard from "./GameCard";
 
 type Props = {
   data: Game[];
@@ -40,27 +40,17 @@ const GameCarousel = ({ data, date }: Props) => {
         <SplideTrack className="px-12">
           {data.map((game) => (
             <SplideSlide key={game.id}>
-              <Link
-                to="/games/$gamesSlug"
-                params={{ gamesSlug: game.slug }}
-                className="block group relative rounded-lg overflow-hidden border border-neutral hover:border-primary transition-colors"
-              >
-                <div className="aspect-[3/4]">
-                  <img
-                    src={`https://images.igdb.com/igdb/image/upload/t_1080p/${game.cover.image_id}.jpg`}
-                    alt={game.name}
-                    className="col-span-1 object-fill transition duration-300 group-hover:brightness-25"
-                  />
-
-                  <div className="absolute inset-0  text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                    <h3 className="text-sm font-semibold">{game.name}</h3>
-                  </div>
-                </div>
-              </Link>
+              <div className="flex">
+                <GameCard
+                  id={game.id.toString()}
+                  name={game.name}
+                  slug={game.slug}
+                  coverId={game.cover_id || ""}
+                  release_date_human={game.release_date_human}
+                />
+              </div>
               {date ? (
-                <div className=" text-center">
-                  {convertToDate(game.first_release_date)}
-                </div>
+                <div className=" text-center">{game.release_date_human}</div>
               ) : (
                 <></>
               )}

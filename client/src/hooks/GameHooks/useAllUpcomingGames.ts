@@ -16,6 +16,7 @@ type GamesData = {
       igdb_total_count: number;
       name: string;
       slug: string;
+      release_date_human: string;
     },
   ];
 };

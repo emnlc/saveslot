@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
 import { useGames } from "../../hooks/GameHooks/useGames";
 import { useEffect, useState } from "react";
 import Pagination from "@/components/controls/Pagination";
+
+import GameCard from "@/components/GameCard";
 
 const AllGames = () => {
   const [page, setPage] = useState(1);
@@ -18,17 +19,13 @@ const AllGames = () => {
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container my-16 gap-4 place-items-center">
         {data.games.map((game) => (
-          <Link
-            className="group rounded-lg overflow-hidden border border-neutral hover:border-primary transition-colors"
-            key={game.id}
-            to="/games/$gamesSlug"
-            params={{ gamesSlug: game.slug }}
-          >
-            <img
-              className="col-span-1 object-fill rounded-lg transition duration-300 group-hover:brightness-25"
-              src={`https://images.igdb.com/igdb/image/upload/t_1080p/${game.cover_id}.jpg`}
-            />
-          </Link>
+          <GameCard
+            id={game.id.toString()}
+            name={game.name}
+            slug={game.slug}
+            coverId={game.cover_id}
+            first_release_date={game.first_release_date}
+          />
         ))}
 
         <div className="col-span-full">
