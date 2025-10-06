@@ -71,7 +71,7 @@ searchRoutes.post("/", async (c) => {
       supabase
         .from("games")
         .select(
-          "id, name, slug, cover_id, released, official_release_date, popularity, igdb_total_rating"
+          "id, name, slug, cover_id, released, official_release_date, release_date_human, popularity, igdb_total_rating"
         )
         .ilike("name", searchPattern)
         .limit(20),
@@ -116,8 +116,8 @@ searchRoutes.post("/", async (c) => {
         `
           fields name, slug, cover.image_id, first_release_date, total_rating;
           search "${query}";
-          where first_release_date != null & cover.image_id != null & game_type != 14;
-          limit 20;
+          where cover.image_id != null & game_type != 14;
+          limit 30;
         `
       ).catch(() => []),
     ]);

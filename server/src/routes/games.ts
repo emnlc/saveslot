@@ -111,7 +111,7 @@ gamesRoutes.get("/:game_slug", async (c) => {
       const { popularityMap } = await fetchPopularityScores([igdbGame.id]);
 
       // Format game data
-      const formattedGame = formatGameForDatabase(
+      const formattedGame = await formatGameForDatabase(
         igdbGame,
         popularityMap.get(igdbGame.id) || null
       );
