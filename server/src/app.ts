@@ -9,6 +9,7 @@ import { gamesRoutes } from "./routes/games";
 import { reviewsRoutes } from "./routes/reviews";
 import { landingRoutes } from "./routes/landing";
 import { searchRoutes } from "./routes/search";
+import { activityRoutes } from "./routes/activity";
 
 // on database reset
 // import { populateGames } from "./services/updaters/populator";
@@ -27,6 +28,7 @@ app.route("/games", gamesRoutes);
 app.route("/reviews", reviewsRoutes);
 app.route("/landing", landingRoutes);
 app.route("/search", searchRoutes);
+app.route("/activity", activityRoutes);
 
 app.post("/update-games", async (c) => {
   return c.json({ success: true });

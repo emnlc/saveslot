@@ -89,7 +89,16 @@ function RouteComponent() {
                 Reviews
               </Link>
             </li>
-            <li>Activity</li>
+            <li>
+              <Link
+                to="/u/$username/activity"
+                params={{ username }}
+                activeProps={{ className: "text-primary" }}
+                className="text-base-content hover:text-primary transition-all"
+              >
+                Activity
+              </Link>
+            </li>
             <li>
               <Link
                 to="/u/$username/likes"
