@@ -11,7 +11,6 @@ activityRoutes.get("/user/:userId", async (c) => {
   cutoffDate.setDate(cutoffDate.getDate() - days);
 
   try {
-    // Fetch new reviews, game_logs with text
     const { data: reviews, error: reviewsError } = await supabase
       .from("game_logs")
       .select(
@@ -38,7 +37,6 @@ activityRoutes.get("/user/:userId", async (c) => {
 
     if (reviewsError) throw reviewsError;
 
-    // Fetch status changes from game_logs, with game_status but no review
     const { data: logStatuses, error: logStatusesError } = await supabase
       .from("game_logs")
       .select(
@@ -63,7 +61,6 @@ activityRoutes.get("/user/:userId", async (c) => {
 
     if (logStatusesError) throw logStatusesError;
 
-    // Fetch status changes from user_games table
     const { data: userGameStatuses, error: userGameStatusesError } =
       await supabase
         .from("user_games")
@@ -87,7 +84,6 @@ activityRoutes.get("/user/:userId", async (c) => {
 
     if (userGameStatusesError) throw userGameStatusesError;
 
-    // Fetch new lists
     const { data: lists, error: listsError } = await supabase
       .from("game_lists")
       .select(
@@ -107,7 +103,6 @@ activityRoutes.get("/user/:userId", async (c) => {
 
     if (listsError) throw listsError;
 
-    // Fetch likes
     const { data: likes, error: likesError } = await supabase
       .from("likes")
       .select(
@@ -132,7 +127,6 @@ activityRoutes.get("/user/:userId", async (c) => {
 
     if (likesError) throw likesError;
 
-    // For likes on reviews and lists, fetch additional data
     const reviewIds =
       likes
         ?.filter((l) => l.target_type === "review")
@@ -192,9 +186,7 @@ activityRoutes.get("/user/:userId", async (c) => {
       }));
     }
 
-    // Transform and combine all activities
     const activities = [
-      // Reviews
       ...(reviews || []).map((r) => ({
         id: `review-${r.id}`,
         type: "review",
@@ -208,7 +200,6 @@ activityRoutes.get("/user/:userId", async (c) => {
         },
       })),
 
-      // Status changes from game_logs
       ...(logStatuses || []).map((s) => ({
         id: `log-status-${s.id}`,
         type: "status",
@@ -219,7 +210,6 @@ activityRoutes.get("/user/:userId", async (c) => {
         },
       })),
 
-      // Status changes from user_games
       ...(userGameStatuses || []).map((s) => ({
         id: `user-game-status-${s.id}`,
         type: "status",
@@ -230,7 +220,6 @@ activityRoutes.get("/user/:userId", async (c) => {
         },
       })),
 
-      // Lists
       ...(lists || []).map((l) => ({
         id: `list-${l.id}`,
         type: "list",
@@ -243,7 +232,6 @@ activityRoutes.get("/user/:userId", async (c) => {
         },
       })),
 
-      // Likes
       ...(likes || []).map((l) => {
         const likeData: any = {
           targetType: l.target_type,
@@ -269,7 +257,6 @@ activityRoutes.get("/user/:userId", async (c) => {
       }),
     ];
 
-    // Sort by timestamp descending
     activities.sort(
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()

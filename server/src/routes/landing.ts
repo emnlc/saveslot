@@ -6,12 +6,10 @@ export const landingRoutes = new Hono();
 const gameData =
   "id, name, slug, cover_id, game_type, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human";
 
-// Get top reviews
 landingRoutes.get("/top-reviews", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
 
-    // Get all reviews with text
     const { data: reviews, error: reviewsError } = await supabase
       .from("game_logs")
       .select(
@@ -25,15 +23,11 @@ landingRoutes.get("/top-reviews", async (c) => {
       .not("review_text", "is", null)
       .neq("review_text", "")
       .order("created_at", { ascending: false })
-      .limit(100); // Get more to sort by likes
+      .limit(100);
 
     if (reviewsError) throw reviewsError;
+    if (!reviews || reviews.length === 0) return c.json([]);
 
-    if (!reviews || reviews.length === 0) {
-      return c.json([]);
-    }
-
-    // Get like counts for these reviews
     const reviewIds = reviews.map((r) => r.id);
     const { data: likes, error: likesError } = await supabase
       .from("likes")
@@ -43,13 +37,11 @@ landingRoutes.get("/top-reviews", async (c) => {
 
     if (likesError) throw likesError;
 
-    // Count likes per review
     const likeCountMap: { [key: string]: number } = {};
     likes?.forEach((like) => {
       likeCountMap[like.review_id] = (likeCountMap[like.review_id] || 0) + 1;
     });
 
-    // Sort by like count and limit
     const topReviews = reviews
       .map((review) => ({
         ...review,
@@ -65,7 +57,6 @@ landingRoutes.get("/top-reviews", async (c) => {
   }
 });
 
-// Get recently released games
 landingRoutes.get("/recently-released", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
@@ -77,23 +68,19 @@ landingRoutes.get("/recently-released", async (c) => {
     const { data: games, error } = await supabase
       .from("games")
       .select(gameData)
-      .eq("released", true)
+      .eq("is_released", true)
+      .eq("is_nsfw", false)
       .not("official_release_date", "is", null)
-      .not("themes", "cs", "{42}")
       .not("game_type", "in", "(3, 1)")
       .not("cover_id", "is", null)
       .lte("official_release_date", new Date().toISOString())
       .gte("official_release_date", daysAgo.toISOString())
-      .or(
-        "release_date_status.ilike.%Full Release%,release_date_status.is.null"
-      )
       .order("popularity", { ascending: false })
       .order("official_release_date", { ascending: false })
       .limit(limit);
 
     if (error) throw error;
 
-    // Sort by release date chronologically
     const sortedGames =
       games?.sort((a, b) => {
         const dateA = new Date(a.official_release_date).getTime();
@@ -108,10 +95,10 @@ landingRoutes.get("/recently-released", async (c) => {
   }
 });
 
-// Get upcoming games
 landingRoutes.get("/upcoming", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
+
     const now = new Date();
     const dateRange = new Date();
     dateRange.setDate(dateRange.getDate() + 14);
@@ -119,8 +106,8 @@ landingRoutes.get("/upcoming", async (c) => {
     const { data: games, error } = await supabase
       .from("games")
       .select(gameData)
-      .not("themes", "cs", "{42}")
-      .eq("released", false)
+      .eq("is_released", false)
+      .eq("is_nsfw", false)
       .not("official_release_date", "is", null)
       .not("cover_id", "is", null)
       .gte("official_release_date", now.toISOString())
@@ -136,6 +123,7 @@ landingRoutes.get("/upcoming", async (c) => {
         new Date(a.official_release_date).getTime() -
         new Date(b.official_release_date).getTime()
     );
+
     return c.json(upcomingGames || []);
   } catch (err) {
     console.error("Error fetching upcoming games:", err);
@@ -143,12 +131,10 @@ landingRoutes.get("/upcoming", async (c) => {
   }
 });
 
-// Get most rated games
 landingRoutes.get("/most-rated", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
 
-    // Count reviews per game
     const { data: logCounts, error: countError } = await supabase
       .from("game_logs")
       .select("game_id")
@@ -156,31 +142,26 @@ landingRoutes.get("/most-rated", async (c) => {
 
     if (countError) throw countError;
 
-    // Count occurrences
     const gameCountMap: { [key: number]: number } = {};
     logCounts?.forEach((log) => {
       gameCountMap[log.game_id] = (gameCountMap[log.game_id] || 0) + 1;
     });
 
-    // Sort by count
     const topGameIds = Object.entries(gameCountMap)
       .sort(([, a], [, b]) => b - a)
       .slice(0, limit)
       .map(([id]) => parseInt(id));
 
-    if (topGameIds.length === 0) {
-      return c.json([]);
-    }
+    if (topGameIds.length === 0) return c.json([]);
 
-    // Get game details
     const { data: games, error: gamesError } = await supabase
       .from("games")
       .select("*")
+      .eq("is_nsfw", false)
       .in("id", topGameIds);
 
     if (gamesError) throw gamesError;
 
-    // Maintain order and add review count
     const orderedGames = topGameIds
       .map((id) => {
         const game = games?.find((g) => g.id === id);
@@ -202,14 +183,14 @@ landingRoutes.get("/most-rated", async (c) => {
 
 landingRoutes.get("/featured-game", async (c) => {
   try {
-    // Calculate date 30 days ago
     const twoWeeksAgo = new Date();
     twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
     const { data: game, error } = await supabase
       .from("games")
       .select("id, name, slug, cover_id, release_date_human")
-      .eq("released", true)
+      .eq("is_released", true)
+      .eq("is_nsfw", false)
       .not("first_release_date", "is", null)
       .not("cover_id", "is", null)
       .not("popularity", "is", null)
@@ -231,7 +212,6 @@ landingRoutes.get("/popular-lists", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "6");
 
-    // Get public lists with item counts
     const { data: lists, error: listsError } = await supabase
       .from("game_lists")
       .select(
@@ -242,17 +222,13 @@ landingRoutes.get("/popular-lists", async (c) => {
       )
       .eq("is_public", true)
       .order("last_updated", { ascending: false })
-      .limit(100); // Get more to count items
+      .limit(100);
 
     if (listsError) throw listsError;
-
-    if (!lists || lists.length === 0) {
-      return c.json([]);
-    }
+    if (!lists || lists.length === 0) return c.json([]);
 
     const listIds = lists.map((list) => list.id);
 
-    // Get item counts for these lists
     const { data: items, error: itemsError } = await supabase
       .from("game_list_items")
       .select("list_id, game_id, rank")
@@ -261,7 +237,6 @@ landingRoutes.get("/popular-lists", async (c) => {
 
     if (itemsError) throw itemsError;
 
-    // Get like counts for these lists
     const { data: likes, error: likesError } = await supabase
       .from("likes")
       .select("list_id")
@@ -270,7 +245,6 @@ landingRoutes.get("/popular-lists", async (c) => {
 
     if (likesError) throw likesError;
 
-    // Count items and likes per list
     const listData: {
       [key: string]: { count: number; gameIds: number[]; likeCount: number };
     } = {};
@@ -291,7 +265,6 @@ landingRoutes.get("/popular-lists", async (c) => {
       }
     });
 
-    // Get game details for all games we need
     const allGameIds = Object.values(listData).flatMap((data) => data.gameIds);
     const { data: games, error: gamesError } = await supabase
       .from("games")
@@ -300,13 +273,11 @@ landingRoutes.get("/popular-lists", async (c) => {
 
     if (gamesError) throw gamesError;
 
-    // Create game lookup map
     const gameMap: { [key: number]: any } = {};
     games?.forEach((game) => {
       gameMap[game.id] = game;
     });
 
-    // Combine everything
     const popularLists = lists
       .filter((list) => listData[list.id] && listData[list.id].count > 0)
       .map((list) => ({

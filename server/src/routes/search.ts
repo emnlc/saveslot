@@ -1,11 +1,9 @@
-// routes/search.ts
 import { Hono } from "hono";
 import { supabase } from "../lib/supabase";
 import { fetchIGDB } from "../services/igdb";
 
 export const searchRoutes = new Hono();
 
-// search for dropdown
 searchRoutes.get("/quick", async (c) => {
   try {
     const query = c.req.query("q") || "";
@@ -16,14 +14,14 @@ searchRoutes.get("/quick", async (c) => {
 
     const searchPattern = `%${query}%`;
 
-    // Search games
     const { data: games, error: gamesError } = await supabase
       .from("games")
       .select(
-        "id, name, slug, cover_id, released, first_release_date, official_release_date, release_date_human, popularity, igdb_total_rating"
+        "id, name, slug, cover_id, is_released, first_release_date, official_release_date, release_date_human, popularity, igdb_total_rating, is_nsfw"
       )
       .ilike("name", searchPattern)
-      .limit(5);
+      .eq("is_nsfw", false)
+      .limit(10);
 
     if (gamesError) throw gamesError;
 
@@ -32,7 +30,7 @@ searchRoutes.get("/quick", async (c) => {
       const bExact = b.name.toLowerCase() === query.toLowerCase();
       if (aExact && !bExact) return -1;
       if (!aExact && bExact) return 1;
-      return 0;
+      return (b.popularity || 0) - (a.popularity || 0);
     });
 
     return c.json({
@@ -71,12 +69,12 @@ searchRoutes.post("/", async (c) => {
       supabase
         .from("games")
         .select(
-          "id, name, slug, cover_id, released, official_release_date, release_date_human, popularity, igdb_total_rating"
+          "id, name, slug, cover_id, is_released, official_release_date, release_date_human, popularity, igdb_total_rating, is_nsfw"
         )
         .ilike("name", searchPattern)
-        .limit(20),
+        .eq("is_nsfw", false)
+        .limit(5),
 
-      // Users
       supabase
         .from("profiles")
         .select("id, username, display_name, avatar_url")
@@ -85,24 +83,32 @@ searchRoutes.post("/", async (c) => {
         )
         .limit(20),
 
-      // Lists
-      (() => {
-        let q = supabase
+      (async () => {
+        let query = supabase
           .from("game_lists")
           .select("*, profile:profiles(id, username, display_name, avatar_url)")
           .ilike("name", searchPattern);
-        return (
-          user_id
-            ? q.or(`is_public.eq.true,user_id.eq.${user_id}`)
-            : q.eq("is_public", true)
-        ).limit(20);
+
+        if (user_id) {
+          query = query.or(`is_public.eq.true,user_id.eq.${user_id}`);
+        } else {
+          query = query.eq("is_public", true);
+        }
+
+        return query.limit(20);
       })(),
 
-      // Reviews
       supabase
         .from("game_logs")
         .select(
-          "id, review_text, rating, created_at, profile:profiles(id, username, display_name, avatar_url), game:games(id, name, slug, cover_id)"
+          `
+          id,
+          review_text,
+          rating,
+          created_at,
+          profile:profiles(id, username, display_name, avatar_url),
+          game:games(id, name, slug, cover_id, is_nsfw)
+        `
         )
         .ilike("review_text", searchPattern)
         .eq("is_draft", false)
@@ -110,30 +116,39 @@ searchRoutes.post("/", async (c) => {
         .neq("review_text", "")
         .limit(20),
 
-      // IGDB search
       fetchIGDB(
         "games",
         `
-          fields name, slug, cover.image_id, first_release_date, total_rating;
+          fields name, slug, cover.image_id, first_release_date, total_rating, themes.id;
           search "${query}";
-          where cover.image_id != null & game_type != 14;
+          where cover.image_id != null & game_type != (13, 14);
           limit 30;
         `
-      ).catch(() => []),
+      ).catch((err) => {
+        console.error("IGDB search failed:", err);
+        return [];
+      }),
     ]);
 
-    // games by exact match
     const sortedLocalGames = (localGamesResult.data || []).sort((a, b) => {
       const aExact = a.name.toLowerCase() === query.toLowerCase();
       const bExact = b.name.toLowerCase() === query.toLowerCase();
-      return aExact && !bExact ? -1 : !aExact && bExact ? 1 : 0;
+      if (aExact && !bExact) return -1;
+      if (!aExact && bExact) return 1;
+      return (b.popularity || 0) - (a.popularity || 0);
     });
 
     const localGameIds = new Set(sortedLocalGames.map((g) => g.id));
     const igdbGames = (Array.isArray(igdbResult) ? igdbResult : [])
-      .filter(
-        (game: any) => game?.id && game?.name && !localGameIds.has(game.id)
-      )
+      .filter((game: any) => {
+        if (!game?.id || !game?.name || localGameIds.has(game.id)) {
+          return false;
+        }
+        const hasEroticTheme = game.themes?.some(
+          (theme: any) => theme.id === 42
+        );
+        return !hasEroticTheme;
+      })
       .map((game: any) => ({
         id: game.id,
         name: game.name,
@@ -143,12 +158,16 @@ searchRoutes.post("/", async (c) => {
         total_rating: game.total_rating || null,
       }));
 
+    const filteredReviews = (reviewsResult.data || []).filter(
+      (review: any) => !review.game?.is_nsfw
+    );
+
     return c.json({
       local_games: sortedLocalGames,
       igdb_games: igdbGames,
       users: usersResult.data || [],
       lists: listsResult.data || [],
-      reviews: reviewsResult.data || [],
+      reviews: filteredReviews,
     });
   } catch (err) {
     console.error("Error in full search:", err);
