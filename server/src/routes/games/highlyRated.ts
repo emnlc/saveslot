@@ -13,16 +13,16 @@ highlyRatedRoutes.get("/", async (c) => {
     const { data: highlyRated, error } = await supabase
       .from("games")
       .select(
-        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, released"
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, is_released"
       )
-      .eq("released", true)
+      .eq("is_released", true)
+      .eq("is_nsfw", false) // Replaces erotic game filtering
       .not("cover_id", "is", null)
       .not("igdb_total_rating", "is", null)
       .not("igdb_total_rating_count", "is", null)
       .gte("igdb_total_rating", minRating)
       .gte("igdb_total_rating_count", minRatingCount)
-      .not("game_type", "in", "(11,14)")
-      .not("themes", "cs", "{42}")
+      .not("game_type", "in", "(11, 14)")
       .order("igdb_total_rating_count", { ascending: false })
       .order("igdb_total_rating", { ascending: false })
       .limit(limit);

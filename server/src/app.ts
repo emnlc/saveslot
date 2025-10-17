@@ -1,42 +1,55 @@
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
-
-import { addNewGames } from "./services/updaters/newGames";
-import { addUpcomingGames } from "./services/updaters/upcomingGames";
-
 import { gamesRoutes } from "./routes/games";
 import { reviewsRoutes } from "./routes/reviews";
 import { landingRoutes } from "./routes/landing";
 import { searchRoutes } from "./routes/search";
 import { activityRoutes } from "./routes/activity";
-
-// on database reset
-// import { populateGames } from "./services/updaters/populator";
+import { listsRoutes } from "./routes/lists/lists";
+import { likesRoutes } from "./routes/likes/likes";
+import { userGamesRoutes } from "./routes/userGames/userGames";
+import { profilesRoutes } from "./routes/profiles/profiles";
+import { followsRoutes } from "./routes/follows/follows";
+import { gameStatsRoutes } from "./routes/gameStats";
+import { startScheduler } from "./scheduler";
+import { favoritesRoutes } from "./routes/favorites/favorites";
+import { profileStatsRoutes } from "./routes/profileStats/profileStats";
 
 const app = new Hono();
 
-// middleware
-app.use("*", logger()); // Log all requests
-app.use("*", cors()); // Enable CORS
+app.use(
+  "*",
+  cors({
+    origin: [
+      "https://saveslot.app",
+      "https://www.saveslot.app",
+      process.env.NODE_ENV !== "production" ? "http://localhost:5173" : "",
+    ].filter(Boolean),
+    credentials: true,
+  })
+);
 
-// health check
+if (process.env.NODE_ENV !== "production") {
+  app.use("*", logger());
+}
+
 app.get("/", (c) => c.text("SaveSlot API is running."));
 
-// routes
 app.route("/games", gamesRoutes);
 app.route("/reviews", reviewsRoutes);
 app.route("/landing", landingRoutes);
 app.route("/search", searchRoutes);
 app.route("/activity", activityRoutes);
+app.route("/lists", listsRoutes);
+app.route("/likes", likesRoutes);
+app.route("/user-games", userGamesRoutes);
+app.route("/profiles", profilesRoutes);
+app.route("/follows", followsRoutes);
+app.route("/games", gameStatsRoutes);
+app.route("/favorites", favoritesRoutes);
+app.route("/profiles", profileStatsRoutes);
 
-app.post("/update-games", async (c) => {
-  return c.json({ success: true });
-});
-
-// Run on startup
-addNewGames();
-addUpcomingGames();
-// populateGames();
+startScheduler();
 
 export default app;

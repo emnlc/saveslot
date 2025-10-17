@@ -23,7 +23,7 @@ export const fetchGamePopularity = async (
 ): Promise<PopularityPrimitive[]> => {
   const gameIdList = `(${gameIds.join(",")})`;
   const allResults: PopularityPrimitive[] = [];
-  const types = [1, 2, 3, 8]; // Visits, Want to Play, Playing, Total Reviews
+  const types = [1, 2, 3, 8];
 
   for (const type of types) {
     const body = `fields game_id,value,popularity_type; where game_id = ${gameIdList} & popularity_type = ${type};`;
@@ -32,7 +32,6 @@ export const fetchGamePopularity = async (
       const results = await fetchIGDB("popularity_primitives", body);
       allResults.push(...results);
 
-      // delay
       if (type !== 8) {
         await new Promise((resolve) => setTimeout(resolve, 150));
       }

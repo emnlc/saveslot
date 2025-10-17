@@ -15,11 +15,6 @@ async function fetchBatchWithRetry(
 
     if (isRateLimitError && retryCount < maxRetries) {
       const waitTime = Math.pow(2, retryCount + 1) * 1000;
-      console.log(
-        `Rate limit hit, retrying in ${waitTime / 1000}s (${
-          retryCount + 1
-        }/${maxRetries})...`
-      );
       await new Promise((resolve) => setTimeout(resolve, waitTime));
       return fetchBatchWithRetry(batch, retryCount + 1, maxRetries);
     }
@@ -39,7 +34,7 @@ export async function fetchPopularityScores(
   options: {
     batchSize?: number;
     delayBetweenBatches?: number;
-    verbose?: boolean; // debug
+    verbose?: boolean;
   } = {}
 ): Promise<PopularityResult> {
   const {
@@ -48,30 +43,13 @@ export async function fetchPopularityScores(
     verbose = false,
   } = options;
 
-  console.log(`Fetching popularity scores for ${gameIds.length} games...`);
-
   let popularityScores = [];
-  const totalBatches = Math.ceil(gameIds.length / batchSize);
 
   try {
     for (let i = 0; i < gameIds.length; i += batchSize) {
       const batch = gameIds.slice(i, i + batchSize);
-      const batchNumber = Math.floor(i / batchSize) + 1;
-
-      if (verbose) {
-        console.log(`Batch ${batchNumber}/${totalBatches}...`);
-      }
-
       const batchScores = await fetchBatchWithRetry(batch);
       popularityScores.push(...batchScores);
-
-      if (verbose && batchScores.length < batch.length) {
-        console.warn(
-          `Batch ${batchNumber}: Missing ${
-            batch.length - batchScores.length
-          } scores`
-        );
-      }
 
       if (i + batchSize < gameIds.length) {
         await new Promise((resolve) =>
@@ -80,19 +58,13 @@ export async function fetchPopularityScores(
       }
     }
 
-    const successRate = (
-      (popularityScores.length / gameIds.length) *
-      100
-    ).toFixed(1);
-    console.log(
-      `✓ Fetched ${popularityScores.length}/${gameIds.length} popularity scores (${successRate}%)`
-    );
-
-    if (popularityScores.length < gameIds.length && !verbose) {
-      console.warn(
-        `Missing ${
-          gameIds.length - popularityScores.length
-        } scores - fallback values will be used`
+    if (verbose) {
+      const successRate = (
+        (popularityScores.length / gameIds.length) *
+        100
+      ).toFixed(1);
+      console.log(
+        `Fetched ${popularityScores.length}/${gameIds.length} popularity scores (${successRate}%)`
       );
     }
   } catch (error) {

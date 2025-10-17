@@ -3,31 +3,32 @@ import { supabase } from "../../lib/supabase";
 
 export const newlyReleasedRoutes = new Hono();
 
-// Recently released games
 newlyReleasedRoutes.get("/", async (c) => {
   try {
     const limit = parseInt(c.req.query("limit") || "30");
     const now = new Date();
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 14);
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
 
+    // Fetch by popularity to get most popular recent games
     const { data: releases, error } = await supabase
       .from("games")
       .select(
-        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human"
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, is_released"
       )
-      .eq("released", true)
+      .eq("is_released", true)
+      .eq("is_nsfw", false)
       .not("official_release_date", "is", null)
       .not("cover_id", "is", null)
-      .not("themes", "cs", "{42}")
-      .gte("official_release_date", ninetyDaysAgo.toISOString())
+      .gte("official_release_date", fourteenDaysAgo.toISOString())
       .lte("official_release_date", now.toISOString())
-      .not("game_type", "in", "(3, 11,14)")
-      .order("popularity", { ascending: false })
+      .not("game_type", "in", "(3, 11, 14)")
+      .order("popularity", { ascending: false }) // Fetch popular games
       .limit(limit);
 
     if (error) throw error;
 
+    // Sort by release date chronologically (newest first)
     const sortedReleases = (releases || []).sort(
       (a, b) =>
         new Date(b.official_release_date).getTime() -
@@ -57,24 +58,25 @@ newlyReleasedRoutes.get("/all", async (c) => {
     const { count } = await supabase
       .from("games")
       .select("*", { count: "exact", head: true })
-      .eq("released", true)
+      .eq("is_released", true)
+      .eq("is_nsfw", false)
       .not("official_release_date", "is", null)
       .gte("official_release_date", ninetyDaysAgo.toISOString())
       .lte("official_release_date", now.toISOString())
-      .not("game_type", "in", "(11,14)");
+      .not("game_type", "in", "(11, 14)");
 
     // Get paginated results
     const { data: games, error } = await supabase
       .from("games")
       .select(
-        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, released"
+        "id, name, slug, cover_id, igdb_total_rating, igdb_total_rating_count, popularity, first_release_date, official_release_date, release_date_human, is_released"
       )
-      .eq("released", true)
-      .not("themes", "cs", "{42}")
+      .eq("is_released", true)
+      .eq("is_nsfw", false)
       .not("official_release_date", "is", null)
       .gte("official_release_date", ninetyDaysAgo.toISOString())
       .lte("official_release_date", now.toISOString())
-      .not("game_type", "in", "(11,14)")
+      .not("game_type", "in", "(11, 14)")
       .order(sort1, { ascending: sort1Order === "asc" })
       .range(offset, offset + pageSize - 1);
 
