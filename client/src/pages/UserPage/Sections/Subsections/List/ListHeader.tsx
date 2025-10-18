@@ -1,25 +1,9 @@
 import { Edit3, Save, Trash2, X } from "lucide-react";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import LikeButton from "@/components/LikeButton";
-
-interface Game {
-  id: string;
-  name: string;
-  cover_id: string | null;
-  slug: string;
-}
-
-interface GameListItem {
-  id: string;
-  rank: number;
-  games: Game;
-}
-
-export interface ListData {
-  id: string;
-  name: string;
-  games: GameListItem[];
-}
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { useParams } from "@tanstack/react-router";
+import LikeButton from "@/components/controls/LikeButton";
+import type { ListData } from "@/types/lists";
 
 type Props = {
   editMode: boolean;
@@ -52,7 +36,10 @@ const ListHeader = ({
   deleteListMutation,
   data,
 }: Props) => {
-  const { isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   return (
     <>
@@ -74,13 +61,10 @@ const ListHeader = ({
             </div>
           </>
         )}
-
-        {/* Action Buttons */}
         {isOwnProfile && (
           <div className="flex gap-2">
             {editMode ? (
               <>
-                {/* Save Button */}
                 <button
                   onClick={saveChanges}
                   disabled={
@@ -105,8 +89,6 @@ const ListHeader = ({
                     </>
                   )}
                 </button>
-
-                {/* Delete Button - only visible in edit mode */}
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   className="flex items-center gap-2 px-4 py-2 btn btn-error btn-sm md:btn-md"
@@ -115,8 +97,6 @@ const ListHeader = ({
                   <Trash2 className="w-4 h-4" />
                   Delete List
                 </button>
-
-                {/* Cancel Button */}
                 <button
                   onClick={cancelEdit}
                   className="flex items-center gap-2 px-4 py-2 btn btn-neutral btn-sm md:btn-md"
@@ -131,7 +111,6 @@ const ListHeader = ({
                 </button>
               </>
             ) : (
-              /* Edit Button */
               <button
                 onClick={enterEditMode}
                 className="flex items-center gap-2 px-4 py-2 btn btn-secondary btn-sm md:btn-md"

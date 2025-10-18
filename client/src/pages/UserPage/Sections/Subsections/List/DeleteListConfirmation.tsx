@@ -1,24 +1,6 @@
 import { UseMutationResult } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
-
-interface Game {
-  id: string;
-  name: string;
-  cover_id: string | null;
-  slug: string;
-}
-
-interface GameListItem {
-  id: string;
-  rank: number;
-  games: Game;
-}
-
-export interface ListData {
-  id: string;
-  name: string;
-  games: GameListItem[];
-}
+import type { ListData } from "@/types/lists";
 
 type Props = {
   setShowDeleteConfirm: (show: boolean) => void;

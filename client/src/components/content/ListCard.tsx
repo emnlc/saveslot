@@ -40,9 +40,6 @@ const ListCard = ({ list }: Props) => {
           <h3 className="font-semibold text-lg truncate">{list.name}</h3>
           {!list.is_public && <Lock className="w-4 h-4 text-base-content/50" />}
         </div>
-        <span className="text-sm text-gray-500">
-          {list.game_count} {list.game_count === 1 ? "game" : "games"}
-        </span>
       </div>
 
       {list.game_count > 0 ? (
@@ -75,10 +72,16 @@ const ListCard = ({ list }: Props) => {
         </div>
       )}
 
-      <span className="flex flex-row items-center gap-2 text-sm text-gray-500">
-        {likeCount || 0}
-        <Heart className="w-[14px]" fill="#6a7282" />
-      </span>
+      <div className="flex items-center gap-2 text-xs text-base-content/60">
+        <span>
+          {list.game_count} {list.game_count === 1 ? "game" : "games"}
+        </span>
+
+        <div className="flex items-center gap-1">
+          <Heart className="w-3 h-3" />
+          <span>{likeCount || 0}</span>
+        </div>
+      </div>
     </Link>
   );
 };

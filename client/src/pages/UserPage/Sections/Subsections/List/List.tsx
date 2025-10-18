@@ -1,29 +1,33 @@
 import { useParams, useNavigate } from "@tanstack/react-router";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
 import {
   useListItems,
-  type ListData,
-} from "@/hooks/UserListHooks/useListItemsQuery";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import {
   useUpdateList,
   useDeleteList,
   useRemoveGameFromList,
-} from "@/hooks/UserListHooks/useListMutation";
-import { useUpdateRanks } from "@/hooks/UserListHooks/useUpdateRankMutation";
+  useUpdateRanks,
+} from "@/hooks/lists";
 import { useState, useEffect } from "react";
-import DraggableGameList from "@/components/DraggableGameList";
+import DraggableGameList from "@/components/content/DraggableGameList";
 import DeleteListConfirmation from "./DeleteListConfirmation";
 import ListHeader from "./ListHeader";
 import RemovedItems from "./RemovedItems";
+import type { ListData } from "@/types/lists";
 
 const List = () => {
   const navigate = useNavigate();
-  const { viewedProfile } = UseProfileContext();
-  const { listslug } = useParams({ from: "/u/$username/list/_list/$listslug" });
+  const { username, listslug } = useParams({
+    from: "/u/$username/list/_list/$listslug",
+  });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username, currentUser?.id);
+
   const { data, isLoading, isError, error } = useListItems(
-    listslug,
-    viewedProfile?.id || ""
+    viewedProfile?.username || "",
+    listslug
   );
+
   const updateListMutation = useUpdateList();
   const deleteListMutation = useDeleteList();
   const removeGameMutation = useRemoveGameFromList();
@@ -31,7 +35,7 @@ const List = () => {
 
   const [editMode, setEditMode] = useState(false);
   const [editedName, setEditedName] = useState("");
-  const [gamesToRemove, setGamesToRemove] = useState<Set<string>>(new Set());
+  const [gamesToRemove, setGamesToRemove] = useState<Set<number>>(new Set());
   const [reorderedGames, setReorderedGames] = useState<
     ListData["games"] | null
   >(null);
@@ -70,7 +74,7 @@ const List = () => {
     setReorderedGames(newOrder);
   };
 
-  const toggleGameRemoval = (gameId: string) => {
+  const toggleGameRemoval = (gameId: number) => {
     const newSet = new Set(gamesToRemove);
     if (newSet.has(gameId)) {
       newSet.delete(gameId);
@@ -82,28 +86,29 @@ const List = () => {
 
   const saveChanges = async () => {
     if (!data?.id || !viewedProfile?.id) return;
-    try {
-      let newSlug = listslug;
 
-      // Update list name if changed
+    try {
+      let updatedData = data;
+
       if (editedName.trim() !== data.name) {
-        const result = await updateListMutation.mutateAsync({
+        updatedData = await updateListMutation.mutateAsync({
           listId: data.id,
           name: editedName.trim(),
         });
-        newSlug = result.newSlug;
       }
 
-      // Update ranks if games were reordered
       if (reorderedGames) {
         const rankUpdates = reorderedGames.map((game, index) => ({
-          gameListItemId: game.id,
+          item_id: game.id,
           rank: index + 1,
         }));
-        await updateRanksMutation.mutateAsync(rankUpdates);
+
+        await updateRanksMutation.mutateAsync({
+          listId: data.id,
+          updates: rankUpdates,
+        });
       }
 
-      // Remove selected games
       if (gamesToRemove.size > 0) {
         for (const gameId of gamesToRemove) {
           await removeGameMutation.mutateAsync({
@@ -113,19 +118,17 @@ const List = () => {
         }
       }
 
-      // Navigate to new URL if list name changed
-      if (newSlug !== listslug) {
+      if (updatedData.slug !== listslug) {
         navigate({
           to: "/u/$username/list/$listslug",
           params: {
             username: viewedProfile.username,
-            listslug: newSlug,
+            listslug: updatedData.slug,
           },
           replace: true,
         });
       }
 
-      // leave edit mode
       setEditMode(false);
       setGamesToRemove(new Set());
       setReorderedGames(null);
@@ -137,6 +140,7 @@ const List = () => {
 
   const handleDeleteList = async () => {
     if (!data?.id) return;
+
     try {
       await deleteListMutation.mutateAsync(data.id);
       navigate({
@@ -162,7 +166,10 @@ const List = () => {
   if (isError) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-500">Error loading list: {error?.message}</p>
+        <p className="text-red-500">
+          Error loading list:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
       </div>
     );
   }
@@ -194,7 +201,6 @@ const List = () => {
           data={data}
         />
 
-        {/* Games Grid with Drag and Drop */}
         <DraggableGameList
           games={reorderedGames || data.games}
           editMode={editMode}
@@ -203,7 +209,6 @@ const List = () => {
           onReorder={handleReorder}
         />
 
-        {/* Show games marked for removal */}
         <RemovedItems
           editMode={editMode}
           data={data}
@@ -212,7 +217,6 @@ const List = () => {
         />
       </div>
 
-      {/* Delete List Confirmation Modal */}
       {showDeleteConfirm && (
         <DeleteListConfirmation
           deleteListMutation={deleteListMutation}

@@ -1,10 +1,15 @@
-import GameCard from "@/components/GameCard";
+import GameCard from "@/components/content/GameCard";
 
 interface Game {
-  id: string;
+  id: number;
   name: string;
   cover_id: string | null;
   slug: string;
+  is_nsfw: boolean;
+  is_released?: boolean;
+  official_release_date?: string | null;
+  igdb_total_rating?: number | null;
+  popularity?: number | null;
 }
 
 interface GameListItem {
@@ -16,14 +21,19 @@ interface GameListItem {
 export interface ListData {
   id: string;
   name: string;
+  slug: string;
+  is_public: boolean;
+  user_id: string;
+  created_at: string;
+  last_updated: string;
   games: GameListItem[];
 }
 
 type Props = {
   editMode: boolean;
   data: ListData;
-  gamesToRemove: Set<string>;
-  toggleGameRemoval: (gameId: string) => void;
+  gamesToRemove: Set<number>;
+  toggleGameRemoval: (gameId: number) => void;
 };
 
 const RemovedItems = ({
@@ -45,7 +55,7 @@ const RemovedItems = ({
               .map(({ games }) => (
                 <GameCard
                   key={`remove-${games.id}`}
-                  id={parseInt(games.id)}
+                  id={games.id.toString()}
                   name={games.name}
                   slug={games.slug}
                   coverId={games.cover_id || ""}
