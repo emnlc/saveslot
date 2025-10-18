@@ -1,4 +1,3 @@
-// routes/search/index.tsx
 import { createFileRoute } from "@tanstack/react-router";
 import SearchPage from "@/pages/Search/SearchPage";
 

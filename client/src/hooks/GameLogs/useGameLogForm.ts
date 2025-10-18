@@ -6,7 +6,7 @@ import {
   useSaveLogDraft,
   useLogDraft,
   useDeleteLogDraft,
-} from "@/hooks/GameLogs/useGameLogs";
+} from "@/hooks/gameLogs";
 
 interface UseGameLogFormProps {
   userId: string;

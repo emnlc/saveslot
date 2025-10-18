@@ -60,7 +60,7 @@ const Dropdown = ({
   }, [isOpen]);
 
   const defaultButtonClass =
-    "flex items-center justify-between space-x-2 px-3 py-2 text-xs md:text-sm bg-base-100 border border-base-300 rounded-lg hover:border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 cursor-pointer";
+    "flex items-center justify-between space-x-2 px-3 py-2 text-xs  bg-base-100 border border-base-300 rounded-lg hover:border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 cursor-pointer";
 
   const finalButtonClass = buttonClass || defaultButtonClass;
 
@@ -69,7 +69,7 @@ const Dropdown = ({
       <button
         onClick={toggleDropdown}
         disabled={disabled}
-        className={`${finalButtonClass} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`${finalButtonClass} ${disabled ? "opacity-50 cursor-not-allowed " : ""}`}
       >
         <span className="text-base-content">{buttonText}</span>
         <ChevronDown
@@ -86,7 +86,7 @@ const Dropdown = ({
               key={index}
               onClick={() => handleItemClick(item.onClick)}
               disabled={disabled}
-              className={`w-full flex items-center justify-between px-3 py-2 text-xs md:text-sm hover:bg-base-200 transition-colors duration-150 cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3 py-2 text-xs  hover:bg-base-200 transition-colors duration-150 cursor-pointer ${
                 item.isSelected
                   ? "bg-primary/10 text-primary"
                   : "text-base-content"

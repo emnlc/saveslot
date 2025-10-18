@@ -7,7 +7,6 @@ const Xbox = ({ classes }: Props) => {
     <>
       <svg
         fill="currentColor"
-        enable-background="new 0 0 857 857.1"
         viewBox="0 0 857 857.1"
         xmlns="http://www.w3.org/2000/svg"
         className={classes}

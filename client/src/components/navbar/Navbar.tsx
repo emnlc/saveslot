@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Search, Menu, X } from "lucide-react";
-import ThemeToggle from "../ThemeToggle";
+import ThemeToggle from "../controls/ThemeToggle";
 import { UserAuth } from "@/context/AuthContext";
 import Dropdown from "./NavbarDropdown";
 import SearchDropdown from "./SearchDropdown";

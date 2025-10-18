@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Upcoming from "@/pages/Games/Upcoming";
+import { useEffect } from "react";
 
 const validSortValues = ["popularity", "name", "first_release_date"] as const;
 const validOrderValues = ["asc", "desc"] as const;
@@ -31,5 +32,9 @@ export const Route = createFileRoute("/upcoming/")({
 });
 
 function RouteComponent() {
+  useEffect(() => {
+    document.title = "Upcoming | Games";
+  });
+
   return <Upcoming />;
 }

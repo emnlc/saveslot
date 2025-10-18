@@ -11,6 +11,10 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
+    document.title = "SaveSlot";
+  });
+
+  useEffect(() => {
     const unsubscribe = router.subscribe("onBeforeLoad", () => {
       loadingBarRef.current?.continuousStart();
     });

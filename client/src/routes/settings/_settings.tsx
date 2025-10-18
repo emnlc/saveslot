@@ -89,6 +89,18 @@ function RouteComponent() {
                   Account
                 </Link>
               </li>
+
+              <li className="flex-1">
+                <Link
+                  className="flex-1 block text-left text-sm text-base-content/60 hover:text-primary hover:bg-base-200/70 transition-all rounded-lg py-2 pl-4 pr-16"
+                  activeProps={{
+                    className: "text-primary tab-active bg-base-200/70",
+                  }}
+                  to="/settings/widgets"
+                >
+                  Widgets
+                </Link>
+              </li>
             </ul>
           </nav>
         </div>
