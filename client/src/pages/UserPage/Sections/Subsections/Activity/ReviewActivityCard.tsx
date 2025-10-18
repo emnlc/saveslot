@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquare, BookOpen } from "lucide-react";
-import StarDisplay from "@/components/StarDisplay";
-import { ReviewActivity } from "@/hooks/UserActivityHooks/useUserActivity";
+import StarDisplay from "@/components/content/StarDisplay";
+import { ReviewActivity } from "@/types/activity";
 import { formatDate, getCoverUrl } from "@/utils/activityUtils";
 
 interface ReviewActivityCardProps {
@@ -58,7 +58,6 @@ export const ReviewActivityCard = ({ activity }: ReviewActivityCardProps) => {
     );
   }
 
-  // Log entry without rating
   return (
     <div className="border border-base-300 rounded-lg p-4 transition-colors">
       <div className="flex gap-4">

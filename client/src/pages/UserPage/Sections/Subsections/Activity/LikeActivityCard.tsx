@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { Heart } from "lucide-react";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import { LikeActivity } from "@/hooks/UserActivityHooks/useUserActivity";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { LikeActivity } from "@/types/activity";
 import { formatDate } from "@/utils/activityUtils";
 
 interface LikeActivityCardProps {
@@ -9,7 +10,10 @@ interface LikeActivityCardProps {
 }
 
 export const LikeActivityCard = ({ activity }: LikeActivityCardProps) => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   return (
     <div className="border border-base-300 rounded-lg p-4 transition-colors">
@@ -39,7 +43,6 @@ export const LikeActivityCard = ({ activity }: LikeActivityCardProps) => {
               </Link>
             </>
           )}
-
           {activity.data.targetType === "review" && activity.data.review && (
             <>
               <div className="flex items-center gap-1 mb-1">
@@ -66,7 +69,6 @@ export const LikeActivityCard = ({ activity }: LikeActivityCardProps) => {
               </div>
             </>
           )}
-
           {activity.data.targetType === "list" && activity.data.list && (
             <>
               <div className="flex items-center gap-1 mb-1">

@@ -1,7 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { List } from "lucide-react";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import { ListActivity } from "@/hooks/UserActivityHooks/useUserActivity";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { ListActivity } from "@/types/activity";
 import { formatDate } from "@/utils/activityUtils";
 
 interface ListActivityCardProps {
@@ -9,7 +10,10 @@ interface ListActivityCardProps {
 }
 
 export const ListActivityCard = ({ activity }: ListActivityCardProps) => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   return (
     <div className="border border-base-300 rounded-lg p-4 transition-colors">

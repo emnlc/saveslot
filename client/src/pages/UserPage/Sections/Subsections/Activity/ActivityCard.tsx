@@ -1,4 +1,4 @@
-import { Activity } from "@/hooks/UserActivityHooks/useUserActivity";
+import { Activity } from "@/types/activity";
 import { ReviewActivityCard } from "./ReviewActivityCard";
 import { StatusActivityCard } from "./StatusActivityCard";
 import { ListActivityCard } from "./ListActivityCard";

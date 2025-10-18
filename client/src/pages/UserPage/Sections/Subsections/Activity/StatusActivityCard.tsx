@@ -1,6 +1,7 @@
-import { Link } from "@tanstack/react-router";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import { StatusActivity } from "@/hooks/UserActivityHooks/useUserActivity";
+import { Link, useParams } from "@tanstack/react-router";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { StatusActivity } from "@/types/activity";
 import { formatDate, getStatusText } from "@/utils/activityUtils";
 
 interface StatusActivityCardProps {
@@ -8,8 +9,12 @@ interface StatusActivityCardProps {
 }
 
 export const StatusActivityCard = ({ activity }: StatusActivityCardProps) => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
-  const username = viewedProfile?.display_name || "User";
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
+
+  const displayName = viewedProfile?.display_name || "User";
   const { prefix, statusLabel } = getStatusText(
     activity.data.status,
     isOwnProfile
@@ -26,7 +31,7 @@ export const StatusActivityCard = ({ activity }: StatusActivityCardProps) => {
             </span>
           </div>
           <p className="text-base-content/60 text-sm">
-            {!isOwnProfile && <>{username} </>}
+            {!isOwnProfile && <>{displayName} </>}
             {prefix}{" "}
             {statusLabel && (
               <span className="text-base-content/80">{statusLabel}</span>

@@ -1,9 +1,14 @@
-import { UseProfileContext } from "@/context/ViewedProfileContext";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
 import { useUserActivity } from "@/hooks/UserActivityHooks/useUserActivity";
+import { useParams } from "@tanstack/react-router";
 import { ActivityCard } from "./Subsections/Activity/ActivityCard";
 
 const Activity = () => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   const {
     data: activities,
@@ -25,7 +30,7 @@ const Activity = () => {
       <div className="flex items-center justify-center p-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-base-300 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading activity...</p>
+          <p className="text-base-content/60">Loading activity...</p>
         </div>
       </div>
     );
@@ -34,20 +39,32 @@ const Activity = () => {
   if (isError) {
     return (
       <div className="p-8 text-center">
-        <p className="text-red-500">Error loading activity: {error?.message}</p>
+        <p className="text-red-500">
+          Error loading activity:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
+        </p>
       </div>
     );
   }
 
   if (!activities || activities.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <h3 className="text-lg font-medium mb-2">No recent activity</h3>
-        <p className="text-muted-foreground">
-          {isOwnProfile
-            ? "Start playing games and writing reviews to see your activity here!"
-            : `${viewedProfile?.display_name} hasn't been active recently.`}
-        </p>
+      <div className="space-y-4 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">
+            {isOwnProfile
+              ? "Your Activity"
+              : `${currentUser?.display_name || currentUser?.username}'s Activity`}
+          </h2>
+        </div>
+        <div className="text-center py-12 bg-base-100 rounded-lg border border-base-300">
+          <h3 className="text-lg font-semibold mb-2">No recent activity</h3>
+          <p className="text-base-content/60">
+            {isOwnProfile
+              ? "Start playing games and writing reviews to see your activity here!"
+              : `${viewedProfile?.display_name} hasn't been active recently.`}
+          </p>
+        </div>
       </div>
     );
   }
@@ -60,11 +77,10 @@ const Activity = () => {
             ? "Your Activity"
             : `${viewedProfile?.display_name}'s Activity`}
         </h2>
-        <p className="self-end text-muted-foreground text-sm mt-1 text-base-content/60">
+        <p className="self-end text-base-content/60 text-sm mt-1">
           Last 14 days
         </p>
       </div>
-
       <div className="space-y-4">
         {activities.map((activity) => (
           <ActivityCard key={activity.id} activity={activity} />
