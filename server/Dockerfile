@@ -6,4 +6,4 @@ COPY package.json bun.lockb ./
 
 RUN bun install
 
-CMD ["bun", "run", "dev"]
+CMD ["bun", "run", "start"]
