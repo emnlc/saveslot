@@ -1,6 +1,6 @@
 import { Gamepad2, ChevronDown } from "lucide-react";
 import { Game } from "@/Interface";
-import GameCard from "@/components/GameCard";
+import GameCard from "@/components/content/GameCard";
 import { useState } from "react";
 
 interface GamesSectionProps {
