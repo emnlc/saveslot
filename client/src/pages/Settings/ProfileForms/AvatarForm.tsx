@@ -1,11 +1,12 @@
-import { UserProfile } from "@/context/ProfileContext";
-import { Profile } from "@/Interface";
+import { useUpdateProfile } from "@/hooks/profiles";
+import { UserAuth, type AuthProfile } from "@/context/AuthContext";
 import { useRef, useState, useEffect } from "react";
-import { UserAuth } from "@/context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 import { CloudUpload } from "lucide-react";
+import { supabase } from "@/services/supabase";
 
 type Props = {
-  profile: Profile | null;
+  profile: AuthProfile;
 };
 
 const AvatarForm = ({ profile }: Props) => {
@@ -13,19 +14,21 @@ const AvatarForm = ({ profile }: Props) => {
     null
   );
   const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(
-    profile?.avatar_url || null
+    profile.avatar_url || null
   );
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const avatarInputRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
-  const { updateImage } = UserProfile();
+
   const { refreshProfile } = UserAuth();
+  const queryClient = useQueryClient();
+  const updateProfileMutation = useUpdateProfile();
 
   useEffect(() => {
-    if (profile?.avatar_url && !selectedAvatarFile) {
+    if (profile.avatar_url && !selectedAvatarFile) {
       setAvatarPreviewUrl(profile.avatar_url);
     }
-  }, [profile?.avatar_url, selectedAvatarFile]);
+  }, [profile.avatar_url, selectedAvatarFile]);
 
   const handleAvatarDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -55,29 +58,69 @@ const AvatarForm = ({ profile }: Props) => {
 
   const handleAvatarSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    if (!selectedAvatarFile) return;
 
-    if (selectedAvatarFile) {
-      const { success, error } = await updateImage(
-        selectedAvatarFile,
-        "avatar"
-      );
+    setIsUploading(true);
 
-      if (!success) {
-        console.error("Avatar update failed: ", error);
-        setLoading(false);
-        return;
+    try {
+      // Upload to Supabase Storage in user-images bucket
+      const filePath = `${profile.id}/avatar.png`;
+
+      // Delete old avatar if it exists
+      const { error: deleteError } = await supabase.storage
+        .from("user-images")
+        .remove([filePath]);
+
+      if (deleteError) {
+        console.warn(
+          "No existing avatar to delete or error deleting:",
+          deleteError
+        );
       }
 
-      setSelectedAvatarFile(null);
+      // Upload new avatar
+      const { error: uploadError } = await supabase.storage
+        .from("user-images")
+        .upload(filePath, selectedAvatarFile, {
+          cacheControl: "3600",
+          upsert: true, // This will overwrite if file exists
+        });
 
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from("user-images")
+        .getPublicUrl(filePath);
+
+      // Add timestamp to bust cache
+      const avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+      // Update profile with new avatar URL
+      await updateProfileMutation.mutateAsync({
+        userId: profile.id,
+        avatar_url: avatarUrl,
+      });
+
+      // Clean up
+      setSelectedAvatarFile(null);
       if (avatarPreviewUrl && avatarPreviewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(avatarPreviewUrl);
       }
-    }
 
-    await refreshProfile();
-    setLoading(false);
+      // Refresh auth profile
+      await refreshProfile();
+
+      // Invalidate profile queries
+      queryClient.invalidateQueries({
+        queryKey: ["profile", profile.username],
+      });
+    } catch (error) {
+      console.error("Avatar update failed:", error);
+      alert("Failed to update avatar. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const hasUnsavedChanges = selectedAvatarFile !== null;
@@ -94,8 +137,8 @@ const AvatarForm = ({ profile }: Props) => {
         <div
           className={`w-30 h-30 md:w-48 md:h-48 rounded border-2 border-dashed cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
             isDragOver
-              ? "border-primary bg-primary/10 "
-              : "border-base-content/30 hover:border-primary hover:bg-base-100/20 "
+              ? "border-primary bg-primary/10"
+              : "border-base-content/30 hover:border-primary hover:bg-base-100/20"
           }`}
           onClick={() => avatarInputRef.current?.click()}
           onDragOver={handleAvatarDragOver}
@@ -113,7 +156,7 @@ const AvatarForm = ({ profile }: Props) => {
           <img
             src={
               avatarPreviewUrl ||
-              `https://ui-avatars.com/api/?name=${profile?.username}&background=FE9FA1&color=fff`
+              `https://ui-avatars.com/api/?name=${profile.username}&background=FE9FA1&color=fff`
             }
             className="w-32 h-32 md:w-48 md:h-48 rounded object-cover border-2 border-primary"
             alt="Current avatar"
@@ -133,13 +176,11 @@ const AvatarForm = ({ profile }: Props) => {
         className="hidden"
       />
       <button
-        onClick={(e) => {
-          handleAvatarSave(e);
-        }}
-        className={`self-start btn btn-sm ${loading ? "btn-ghost" : "btn-primary"} ${hasUnsavedChanges ? "block" : "hidden"}`}
-        disabled={loading}
+        onClick={handleAvatarSave}
+        className={`self-start btn btn-sm ${isUploading ? "btn-ghost" : "btn-primary"} ${hasUnsavedChanges ? "block" : "hidden"}`}
+        disabled={isUploading}
       >
-        {loading ? "Updating..." : "Update"}
+        {isUploading ? "Uploading..." : "Update"}
       </button>
     </form>
   );
