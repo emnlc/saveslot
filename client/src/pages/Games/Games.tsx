@@ -1,9 +1,12 @@
-import { useUpcomingGames } from "../../hooks/GameHooks/useUpcomingGames";
-import { useNewlyReleasedGames } from "@/hooks/GameHooks/useNewlyReleased";
 import { Link } from "@tanstack/react-router";
 
-import GameCarousel from "@/components/GameCarousel";
-import { useHighlyRated } from "@/hooks/GameHooks/useHighlyRated";
+import GameCarousel from "@/components/content/GameCarousel";
+import {
+  useNewlyReleasedGames,
+  useUpcomingGames,
+  useHighlyRated,
+} from "@/hooks/games";
+import { ArrowRight } from "lucide-react";
 
 const Games = () => {
   const {
@@ -44,10 +47,12 @@ const Games = () => {
             <h1 className="font-bold text-2xl">Upcoming Games</h1>
             <Link
               to="/upcoming"
-              className="self-end hover:text-secondary transition-all"
+              className="self-end text-sm text-base-content/60 hover:text-primary flex items-center gap-1 transition-all"
               search={{ page: 1, sort: "popularity", order: "desc" }}
+              resetScroll={true}
             >
-              More
+              View all
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
@@ -58,11 +63,12 @@ const Games = () => {
           <div className="flex flex-row justify-between">
             <h1 className="font-bold text-2xl">New Releases</h1>
             <Link
-              to="/newly-released"
-              className="self-end hover:text-secondary transition-all"
+              to="/new-releases"
+              className="self-end text-sm text-base-content/60 hover:text-primary flex items-center gap-1 transition-all"
               search={{ page: 1, sort: "first_release_date", order: "desc" }}
             >
-              More
+              View all
+              <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 

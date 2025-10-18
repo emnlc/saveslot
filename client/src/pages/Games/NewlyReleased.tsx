@@ -1,8 +1,8 @@
-import { useAllNewlyReleasedGames } from "@/hooks/GameHooks/useAllNewlyReleasedGames";
-import GameCard from "@/components/GameCard";
+import { useAllNewlyReleasedGames } from "@/hooks/games";
+import GameCard from "@/components/content/GameCard";
 
 import { useEffect, useState } from "react";
-import { Route as NewlyReleasedRoute } from "../../routes/newly-released";
+import { Route as NewlyReleasedRoute } from "../../routes/new-releases";
 type SortOption = "popularity" | "name" | "first_release_date";
 
 import { ArrowDown, ArrowUp } from "lucide-react";
@@ -101,6 +101,7 @@ const NewlyReleased = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container mb-16 gap-4 place-items-center join">
           {data.games.map((game) => (
             <GameCard
+              key={game.id}
               id={game.id.toString()}
               name={game.name}
               slug={game.slug}

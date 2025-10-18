@@ -1,4 +1,4 @@
-import { useAllUpcomingGames } from "../../hooks/GameHooks/useAllUpcomingGames";
+import { useAllUpcomingGames } from "@/hooks/games";
 import { useEffect, useState } from "react";
 import { Route as UpcomingRoute } from "../../routes/upcoming";
 type SortOption = "popularity" | "name" | "first_release_date";
@@ -6,7 +6,7 @@ type SortOption = "popularity" | "name" | "first_release_date";
 import { ArrowDown, ArrowUp } from "lucide-react";
 
 import Pagination from "@/components/controls/Pagination";
-import GameCard from "@/components/GameCard";
+import GameCard from "@/components/content/GameCard";
 
 const sortLabels: Record<SortOption, string> = {
   popularity: "Popularity",
@@ -96,6 +96,7 @@ const Upcoming = () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 md:mx-auto px-4 container mb-16 gap-4 place-items-center join">
           {data.games.map((game) => (
             <GameCard
+              key={game.id}
               id={game.id.toString()}
               name={game.name}
               slug={game.slug}

@@ -1,16 +1,15 @@
 export interface Profile {
   id: string;
   username: string;
-  full_name: string;
+  display_name: string;
+  bio: string | null;
   avatar_url: string | null;
   banner_url: string | null;
   created_at: string;
-
-  display_name: string | null;
-  bio: string | null;
-
   followers: number;
   following: number;
+  is_following: boolean;
+  full_name?: string;
 }
 
 export type GameList = {
@@ -30,6 +29,20 @@ export interface Game {
     id: string;
     image_id: string;
   };
+  developers?: [
+    {
+      id: number;
+      name: string;
+      slug: string;
+    },
+  ];
+  publishers?: [
+    {
+      id: number;
+      name: string;
+      slug: string;
+    },
+  ];
   official_release_date?: Date;
   release_date_human?: string;
   first_release_date?: number;
@@ -47,6 +60,7 @@ export interface Game {
   summary: string;
   storyline: string;
   rating: number;
+  is_released: boolean;
   rating_count: number;
   aggregated_rating: number;
   url: string;
@@ -64,19 +78,13 @@ export interface Game {
       image_id: string;
     },
   ];
+  screenshot_ids: [string];
   tags: number[];
   age_ratings: [
     {
-      id: number;
-      rating_category: {
-        id: number;
-        organization: {
-          id: number;
-          name: string;
-        };
-        rating: string;
-        rating_cover_url: string;
-      };
+      rating: string;
+      game_id: number;
+      organization_id: number;
     },
   ];
   websites: [
