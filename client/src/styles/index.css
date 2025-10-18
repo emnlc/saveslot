@@ -2,7 +2,7 @@
 @import "tailwindcss";
 @import "@splidejs/react-splide/css";
 
-@import "./themes.css";
+@import "./daisyui.css";
 @import "./daisyui.css";
 
 body {
