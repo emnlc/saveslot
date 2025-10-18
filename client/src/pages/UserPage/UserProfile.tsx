@@ -1,8 +1,10 @@
+import Profile from "./Sections/Profile";
+
 const UserProfile = () => {
   return (
     <>
-      <div className="my-12">
-        <h1>Profile Overview</h1>
+      <div className="my-6">
+        <Profile />
       </div>
     </>
   );

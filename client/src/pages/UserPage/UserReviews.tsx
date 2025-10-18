@@ -2,7 +2,7 @@ import Reviews from "./Sections/Reviews";
 
 const UserReviews = () => {
   return (
-    <div className="my-12">
+    <div className="my-6">
       <Reviews />
     </div>
   );

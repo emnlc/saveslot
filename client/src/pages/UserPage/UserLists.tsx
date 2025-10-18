@@ -3,7 +3,7 @@ import Lists from "./Sections/Lists";
 const UserLists = () => {
   return (
     <>
-      <div className="my-12">
+      <div className="my-6">
         <Lists />
       </div>
     </>

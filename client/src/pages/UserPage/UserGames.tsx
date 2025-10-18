@@ -11,7 +11,7 @@ interface Props {
 const UserGames = ({ search, navigate }: Props) => {
   return (
     <>
-      <div className="my-12">
+      <div className="my-6">
         <Games search={search} navigate={navigate} />
       </div>
     </>

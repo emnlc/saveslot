@@ -2,7 +2,7 @@ import Activity from "./Sections/Activity";
 
 const UserActivity = () => {
   return (
-    <div className="my-12">
+    <div className="my-6">
       <Activity />
     </div>
   );
