@@ -7,16 +7,20 @@ import {
 } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/services/supabase";
-// Define your Profile type
-import type { Profile } from "@/Interface";
+
+export interface AuthProfile {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  banner_url: string | null;
+  bio: string | null;
+}
 
 interface AuthContextType {
   session: Session | null;
-  profile: Profile | null;
+  profile: AuthProfile | null;
   loading: boolean;
-  getFollowStats: (
-    userId: string
-  ) => Promise<{ followers: number; following: number }>;
   refreshProfile: () => Promise<void>;
   signUpNewUser: (
     email: string,
@@ -34,16 +38,14 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const validateUsername = (
     username: string
   ): { isValid: boolean; error?: string } => {
-    // Convert to lowercase for case-insensitive validation
     const lowerUsername = username.toLowerCase();
 
-    // Check length
     if (username.length < 4) {
       return {
         isValid: false,
@@ -57,7 +59,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // Check allowed characters (letters, numbers, underscore only)
     const validPattern = /^[a-zA-Z0-9_]+$/;
     if (!validPattern.test(username)) {
       return {
@@ -66,7 +67,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // Optional: Check for reserved usernames
     const reservedNames = [
       "admin",
       "api",
@@ -89,34 +89,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     return { isValid: true };
   };
 
-  const getFollowStats = async (userId: string) => {
-    const { count: followersCount, error: followersError } = await supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("following_id", userId);
-
-    const { count: followingCount, error: followingError } = await supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("follower_id", userId);
-
-    if (followersError || followingError) {
-      console.error(
-        "Error fetching follow stats",
-        followersError || followingError
-      );
-      return { followers: 0, following: 0 };
-    }
-
-    const stats = {
-      followers: followersCount ?? 0,
-      following: followingCount ?? 0,
-    };
-
-    return stats;
-  };
-
-  // Refresh profile data function
   const refreshProfile = async () => {
     if (!session?.user?.id) {
       console.warn("No session available to refresh profile");
@@ -126,7 +98,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, username, display_name, avatar_url, banner_url, bio")
         .eq("id", session.user.id)
         .single();
 
@@ -135,20 +107,17 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Get follow stats and merge with profile data
-      const followStats = await getFollowStats(session.user.id);
-      setProfile({ ...data, ...followStats });
+      setProfile(data);
     } catch (error) {
       console.error("Error refreshing profile:", error);
     }
   };
 
-  // Fetch profile data
   const fetchProfile = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, username, display_name, avatar_url, banner_url, bio")
         .eq("id", userId)
         .single();
 
@@ -157,18 +126,13 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      // Get follow stats and merge with profile data
-      const followStats = await getFollowStats(userId);
-      const profileWithStats = { ...data, ...followStats };
-
-      setProfile(profileWithStats);
+      setProfile(data);
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
   };
 
   useEffect(() => {
-    // Get initial session
     supabase.auth
       .getSession()
       .then(({ data: { session } }) => {
@@ -183,7 +147,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
       });
 
-    // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -197,10 +160,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sign in
   const signInUser = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -219,7 +180,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // Quick fetch of just the username for navigation purposes
     const { data: profileData, error: profileError } = await supabase
       .from("profiles")
       .select("username")
@@ -233,7 +193,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true, username: profileData.username };
   };
 
-  // Sign up
   const signUpNewUser = async (
     email: string,
     password: string,
@@ -244,7 +203,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, error: validation.error };
     }
 
-    // Check if username exists
     const { data: existingUsernames, error: usernameError } = await supabase
       .from("profiles")
       .select("id")
@@ -258,7 +216,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       return { success: false, error: "Username is already taken." };
     }
 
-    // Sign up with Supabase
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -270,7 +227,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
     const userId = data.user?.id;
 
-    // Check session (required for RLS)
     const { data: sessionResult } = await supabase.auth.getSession();
     if (!sessionResult.session) {
       return {
@@ -307,7 +263,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     return { success: true };
   };
 
-  // Sign out
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -321,7 +276,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         session,
         profile,
         loading,
-        getFollowStats,
         refreshProfile,
         signUpNewUser,
         signInUser,
