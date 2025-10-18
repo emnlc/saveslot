@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useGameInfo } from "../../hooks/GameHooks/useGameInfo";
+import { useGameInfo } from "@/hooks/games";
 import LightboxGallery from "./LightboxGallery";
 
 import GamePageHeader from "./GamePageHeader";
@@ -73,16 +73,18 @@ const GamePage = (props: Props) => {
               </div>
             )}
 
-            {data.screenshots && (
+            {data.screenshot_ids && (
               <div className="flex flex-col gap-2">
                 <h2 className="text-lg font-bold">Screenshots</h2>
-                <LightboxGallery screenshots={data.screenshots} />
+                <LightboxGallery screenshots={data.screenshot_ids} />
               </div>
             )}
 
-            <div className="flex flex-col gap-2">
-              <GamePageStores data={data} />
-            </div>
+            {data.websites && (
+              <div className="flex flex-col gap-2">
+                <GamePageStores data={data.websites} />
+              </div>
+            )}
           </div>
 
           {/* reviews section */}

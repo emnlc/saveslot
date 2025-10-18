@@ -11,9 +11,8 @@ type Props = {
 const GAME_STATUSES: { value: GameStatus | ""; label: string }[] = [
   { value: "", label: "No status" },
   { value: "completed", label: "Completed" },
-  { value: "playing", label: "Currently Playing" },
+  { value: "playing", label: "Playing" },
   { value: "dropped", label: "Dropped" },
-  { value: "plan_to_play", label: "Plan to Play" },
   { value: "abandoned", label: "Abandoned" },
 ];
 

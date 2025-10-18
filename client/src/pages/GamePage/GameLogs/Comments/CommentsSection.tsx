@@ -4,13 +4,13 @@ import {
   useLogComments,
   useCreateLogComment,
   useDeleteLogComment,
-} from "@/hooks/GameLogs/useGameLogs";
+} from "@/hooks/gameLogs";
 import CommentItem from "./CommentItem";
 import CommentInput from "./CommentInput";
 
 import { UserAuth } from "@/context/AuthContext";
 
-import InlineLikeButton from "@/components/InlineLikeButton";
+import InlineLikeButton from "@/components/controls/InlineLikeButton";
 
 type Props = {
   logId: string;
@@ -99,7 +99,7 @@ const CommentsSection = ({ logId, currentUserId }: Props) => {
           )}
 
           {/* New Comment Input */}
-          {currentUserId && (
+          {profile && currentUserId && (
             <CommentInput
               onSubmit={handleCommentSubmit}
               isSubmitting={createCommentMutation.isPending}

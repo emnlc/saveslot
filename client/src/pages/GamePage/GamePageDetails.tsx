@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Game } from "../../Interface";
 
-// import { Link } from "@tanstack/react-router";
-import GameCard from "@/components/GameCard";
+import GameCard from "@/components/content/GameCard";
+import { Star } from "lucide-react";
 
 type Props = { data: Game };
 
@@ -20,7 +20,12 @@ const GamePageDetails = ({ data }: Props) => {
     }
   }, [data?.storyline, data?.summary]);
 
-  const relatedGames = data.related_games || [];
+  const relatedGames =
+    data.related_games?.length > 0 ? data.related_games : null;
+  const officialWebsite = data.websites?.find(
+    (website) => website.type.id === 1
+  );
+  const esrbRating = data.age_ratings?.find((r) => r.organization_id === 1);
 
   return (
     <>
@@ -66,48 +71,42 @@ const GamePageDetails = ({ data }: Props) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 col-span-1  ">
+        <div className="flex flex-col gap-2 col-span-1">
           <h2 className="text-lg font-bold">Age Rating</h2>
           <span className="text-sm">
-            {data.esrb_rating ? data.esrb_rating : "Not rated"}
+            {esrbRating ? `ESRB ${esrbRating.rating}` : "Not rated"}
           </span>
         </div>
 
-        {data.involved_companies && data.involved_companies[0].developer && (
+        {data.developers && (
           <>
             <div className="flex flex-col items-start gap-2 col-span-1  ">
               <h2 className="text-lg font-bold">Developers</h2>
-              {data.involved_companies.map(
-                (company) =>
-                  company.developer && (
-                    <a
-                      className="text-sm hover:text-primary transition-colors"
-                      key={company.id}
-                    >
-                      {company.company.name}
-                    </a>
-                  )
-              )}
+              {data.developers.map((developer) => (
+                <a
+                  className="text-sm hover:text-primary transition-colors"
+                  key={developer.id}
+                >
+                  {developer.name}
+                </a>
+              ))}
             </div>
           </>
         )}
 
-        {data.involved_companies && data.involved_companies[0].publisher && (
+        {data.publishers && (
           <>
             <div className="flex flex-col items-start gap-2 col-span-1  ">
               <h2 className="text-lg font-bold">Publishers</h2>
 
-              {data.involved_companies.map(
-                (company) =>
-                  company.publisher && (
-                    <a
-                      className="text-sm hover:text-primary transition-colors"
-                      key={company.id}
-                    >
-                      {company.company.name}
-                    </a>
-                  )
-              )}
+              {data.publishers.map((publisher) => (
+                <a
+                  className="text-sm hover:text-primary transition-colors"
+                  key={publisher.id}
+                >
+                  {publisher.name}
+                </a>
+              ))}
             </div>
           </>
         )}
@@ -127,6 +126,33 @@ const GamePageDetails = ({ data }: Props) => {
           </div>
         </div>
 
+        {officialWebsite && (
+          <div className="flex flex-col gap-2 col-span-1">
+            <h2 className="text-lg font-bold">Website</h2>
+            <div className="flex flex-row flex-wrap gap-2 overflow-clip">
+              <a
+                key={officialWebsite.id}
+                className="text-sm text-base-content/60 underline underline-offset-2 hover:text-primary transition-all cursor-pointer"
+                href={officialWebsite.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Official Website
+              </a>
+            </div>
+          </div>
+        )}
+
+        {data.igdb_total_rating && (
+          <div className="flex flex-col gap-2 col-span-1">
+            <h2 className="text-lg font-bold">IGDB Rating</h2>
+            <div className="flex flex-row flex-wrap gap-2 overflow-clip">
+              <Star className="w-4 text-[#9047FE] fill-[#9047FE]" />
+              <span>{(data.igdb_total_rating / 10).toFixed(1)}</span>
+            </div>
+          </div>
+        )}
+
         {data.genres && (
           <div className="flex flex-col gap-2 col-span-2  ">
             <h2 className="text-lg font-bold">Genres</h2>
@@ -143,36 +169,22 @@ const GamePageDetails = ({ data }: Props) => {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 col-span-2  ">
-          <h2 className="text-lg font-bold">Website</h2>
-          <div className="flex flex-row flex-wrap gap-2 overflow-clip">
-            {data.official_website && (
-              <a
-                key={data.official_website}
-                className="text-sm text-base-content/60 underline underline-offset-2 hover:text-primary transition-all cursor-pointer"
-                href={data.official_website}
-                target="_blank"
-              >
-                Official Website
-              </a>
-            )}
+        {relatedGames && (
+          <div className="flex flex-col gap-2 col-span-2  ">
+            <h2 className="text-lg font-bold">Also in Series</h2>
+            <div className="flex flex-row flex-wrap gap-2">
+              {relatedGames.map((game, index) => (
+                <div className="flex items-start w-28" key={index}>
+                  <GameCard
+                    id={index.toString()}
+                    slug={game.slug}
+                    coverId={game.cover_id || ""}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-
-        <div className="flex flex-col gap-2 col-span-2  ">
-          <h2 className="text-lg font-bold">Also in Series</h2>
-          <div className="flex flex-row flex-wrap gap-2">
-            {relatedGames.map((game, index) => (
-              <div className="flex items-start w-28" key={index}>
-                <GameCard
-                  id={index.toString()}
-                  slug={game.slug}
-                  coverId={game.cover_id || ""}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </>
   );

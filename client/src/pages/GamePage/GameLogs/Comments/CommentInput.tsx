@@ -1,10 +1,16 @@
-import { Profile } from "@/Interface";
 import { useState } from "react";
+
+interface AuthProfile {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+}
 
 type Props = {
   onSubmit: (commentText: string) => Promise<void>;
   isSubmitting: boolean;
-  profile: Profile | null;
+  profile: AuthProfile;
 };
 
 const CommentInput = ({ onSubmit, isSubmitting, profile }: Props) => {

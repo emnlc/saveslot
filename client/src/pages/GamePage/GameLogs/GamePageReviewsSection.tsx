@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { UserAuth } from "@/context/AuthContext";
 import { Game, GameLogWithProfile } from "@/Interface";
-import { useReviewsData } from "@/hooks/GameReviews/useReviewsData";
+import { useReviewsData } from "@/hooks/reviews/useReviewsData";
 import ReviewsHeader from "./ReviewsHeader";
 import RatingStatsCard from "./RatingStatsCard";
 import ReviewsList from "./ReviewsList";

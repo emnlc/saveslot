@@ -1,16 +1,16 @@
 import { ListPlus, Star, Gamepad2, Heart, LayoutGrid } from "lucide-react";
 import type { Game } from "../../Interface";
 
-import AddToListModal from "./AddToListModal";
+import AddToListModal from "../../components/modals/AddToListModal";
 import CreateLogModal from "./GameLogModal/CreateLogModal";
 import { useState } from "react";
 import GameStatusDropdown from "./GameStatusRadio";
 
-import LikeButton from "@/components/LikeButton";
-import { useGameLikeCount } from "@/hooks/UserLikeHooks/useGameLikeCount";
-import { useGameRatingStats } from "@/hooks/GameLogs/useGameLogs";
+import LikeButton from "@/components/controls/LikeButton";
+import { useGameRatingStats } from "@/hooks/gameLogs";
 import { UserAuth } from "@/context/AuthContext";
 import React from "react";
+import { useGameStats } from "@/hooks/games";
 
 type Props = {
   data: Game;
@@ -23,12 +23,12 @@ const GamePageHeader = ({ data }: Props) => {
 
   const { profile } = UserAuth();
 
-  const { data: likeCount } = useGameLikeCount(data.id.toString());
+  const { data: gameStats } = useGameStats(data.id);
   const { data: ratingStats } = useGameRatingStats(data.id);
 
   return (
     <>
-      {showModal && (
+      {showModal && profile && (
         <AddToListModal
           gameId={data.id}
           gameTitle={data.name}
@@ -37,7 +37,7 @@ const GamePageHeader = ({ data }: Props) => {
       )}
 
       {/* Add the CreateLogModal */}
-      {showLogModal && profile && (
+      {showLogModal && profile && data.is_released && (
         <CreateLogModal
           game={data}
           userId={profile.id}
@@ -52,17 +52,26 @@ const GamePageHeader = ({ data }: Props) => {
           alt={data.name}
         />
         <div className="flex flex-row gap-2">
-          <span className="flex flex-row items-center gap-1">
+          <span
+            className="flex flex-row items-center gap-1"
+            title="Times Played"
+          >
             <Gamepad2 className="w-5 text-accent fill-accent/20" />{" "}
-            <span className="text-base-content/60">0</span>
+            <span className="text-base-content/60">
+              {gameStats?.play_count}
+            </span>
           </span>
           <span className="flex flex-row items-center gap-1">
             <LayoutGrid className="w-5 text-secondary fill-secondary" />
-            <span className="text-base-content/60">0</span>
+            <span className="text-base-content/60">
+              {gameStats?.list_count}
+            </span>
           </span>
           <span className="flex flex-row items-center gap-1">
             <Heart className="w-5 text-primary fill-primary" />
-            <span className="text-base-content/60">{likeCount ?? 0}</span>
+            <span className="text-base-content/60">
+              {gameStats ? gameStats.like_count : 0}
+            </span>
           </span>
         </div>
       </div>
@@ -75,7 +84,6 @@ const GamePageHeader = ({ data }: Props) => {
         <div className="md:flex flex-row items-center gap-2 text-sm hidden">
           {data.release_date_human ? (
             <>
-              {/* <span>{convertToDate(data.first_release_date)}</span> */}
               <span>{data.release_date_human}</span>
             </>
           ) : (
@@ -84,14 +92,14 @@ const GamePageHeader = ({ data }: Props) => {
             </>
           )}
 
-          {data.involved_companies &&
-            data.involved_companies.map(
-              (company) =>
-                company.developer && (
-                  <React.Fragment key={company.id}>
+          {data.publishers &&
+            data.publishers.map(
+              (publisher) =>
+                publisher && (
+                  <React.Fragment key={publisher.id}>
                     <span className="w-1.5 h-1.5 rounded-full bg-neutral"></span>
                     <span className="hover:text-primary transition-colors">
-                      {company.company.name}
+                      {publisher.name}
                     </span>
                   </React.Fragment>
                 )
@@ -115,7 +123,6 @@ const GamePageHeader = ({ data }: Props) => {
           <div className="flex flex-col items-center justify-center">
             <span className="flex items-center gap-2 text-xl">
               <Star fill="#FFD700" stroke="#FFD700" />
-              {/* Update this to show actual user rating stats */}
               {ratingStats && ratingStats.total_logs > 0
                 ? ratingStats.average_rating.toFixed(1)
                 : "N/A"}
@@ -152,15 +159,15 @@ const GamePageHeader = ({ data }: Props) => {
         <div className="flex flex-row gap-4 justify-center md:justify-start">
           <button
             onClick={() => setShowModal(true)}
+            disabled={!profile?.id}
             className="btn btn-secondary btn-sm md:btn-md"
           >
             <ListPlus />
             Add to List
           </button>
-          {/* Update the Review or Log button */}
           <button
             onClick={() => setShowLogModal(true)}
-            disabled={!profile?.id}
+            disabled={!profile?.id || !data.is_released}
             className="btn btn-accent btn-sm md:btn-md"
           >
             <ListPlus />
@@ -168,7 +175,7 @@ const GamePageHeader = ({ data }: Props) => {
           </button>
           <LikeButton targetId={data.id.toString()} targetType="game" />
         </div>
-        <GameStatusDropdown gameId={data.id} />
+        <GameStatusDropdown gameId={data.id} released={data.is_released} />
       </div>
     </>
   );

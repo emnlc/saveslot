@@ -1,5 +1,5 @@
 import { GameLogWithProfile } from "@/Interface";
-import StarDisplay from "@/components/StarDisplay";
+import StarDisplay from "@/components/content/StarDisplay";
 import LogDropdown from "./LogDropdown";
 
 type Props = {

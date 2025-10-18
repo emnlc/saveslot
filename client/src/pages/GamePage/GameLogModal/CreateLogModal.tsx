@@ -1,5 +1,5 @@
 import { Game, GameLogWithProfile } from "@/Interface";
-import { useGameLogForm } from "@/hooks/GameLogs/useGameLogForm";
+import { useGameLogForm } from "@/hooks/gameLogs/useGameLogForm";
 import ModalHeader from "./ModalHeader";
 import GameLogForm from "./GameLogForm";
 import ModalFooter from "./ModalFooter";

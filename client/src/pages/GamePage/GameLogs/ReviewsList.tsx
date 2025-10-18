@@ -1,5 +1,5 @@
 import { GameLogWithProfile, LogFilters } from "@/Interface";
-import { useDeleteGameLog } from "@/hooks/GameLogs/useGameLogs";
+import { useDeleteGameLog } from "@/hooks/gameLogs/";
 import LogItem from "./LogItems/LogItem";
 
 type Props = {

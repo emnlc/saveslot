@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-type Screenshot = {
-  id: number;
-  image_id: string;
-};
-
 type LightboxGalleryProps = {
-  screenshots: Screenshot[];
+  screenshots: string[];
 };
 
 const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
@@ -46,7 +41,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
       <div className="grid grid-cols-2 gap-4">
         {screenshots.slice(0, 3).map((screenshot, idx) => (
           <img
-            key={screenshot.id}
+            key={idx}
             src={`https://images.igdb.com/igdb/image/upload/t_1080p/${screenshot}.jpg`}
             className="col-span-1 cursor-pointer rounded shadow-md hover:scale-105 transition-transform"
             onClick={() => openModal(idx)}
@@ -108,7 +103,7 @@ const LightboxGallery: React.FC<LightboxGalleryProps> = ({ screenshots }) => {
               <div className="flex gap-2 px-2">
                 {screenshots.map((screenshot, idx) => (
                   <img
-                    key={screenshot.id}
+                    key={idx}
                     ref={(el) => {
                       thumbnailRefs.current[idx] = el;
                     }}
