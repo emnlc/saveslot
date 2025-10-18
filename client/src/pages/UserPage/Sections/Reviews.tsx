@@ -1,20 +1,25 @@
 import { useState } from "react";
-import { Star } from "lucide-react";
 import { GameLogWithProfile } from "@/Interface";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
+import { useProfile } from "@/hooks/profiles";
 import { UserAuth } from "@/context/AuthContext";
 import { useUserReviews } from "@/hooks/UserReviewHooks/useUserReviews";
-import { useDeleteGameLog } from "@/hooks/GameLogs/useGameLogs";
+import { useDeleteGameLog } from "@/hooks/gameLogs/";
+import { useParams } from "@tanstack/react-router";
 import ProfileReviewItem from "./Subsections/Reviews/ProfileReviewItem";
 import CreateLogModal from "../../GamePage/GameLogModal/CreateLogModal";
 import Dropdown from "@/components/controls/Dropdown";
 
 const Reviews = () => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
   const { profile: currentUserProfile } = UserAuth();
+  const { data: viewedProfile } = useProfile(
+    username || "",
+    currentUserProfile?.id
+  );
+  const isOwnProfile = currentUserProfile?.id === viewedProfile?.id;
+
   const [editingLog, setEditingLog] = useState<GameLogWithProfile | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-
   const deleteLogMutation = useDeleteGameLog();
 
   const {
@@ -31,7 +36,6 @@ const Reviews = () => {
 
   const handleDeleteReview = async (logId: string) => {
     if (!currentUserProfile) return;
-
     try {
       await deleteLogMutation.mutateAsync({
         logId,
@@ -44,7 +48,6 @@ const Reviews = () => {
   };
 
   const handleReportReview = (logId: string) => {
-    // TODO: report function
     console.log("Report review:", logId);
     alert("Thank you for your report. We will review it shortly.");
   };
@@ -91,7 +94,7 @@ const Reviews = () => {
       <div className="flex items-center justify-center p-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-base-300 mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading reviews...</p>
+          <p className="text-base-content/60">Loading reviews...</p>
         </div>
       </div>
     );
@@ -115,15 +118,12 @@ const Reviews = () => {
   return (
     <>
       <div className="p-6">
-        {/* Header with Sort Controls */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">
             {isOwnProfile
               ? "Your Reviews"
               : `${viewedProfile.display_name || viewedProfile.username}'s Reviews`}
           </h2>
-
-          {/* Sort Dropdown */}
           {reviews && reviews.length > 0 && (
             <div className="flex items-center space-x-3">
               <Dropdown buttonText={buttonText} items={sortOptions} />
@@ -131,7 +131,6 @@ const Reviews = () => {
           )}
         </div>
 
-        {/* Reviews Grid */}
         {reviews && reviews.length > 0 ? (
           <div className="space-y-4">
             <div className="grid gap-4">
@@ -145,8 +144,6 @@ const Reviews = () => {
                 />
               ))}
             </div>
-
-            {/* Load More Button */}
             {reviews.length >= filters.limit! && (
               <div className="text-center">
                 <button
@@ -161,7 +158,6 @@ const Reviews = () => {
           </div>
         ) : (
           <div className="text-center py-12 bg-base-100 rounded-lg border border-base-300">
-            <Star className="w-12 h-12 text-base-content/40 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-base-content mb-2">
               {isOwnProfile ? "No reviews yet" : "No reviews to show"}
             </h3>
@@ -174,7 +170,6 @@ const Reviews = () => {
         )}
       </div>
 
-      {/* Edit Modal */}
       {showEditModal && editingLog && currentUserProfile && (
         <CreateLogModal
           game={editingLog.game}

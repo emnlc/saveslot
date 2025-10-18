@@ -8,14 +8,14 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { GameLogWithProfile } from "@/Interface";
-import StarDisplay from "@/components/StarDisplay";
+import StarDisplay from "@/components/content/StarDisplay";
 import LogDropdown from "@/pages/GamePage/GameLogs/LogItems/LogDropdown";
-import InlineLikeButton from "@/components/InlineLikeButton";
+import InlineLikeButton from "@/components/controls/InlineLikeButton";
 import {
   useLogComments,
   useCreateLogComment,
   useDeleteLogComment,
-} from "@/hooks/GameLogs/useGameLogs";
+} from "@/hooks/gameLogs/";
 import CommentItem from "@/pages/GamePage/GameLogs/Comments/CommentItem";
 import CommentInput from "@/pages/GamePage/GameLogs/Comments/CommentInput";
 import { UserAuth } from "@/context/AuthContext";
@@ -39,7 +39,6 @@ const ProfileReviewItem = ({
   const [showSpoilers, setShowSpoilers] = useState(isOwnProfile);
   const [showComments, setShowComments] = useState(false);
 
-  // Comment hooks
   const { data: comments } = useLogComments(log.id);
   const createCommentMutation = useCreateLogComment();
   const deleteCommentMutation = useDeleteLogComment();
@@ -95,7 +94,6 @@ const ProfileReviewItem = ({
 
   const handleDeleteComment = async (commentId: string) => {
     if (!profile?.id) return;
-
     try {
       await deleteCommentMutation.mutateAsync({
         commentId,
@@ -108,7 +106,6 @@ const ProfileReviewItem = ({
   };
 
   const handleReportComment = (commentId: string) => {
-    // TODO: report
     console.log("report comment:", commentId);
   };
 
@@ -124,7 +121,6 @@ const ProfileReviewItem = ({
 
   return (
     <div className="bg-base-100 rounded-lg border border-base-300 p-4">
-      {/* Header with Game Info */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-3">
           {cover_url && (
@@ -137,7 +133,7 @@ const ProfileReviewItem = ({
           <div>
             <h3 className="font-semibold text-base-content hover:text-primary transition-all">
               <Link
-                to={`/games/$gamesSlug`}
+                to="/games/$gamesSlug"
                 params={{ gamesSlug: log.game.slug }}
               >
                 {log.game.name}
@@ -159,8 +155,6 @@ const ProfileReviewItem = ({
             </p>
           </div>
         </div>
-
-        {/* Dropdown Menu - only show if user is logged in */}
         <div className="flex items-center space-x-2">
           <LogDropdown
             onDelete={isOwnProfile ? handleDelete : undefined}
@@ -171,7 +165,6 @@ const ProfileReviewItem = ({
         </div>
       </div>
 
-      {/* Game Details */}
       <div className="flex flex-wrap gap-3 mb-3 text-xs text-base-content/60">
         {log.game_status && (
           <div className="flex items-center space-x-1">
@@ -204,10 +197,8 @@ const ProfileReviewItem = ({
         )}
       </div>
 
-      {/* Review Text */}
       {log.review_text && (
         <div>
-          {/* Review Content */}
           <div
             className={log.contains_spoilers && !showSpoilers ? "relative" : ""}
           >
@@ -220,8 +211,6 @@ const ProfileReviewItem = ({
             >
               {displayText}
             </p>
-
-            {/* Spoiler Overlay */}
             {log.contains_spoilers && !showSpoilers && (
               <div className="absolute inset-0 flex items-center justify-center bg-transparent">
                 <button
@@ -234,11 +223,8 @@ const ProfileReviewItem = ({
               </div>
             )}
           </div>
-
-          {/* Action buttons */}
           {(!log.contains_spoilers || showSpoilers) && (
             <div className="flex items-center space-x-3 mt-2">
-              {/* Read more/less button */}
               {shouldTruncateReview && (
                 <button
                   onClick={() => setShowFullReview(!showFullReview)}
@@ -247,8 +233,6 @@ const ProfileReviewItem = ({
                   {showFullReview ? "Show less" : "Read more"}
                 </button>
               )}
-
-              {/* Hide spoilers button */}
               {log.contains_spoilers && showSpoilers && (
                 <button
                   onClick={() => setShowSpoilers(false)}
@@ -263,13 +247,9 @@ const ProfileReviewItem = ({
         </div>
       )}
 
-      {/* Likes and Comments Footer */}
       <div className="flex items-center justify-between pt-4 border-t border-base-300 mt-4">
         <div className="flex items-center space-x-6">
-          {/* Like Section */}
           <InlineLikeButton targetId={log.id} targetType="review" />
-
-          {/* Comments Section */}
           <button
             onClick={() => setShowComments(!showComments)}
             className="flex items-center space-x-2 text-base-content/60 hover:text-base-content transition-colors"
@@ -287,10 +267,8 @@ const ProfileReviewItem = ({
         </div>
       </div>
 
-      {/* Comments Content */}
       {showComments && (
         <div className="mt-4 pt-4 border-t border-base-300">
-          {/* Existing Comments */}
           {comments && comments.length > 0 && (
             <div className="space-y-3 mb-4">
               {comments.map((comment) => (
@@ -304,8 +282,6 @@ const ProfileReviewItem = ({
               ))}
             </div>
           )}
-
-          {/* New Comment Input */}
           {profile?.id && (
             <CommentInput
               onSubmit={handleCommentSubmit}
