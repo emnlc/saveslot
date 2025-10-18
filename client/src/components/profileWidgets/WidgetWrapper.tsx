@@ -1,4 +1,3 @@
-// components/ProfileWidgets/WidgetWrapper.tsx
 import { ReactNode } from "react";
 
 interface Props {

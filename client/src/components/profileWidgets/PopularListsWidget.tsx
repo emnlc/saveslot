@@ -1,4 +1,3 @@
-// components/ProfileWidgets/PopularListsWidget.tsx
 import { usePopularUserLists } from "@/hooks/lists/";
 import { Link } from "@tanstack/react-router";
 import { List, Heart, Gamepad2, ArrowRight } from "lucide-react";
@@ -19,7 +18,7 @@ const PopularListsWidget = ({ userId, username }: Props) => {
         </div>
         <div className="space-y-3 animate-pulse">
           {[...Array(2)].map((_, i) => (
-            <div key={i} className="h-32 bg-base-300 rounded-lg" />
+            <div key={i} className="h-32 bg-base-300 rounded" />
           ))}
         </div>
       </div>
@@ -61,7 +60,7 @@ const PopularListsWidget = ({ userId, username }: Props) => {
             key={list.id}
             to="/u/$username/list/$listslug"
             params={{ username: username || "", listslug: list.slug }}
-            className="block border border-base-300 rounded-lg hover:border-primary transition-colors overflow-hidden"
+            className="block border border-base-300 rounded hover:border-primary transition-colors overflow-hidden"
           >
             {/* Preview Images */}
             {list.preview_games.length > 0 && (

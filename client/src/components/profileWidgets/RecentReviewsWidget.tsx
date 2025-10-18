@@ -1,4 +1,3 @@
-// components/ProfileWidgets/RecentReviewsWidget.tsx
 import { useRecentReviews } from "@/hooks/profileStats";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, MessageSquare } from "lucide-react";

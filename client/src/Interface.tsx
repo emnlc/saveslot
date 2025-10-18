@@ -23,6 +23,7 @@ export type GameList = {
 
 export interface Game {
   cover_id?: string;
+  igdb_total_rating?: number;
   id: number;
   name: string;
   cover: {

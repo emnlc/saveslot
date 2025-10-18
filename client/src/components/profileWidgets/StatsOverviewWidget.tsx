@@ -1,6 +1,5 @@
-// components/ProfileWidgets/StatsOverviewWidget.tsx
 import { useProfileStats } from "@/hooks/profileStats";
-import { Gamepad2, Trophy, Clock, BookMarked } from "lucide-react";
+import { Gamepad2, Trophy, Clock, Library } from "lucide-react";
 
 interface Props {
   userId: string;
@@ -35,7 +34,7 @@ const StatsOverviewWidget = ({ userId }: Props) => {
       color: "text-success",
     },
     {
-      icon: BookMarked,
+      icon: Library,
       label: "Backlog",
       value: stats?.backlog_games || 0,
       color: "text-secondary",

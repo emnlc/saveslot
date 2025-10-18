@@ -1,4 +1,3 @@
-// components/ProfileWidgets/CurrentlyPlayingWidget.tsx
 import { useGamesByStatus } from "@/hooks/userGames";
 import { Link } from "@tanstack/react-router";
 import { Gamepad2, ArrowRight } from "lucide-react";

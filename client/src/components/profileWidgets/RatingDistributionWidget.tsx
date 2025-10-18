@@ -1,4 +1,3 @@
-// components/ProfileWidgets/RatingDistributionWidget.tsx
 import { useRatingDistribution } from "@/hooks/profileStats";
 import { Star } from "lucide-react";
 

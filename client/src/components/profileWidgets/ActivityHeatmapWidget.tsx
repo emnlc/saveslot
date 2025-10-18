@@ -1,4 +1,3 @@
-// components/ProfileWidgets/ActivityHeatmapWidget.tsx
 import { useActivityHeatmap } from "@/hooks/profileStats";
 import { Calendar } from "lucide-react";
 
@@ -91,7 +90,6 @@ const ActivityHeatmapWidget = ({ userId, compact = false }: Props) => {
         </div>
       ) : (
         <>
-          {/* Centered heatmap container */}
           <div className="flex justify-center pb-2">
             <div className="inline-flex gap-1">
               {weeks.map((week, weekIndex) => (

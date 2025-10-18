@@ -1,4 +1,3 @@
-// components/ProfileWidgets/TopGenresWidget.tsx
 import { useTopGenres } from "@/hooks/profileStats";
 import { Tag } from "lucide-react";
 
@@ -38,7 +37,6 @@ const TopGenresWidget = ({ userId }: Props) => {
     );
   }
 
-  // Calculate opacity based on rank (1 = 100%, 5 = 20%)
   const getOpacity = (index: number) => {
     return 1 - index * 0.2; // 1.0, 0.8, 0.6, 0.4, 0.2
   };

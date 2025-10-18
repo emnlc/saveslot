@@ -1,4 +1,3 @@
-// components/ProfileWidgets/FavoriteGamesWidget.tsx
 import {
   useFavoriteGames,
   useReorderFavorites,
@@ -116,7 +115,6 @@ const FavoriteGamesWidget = ({ userId, isOwnProfile, onAddClick }: Props) => {
   const [localFavorites, setLocalFavorites] = useState(favorites || []);
   const [toDelete, setToDelete] = useState<number[]>([]);
 
-  // Update local state when data changes
   useEffect(() => {
     if (favorites) {
       setLocalFavorites(favorites);
@@ -163,7 +161,7 @@ const FavoriteGamesWidget = ({ userId, isOwnProfile, onAddClick }: Props) => {
 
   const handleSaveChanges = async () => {
     try {
-      // First, delete marked items
+      // delete marked items
       for (const gameId of toDelete) {
         await removeFavoriteMutation.mutateAsync({
           user_id: userId,
@@ -171,7 +169,7 @@ const FavoriteGamesWidget = ({ userId, isOwnProfile, onAddClick }: Props) => {
         });
       }
 
-      // Then reorder remaining items
+      // reorder remaining items
       if (localFavorites.length > 0) {
         const updates = localFavorites.map((fav, index) => ({
           id: fav.id,
@@ -189,7 +187,7 @@ const FavoriteGamesWidget = ({ userId, isOwnProfile, onAddClick }: Props) => {
     } catch (error) {
       console.error("Error saving changes:", error);
       alert("Failed to save changes. Please try again.");
-      // Revert to original state
+
       if (favorites) {
         setLocalFavorites(favorites);
       }
@@ -200,7 +198,7 @@ const FavoriteGamesWidget = ({ userId, isOwnProfile, onAddClick }: Props) => {
   const handleCancelEdit = () => {
     setIsEditMode(false);
     setToDelete([]);
-    // Revert to original order
+
     if (favorites) {
       setLocalFavorites(favorites);
     }

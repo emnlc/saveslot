@@ -1,21 +1,19 @@
 import { Profile } from "@/Interface";
-import FollowButton from "@/components/FollowButton";
-import { UserAuth } from "@/context/AuthContext";
+import FollowButton from "@/components/controls/FollowButton";
 
 type Props = {
   profile: Profile;
   isOwnProfile: boolean;
-  setViewedProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
 };
 
-const ProfileHeader = ({ profile, isOwnProfile, setViewedProfile }: Props) => {
-  const { getFollowStats } = UserAuth();
+const ProfileHeader = ({ profile, isOwnProfile }: Props) => {
   const AVATAR_PLACEHOLDER = `https://ui-avatars.com/api/?name=${profile.username}&background=FE9FA1&color=fff`;
+
   return (
     <>
       {/* banner */}
       <div
-        className="w-full max-w-6xl -z-10 mx-auto aspect-[3/1] bg-cover bg-center bg-no-repeat relative "
+        className="w-full max-w-6xl -z-10 mx-auto aspect-[3/1] bg-cover bg-center bg-no-repeat relative"
         style={
           profile.banner_url
             ? {
@@ -28,7 +26,6 @@ const ProfileHeader = ({ profile, isOwnProfile, setViewedProfile }: Props) => {
       >
         {/* base overlay */}
         <div className="absolute inset-0 [data-theme=saveslot]:bg-gradient-to-b [data-theme=saveslot]:from-base-100/10 [data-theme=saveslot]:via-base-100/20 [data-theme=saveslot]:to-base-100/30" />
-
         {/* bottom gradient */}
         <div className="absolute bottom-0 left-0 w-full h-6 md:h-20 bg-gradient-to-b from-transparent to-base-100" />
         {/* left gradient */}
@@ -44,30 +41,18 @@ const ProfileHeader = ({ profile, isOwnProfile, setViewedProfile }: Props) => {
           <img
             src={profile.avatar_url || AVATAR_PLACEHOLDER}
             alt="Avatar"
-            className="w-24 h-24 md:w-32 md:h-32 rounded object-cover ring-4 ring-base-100 "
+            className="w-24 h-24 md:w-32 md:h-32 rounded object-cover ring-4 ring-base-100"
           />
         </div>
 
         {/* User Info */}
         <div className="flex-1 flex flex-col md:justify-center gap-1 md:mt-16 w-full">
-          <div className="flex flex-row justify-between items-center w-full ">
+          <div className="flex flex-row justify-between items-center w-full">
             <h1 className="text-2xl font-semibold">
               {profile.display_name || profile.username}
             </h1>
-
-            {!isOwnProfile && (
-              <FollowButton
-                userId={profile.id}
-                onFollowChange={async () => {
-                  const followStats = await getFollowStats(profile.id);
-                  setViewedProfile((prev) =>
-                    prev ? { ...prev, ...followStats } : null
-                  );
-                }}
-              />
-            )}
+            {!isOwnProfile && <FollowButton userId={profile.id} />}
           </div>
-
           <h2 className="text-md text-muted-foreground">@{profile.username}</h2>
 
           <div className="mt-2">
@@ -82,13 +67,13 @@ const ProfileHeader = ({ profile, isOwnProfile, setViewedProfile }: Props) => {
 
           {/* Follower Stats */}
           <div className="mt-2 flex flex-row gap-4 text-sm text-base-content font-medium">
-            <span className="hover:underline underline-offset-2">
+            <span className="hover:underline underline-offset-2 cursor-pointer">
               {profile.followers}{" "}
               <span className="text-base-content/80 font-normal">
                 Followers
-              </span>{" "}
+              </span>
             </span>
-            <span className="hover:underline underline-offset-2">
+            <span className="hover:underline underline-offset-2 cursor-pointer">
               {profile.following}{" "}
               <span className="text-base-content/80 font-normal">
                 Following

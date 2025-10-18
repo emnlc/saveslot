@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, "src"), // 👈 This is what enables "@/..." imports
+        "@": path.resolve(__dirname, "src"),
       },
     },
     server: dev
