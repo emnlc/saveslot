@@ -15,7 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as UpcomingIndexRouteImport } from './routes/upcoming/index'
 import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
 import { Route as SearchIndexRouteImport } from './routes/search/index'
-import { Route as NewlyReleasedIndexRouteImport } from './routes/newly-released/index'
+import { Route as NewReleasesIndexRouteImport } from './routes/new-releases/index'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as AllGamesIndexRouteImport } from './routes/all-games/index'
@@ -24,6 +24,7 @@ import { Route as SettingsSettingsRouteImport } from './routes/settings/_setting
 import { Route as GamesGamesSlugRouteImport } from './routes/games/$gamesSlug'
 import { Route as SettingsSettingsIndexRouteImport } from './routes/settings/_settings.index'
 import { Route as UUsernameProfileRouteImport } from './routes/u/$username/_profile'
+import { Route as SettingsSettingsWidgetsRouteImport } from './routes/settings/_settings.widgets'
 import { Route as SettingsSettingsAccountRouteImport } from './routes/settings/_settings.account'
 import { Route as UUsernameProfileIndexRouteImport } from './routes/u/$username/_profile.index'
 import { Route as UUsernameListListRouteImport } from './routes/u/$username/list/_list'
@@ -69,9 +70,9 @@ const SearchIndexRoute = SearchIndexRouteImport.update({
   path: '/search/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const NewlyReleasedIndexRoute = NewlyReleasedIndexRouteImport.update({
-  id: '/newly-released/',
-  path: '/newly-released/',
+const NewReleasesIndexRoute = NewReleasesIndexRouteImport.update({
+  id: '/new-releases/',
+  path: '/new-releases/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginIndexRoute = LoginIndexRouteImport.update({
@@ -116,6 +117,11 @@ const SettingsSettingsIndexRoute = SettingsSettingsIndexRouteImport.update({
 const UUsernameProfileRoute = UUsernameProfileRouteImport.update({
   id: '/_profile',
   getParentRoute: () => UUsernameRoute,
+} as any)
+const SettingsSettingsWidgetsRoute = SettingsSettingsWidgetsRouteImport.update({
+  id: '/widgets',
+  path: '/widgets',
+  getParentRoute: () => SettingsSettingsRoute,
 } as any)
 const SettingsSettingsAccountRoute = SettingsSettingsAccountRouteImport.update({
   id: '/account',
@@ -201,11 +207,12 @@ export interface FileRoutesByFullPath {
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
-  '/newly-released': typeof NewlyReleasedIndexRoute
+  '/new-releases': typeof NewReleasesIndexRoute
   '/search': typeof SearchIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
+  '/settings/widgets': typeof SettingsSettingsWidgetsRoute
   '/settings/': typeof SettingsSettingsIndexRoute
   '/u/$username/activity': typeof UUsernameProfileActivityRoute
   '/u/$username/games': typeof UUsernameProfileGamesRoute
@@ -228,11 +235,12 @@ export interface FileRoutesByTo {
   '/all-games': typeof AllGamesIndexRoute
   '/games': typeof GamesIndexRoute
   '/login': typeof LoginIndexRoute
-  '/newly-released': typeof NewlyReleasedIndexRoute
+  '/new-releases': typeof NewReleasesIndexRoute
   '/search': typeof SearchIndexRoute
   '/sign-up': typeof SignUpIndexRoute
   '/upcoming': typeof UpcomingIndexRoute
   '/settings/account': typeof SettingsSettingsAccountRoute
+  '/settings/widgets': typeof SettingsSettingsWidgetsRoute
   '/u/$username/activity': typeof UUsernameProfileActivityRoute
   '/u/$username/games': typeof UUsernameProfileGamesRoute
   '/u/$username/lists': typeof UUsernameProfileListsRoute
@@ -254,11 +262,12 @@ export interface FileRoutesById {
   '/all-games/': typeof AllGamesIndexRoute
   '/games/': typeof GamesIndexRoute
   '/login/': typeof LoginIndexRoute
-  '/newly-released/': typeof NewlyReleasedIndexRoute
+  '/new-releases/': typeof NewReleasesIndexRoute
   '/search/': typeof SearchIndexRoute
   '/sign-up/': typeof SignUpIndexRoute
   '/upcoming/': typeof UpcomingIndexRoute
   '/settings/_settings/account': typeof SettingsSettingsAccountRoute
+  '/settings/_settings/widgets': typeof SettingsSettingsWidgetsRoute
   '/u/$username/_profile': typeof UUsernameProfileRouteWithChildren
   '/settings/_settings/': typeof SettingsSettingsIndexRoute
   '/u/$username/_profile/activity': typeof UUsernameProfileActivityRoute
@@ -286,11 +295,12 @@ export interface FileRouteTypes {
     | '/all-games'
     | '/games'
     | '/login'
-    | '/newly-released'
+    | '/new-releases'
     | '/search'
     | '/sign-up'
     | '/upcoming'
     | '/settings/account'
+    | '/settings/widgets'
     | '/settings/'
     | '/u/$username/activity'
     | '/u/$username/games'
@@ -313,11 +323,12 @@ export interface FileRouteTypes {
     | '/all-games'
     | '/games'
     | '/login'
-    | '/newly-released'
+    | '/new-releases'
     | '/search'
     | '/sign-up'
     | '/upcoming'
     | '/settings/account'
+    | '/settings/widgets'
     | '/u/$username/activity'
     | '/u/$username/games'
     | '/u/$username/lists'
@@ -338,11 +349,12 @@ export interface FileRouteTypes {
     | '/all-games/'
     | '/games/'
     | '/login/'
-    | '/newly-released/'
+    | '/new-releases/'
     | '/search/'
     | '/sign-up/'
     | '/upcoming/'
     | '/settings/_settings/account'
+    | '/settings/_settings/widgets'
     | '/u/$username/_profile'
     | '/settings/_settings/'
     | '/u/$username/_profile/activity'
@@ -369,7 +381,7 @@ export interface RootRouteChildren {
   AllGamesIndexRoute: typeof AllGamesIndexRoute
   GamesIndexRoute: typeof GamesIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
-  NewlyReleasedIndexRoute: typeof NewlyReleasedIndexRoute
+  NewReleasesIndexRoute: typeof NewReleasesIndexRoute
   SearchIndexRoute: typeof SearchIndexRoute
   SignUpIndexRoute: typeof SignUpIndexRoute
   UpcomingIndexRoute: typeof UpcomingIndexRoute
@@ -412,11 +424,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/newly-released/': {
-      id: '/newly-released/'
-      path: '/newly-released'
-      fullPath: '/newly-released'
-      preLoaderRoute: typeof NewlyReleasedIndexRouteImport
+    '/new-releases/': {
+      id: '/new-releases/'
+      path: '/new-releases'
+      fullPath: '/new-releases'
+      preLoaderRoute: typeof NewReleasesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login/': {
@@ -481,6 +493,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/u/$username'
       preLoaderRoute: typeof UUsernameProfileRouteImport
       parentRoute: typeof UUsernameRoute
+    }
+    '/settings/_settings/widgets': {
+      id: '/settings/_settings/widgets'
+      path: '/widgets'
+      fullPath: '/settings/widgets'
+      preLoaderRoute: typeof SettingsSettingsWidgetsRouteImport
+      parentRoute: typeof SettingsSettingsRoute
     }
     '/settings/_settings/account': {
       id: '/settings/_settings/account'
@@ -585,11 +604,13 @@ declare module '@tanstack/react-router' {
 
 interface SettingsSettingsRouteChildren {
   SettingsSettingsAccountRoute: typeof SettingsSettingsAccountRoute
+  SettingsSettingsWidgetsRoute: typeof SettingsSettingsWidgetsRoute
   SettingsSettingsIndexRoute: typeof SettingsSettingsIndexRoute
 }
 
 const SettingsSettingsRouteChildren: SettingsSettingsRouteChildren = {
   SettingsSettingsAccountRoute: SettingsSettingsAccountRoute,
+  SettingsSettingsWidgetsRoute: SettingsSettingsWidgetsRoute,
   SettingsSettingsIndexRoute: SettingsSettingsIndexRoute,
 }
 
@@ -708,7 +729,7 @@ const rootRouteChildren: RootRouteChildren = {
   AllGamesIndexRoute: AllGamesIndexRoute,
   GamesIndexRoute: GamesIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
-  NewlyReleasedIndexRoute: NewlyReleasedIndexRoute,
+  NewReleasesIndexRoute: NewReleasesIndexRoute,
   SearchIndexRoute: SearchIndexRoute,
   SignUpIndexRoute: SignUpIndexRoute,
   UpcomingIndexRoute: UpcomingIndexRoute,
