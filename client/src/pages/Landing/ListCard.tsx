@@ -1,4 +1,3 @@
-// components/ListCard.tsx
 import { Link } from "@tanstack/react-router";
 import { GameListWithGames } from "@/Interface";
 import { List, Heart } from "lucide-react";
@@ -17,7 +16,7 @@ const ListCard = ({ list }: ListCardProps) => {
       }}
       className="group block p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all duration-200 border border-transparent hover:border-base-300"
     >
-      {/* Top 5 Games Grid - Adjusted for proper aspect ratio */}
+      {/* 5 game preview */}
       <div className="grid grid-cols-5 gap-1 mb-3">
         {list.top_games.slice(0, 5).map((game) => (
           <div
@@ -37,18 +36,9 @@ const ListCard = ({ list }: ListCardProps) => {
             )}
           </div>
         ))}
-        {/* Fill remaining slots if less than 5 games */}
-        {[...Array(Math.max(0, 5 - list.top_games.length))].map((_, i) => (
-          <div
-            key={`empty-${i}`}
-            className="rounded bg-base-300 aspect-[90/128] flex items-center justify-center"
-          >
-            <List className="w-4 h-4 text-base-content/20" />
-          </div>
-        ))}
       </div>
 
-      {/* List Info */}
+      {/* list info */}
       <div className="space-y-2">
         <h3 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors">
           {list.name}

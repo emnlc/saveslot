@@ -6,7 +6,7 @@ import {
   useFeaturedGame,
   usePopularLists,
 } from "@/hooks/LandingHooks/useLanding";
-import GameCard from "@/components/GameCard";
+import GameCard from "@/components/content/GameCard";
 import ReviewCard from "@/pages/Landing/ReviewCard";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { GameLogWithProfile, Game } from "@/Interface";
@@ -57,7 +57,7 @@ const Landing = () => {
             {/* Right Side - Featured Game */}
             <div className="flex-shrink-0">
               {featuredGame.isLoading && (
-                <div className="skeleton w-64 md:w-80 h-96 md:h-[480px] rounded-2xl"></div>
+                <div className="skeleton w-64 md:w-80 h-96 md:h-[480px] rounded-lg"></div>
               )}
 
               {featuredGame.data && (
@@ -67,7 +67,7 @@ const Landing = () => {
                     params={{ gamesSlug: (featuredGame.data as Game).slug }}
                     className="group block relative"
                   >
-                    <div className="relative w-64 md:w-80 h-96 md:h-[480px] rounded-2xl overflow-hidden border-2 border-base-300 group-hover:border-primary transition-all duration-300 shadow-2xl">
+                    <div className="relative w-64 md:w-80 h-96 md:h-[480px] rounded-lg overflow-hidden border-2 border-base-300 group-hover:border-primary transition-all duration-300 shadow-2xl">
                       {/* Game Cover */}
                       <img
                         src={`https://images.igdb.com/igdb/image/upload/t_1080p/${(featuredGame.data as Game).cover_id}.jpg`}
@@ -160,7 +160,7 @@ const Landing = () => {
             <h2 className="text-2xl md:text-3xl font-bold">Just Released</h2>
           </div>
           <Link
-            to="/newly-released"
+            to="/new-releases"
             search={{ page: 1, sort: "first_release_date", order: "desc" }}
             className="self-end text-sm text-base-content/60 hover:text-primary flex items-center gap-1 transition-all"
           >

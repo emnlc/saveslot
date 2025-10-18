@@ -25,7 +25,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             <img
               src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${review.game.cover_id}.jpg`}
               alt={review.game.name}
-              className="w-20 h-28 object-cover rounded-lg"
+              className="w-20 h-28 object-cover rounded"
             />
           </div>
         )}
@@ -46,17 +46,27 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
             </span>
           </div>
 
-          {/* Game Name & Rating */}
+          {/* Game Name & Rating + Likes */}
           <div className="mb-2">
             <h3 className="font-semibold text-sm truncate mb-1">
               {review.game.name}
             </h3>
-            {review.rating && (
-              <div className="flex items-center gap-1">
-                <Star className="w-3 h-3 text-warning fill-warning" />
-                <span className="text-xs font-medium">{review.rating}/5</span>
+
+            <div className="flex flex-row gap-1">
+              {/* Rating */}
+              {review.rating && (
+                <div className="flex items-center gap-1">
+                  <Star className="w-3 h-3 text-warning fill-warning" />
+                  <span className="text-xs font-medium">{review.rating}/5</span>
+                </div>
+              )}
+              <span className="text-base-content/60">•</span>
+              {/* Likes */}
+              <div className="flex items-center gap-1 text-xs text-base-content/80">
+                <Heart className="w-3 h-3" />
+                <span>{review.like_count || 0}</span>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Review Text - Truncated */}
@@ -65,12 +75,6 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
               {truncateText(review.review_text, 120)}
             </p>
           )}
-
-          {/* Like Count */}
-          <div className="flex items-center gap-1 text-xs text-base-content/50">
-            <Heart className="w-3 h-3" />
-            <span>{review.like_count || 0}</span>
-          </div>
         </div>
       </div>
     </Link>
