@@ -237,11 +237,12 @@ async function fetchRelatedGames(gameId: number, gameCollections: any[]) {
   const collectionIds = gameCollections.map((gc: any) => gc.collection.id);
   const excludedGameTypes = [1, 3, 5, 13, 14];
 
-  const { data: related } = await supabase
+  const { data: related, error } = await supabase
     .from("game_collections")
     .select(
       `
-      game:games!inner(
+      game_id,
+      games!inner(
         id,
         name,
         slug,
@@ -256,10 +257,19 @@ async function fetchRelatedGames(gameId: number, gameCollections: any[]) {
     .in("collection_id", collectionIds)
     .eq("games.is_nsfw", false)
     .not("games.game_type", "in", `(${excludedGameTypes.join(",")})`)
-    .order("games.official_release_date", { ascending: true })
+    .order("official_release_date", {
+      ascending: true,
+      foreignTable: "games",
+      nullsFirst: false,
+    })
     .limit(5);
 
-  const games = related?.map((r: any) => r.game).filter(Boolean) || [];
+  if (error) {
+    console.error("Error fetching related games:", error);
+    return { games: [], hasMore: false };
+  }
+
+  const games = related?.map((r: any) => r.games).filter(Boolean) || [];
   const hasMore = games.length > 4;
 
   return {
