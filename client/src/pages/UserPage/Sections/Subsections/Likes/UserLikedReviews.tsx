@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import {
-  useUserLikedReviews,
-  LikedReview,
-} from "@/hooks/UserLikeHooks/useUserLikedReviews";
-import { useReviewLikeCount } from "@/hooks/UserLikeHooks/useReviewLikeCount";
-import { Link } from "@tanstack/react-router";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { useUserLikedReviews, useReviewLikeCount } from "@/hooks/likes";
+import type { LikedReview } from "@/types/likes";
+import { Link, useParams } from "@tanstack/react-router";
 import { Heart, User, Calendar, Eye, EyeOff } from "lucide-react";
-import StarDisplay from "@/components/StarDisplay";
+import StarDisplay from "@/components/content/StarDisplay";
 
 const ReviewItem = ({ review }: { review: LikedReview }) => {
   const [showFullReview, setShowFullReview] = useState(false);
@@ -24,9 +22,7 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
   return (
     <div className="group bg-base-100 rounded-xl border border-base-300 overflow-hidden">
       <div className="p-4 sm:p-6">
-        {/* Header Section: Game Cover + Game Info Side by Side */}
         <div className="flex gap-4 mb-4">
-          {/* Game Cover */}
           <div className="flex-shrink-0">
             <Link
               to="/games/$gamesSlug"
@@ -47,7 +43,6 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
             </Link>
           </div>
 
-          {/* Game Header Information */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 gap-2">
               <div className="flex-1 min-w-0">
@@ -67,8 +62,6 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
                   </div>
                 )}
               </div>
-
-              {/* Game Status Badge */}
               {review.game_status && (
                 <span className="px-2 py-1 bg-base-200 text-base-content/70 rounded-full text-xs font-medium capitalize self-start sm:self-auto">
                   {review.game_status.replace("_", " ")}
@@ -78,10 +71,8 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
           </div>
         </div>
 
-        {/* Review Text Section */}
         {review.review_text && (
           <div className="mb-4">
-            {/* Review Content with Spoiler Handling */}
             <div
               className={
                 review.contains_spoilers && !showSpoilers ? "relative" : ""
@@ -96,8 +87,6 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
               >
                 {displayText}
               </p>
-
-              {/* Spoiler Overlay */}
               {review.contains_spoilers && !showSpoilers && (
                 <div className="absolute inset-0 flex items-center justify-center bg-transparent">
                   <button
@@ -110,11 +99,8 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
                 </div>
               )}
             </div>
-
-            {/* Action buttons (only show when spoilers are visible or no spoilers) */}
             {(!review.contains_spoilers || showSpoilers) && (
               <div className="flex flex-wrap items-center gap-2 sm:space-x-3 sm:gap-0 mt-3">
-                {/* Read more/less button */}
                 {shouldTruncateReview && (
                   <button
                     onClick={() => setShowFullReview(!showFullReview)}
@@ -123,8 +109,6 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
                     {showFullReview ? "Show less" : "Read more"}
                   </button>
                 )}
-
-                {/* Hide spoilers button */}
                 {review.contains_spoilers && showSpoilers && (
                   <button
                     onClick={() => setShowSpoilers(false)}
@@ -139,10 +123,8 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
           </div>
         )}
 
-        {/* Footer */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 pt-3 border-t border-base-300">
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-base-content/60">
-            {/* Author */}
             <div className="flex items-center gap-2">
               {review.profile?.avatar_url ? (
                 <img
@@ -163,14 +145,10 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
                 {review.profile?.display_name || review.profile?.username}
               </Link>
             </div>
-
-            {/* Like Count */}
             <div className="flex items-center gap-1">
               <Heart className="w-3 h-3 fill-red-500 text-red-500" />
               <span>{likeCount || 0} likes</span>
             </div>
-
-            {/* Liked Date */}
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
               <span className="text-xs sm:text-sm">
@@ -185,7 +163,11 @@ const ReviewItem = ({ review }: { review: LikedReview }) => {
 };
 
 const UserLikedReviews = () => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
+
   const { data, isLoading, isError, error } = useUserLikedReviews(
     viewedProfile?.id || ""
   );
@@ -204,14 +186,14 @@ const UserLikedReviews = () => {
   if (isError) {
     return (
       <div className="p-8 text-center">
-        <div className="text-error mb-4">
-          <Heart className="h-16 w-16 mx-auto mb-4 opacity-50" />
-        </div>
+        <div className="text-error mb-4"></div>
         <h3 className="text-lg font-semibold mb-2 text-error">
           Failed to load
         </h3>
         <p className="text-base-content/60">
-          {error?.message || "Unable to load liked reviews. Please try again."}
+          {error instanceof Error
+            ? error.message
+            : "Unable to load liked reviews. Please try again."}
         </p>
       </div>
     );
@@ -219,14 +201,15 @@ const UserLikedReviews = () => {
 
   if (!data || data.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <Heart className="h-16 w-16 mx-auto mb-4 text-base-content" />
-        <h3 className="text-lg font-semibold mb-2">No liked reviews yet</h3>
-        <p className="text-base-content">
-          {isOwnProfile
-            ? "Reviews you like will appear here!"
-            : `${viewedProfile?.display_name || viewedProfile?.username} hasn't liked any reviews yet.`}
-        </p>
+      <div className="space-y-4">
+        <div className="text-center py-12 bg-base-100 rounded-lg border border-base-300">
+          <h3 className="text-lg font-semibold mb-2">No liked reviews yet</h3>
+          <p className="text-base-content/60">
+            {isOwnProfile
+              ? "Reviews you like will appear here!"
+              : `${viewedProfile?.display_name} hasn't liked any reviews yet.`}
+          </p>
+        </div>
       </div>
     );
   }

@@ -1,11 +1,14 @@
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import { useUserLikedLists } from "@/hooks/UserLikeHooks/useUserLikedLists";
-
-import { Heart } from "lucide-react";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { useUserLikedLists } from "@/hooks/likes";
+import { useParams } from "@tanstack/react-router";
 import LikedList from "./LikedList";
 
 const UserListLikes = () => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   const {
     data: likedLists,
@@ -29,7 +32,8 @@ const UserListLikes = () => {
     return (
       <div className="p-8 text-center">
         <p className="text-red-500">
-          Error loading liked lists: {error?.message}
+          Error loading liked lists:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
         </p>
       </div>
     );
@@ -37,20 +41,21 @@ const UserListLikes = () => {
 
   if (!likedLists || likedLists.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold mb-2">No liked lists yet</h3>
-        <p className="text-muted-foreground">
-          {isOwnProfile
-            ? "Lists you like will appear here!"
-            : `${viewedProfile?.display_name} hasn't liked any lists yet.`}
-        </p>
+      <div className="space-y-4">
+        <div className="text-center py-12 bg-base-100 rounded-lg border border-base-300">
+          <h3 className="text-lg font-semibold mb-2">No liked lists yet</h3>
+          <p className="text-base-content/60">
+            {isOwnProfile
+              ? "Lists you like will appear here!"
+              : `${viewedProfile?.display_name} hasn't liked any lists yet`}
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8 ">
+    <div className="flex flex-col gap-8">
       {likedLists.map((list) => (
         <LikedList key={list.like_id} list={list} />
       ))}

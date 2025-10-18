@@ -1,11 +1,14 @@
-import { UseProfileContext } from "@/context/ViewedProfileContext";
-import { useUserLikedGames } from "@/hooks/UserLikeHooks/useUserLikedGames";
-import { Heart } from "lucide-react";
-
-import GameCard from "@/components/GameCard";
+import { useProfile } from "@/hooks/profiles";
+import { UserAuth } from "@/context/AuthContext";
+import { useUserLikedGames } from "@/hooks/likes";
+import { useParams } from "@tanstack/react-router";
+import GameCard from "@/components/content/GameCard";
 
 const UserGameLikes = () => {
-  const { viewedProfile, isOwnProfile } = UseProfileContext();
+  const { username } = useParams({ strict: false });
+  const { profile: currentUser } = UserAuth();
+  const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
+  const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   const {
     data: likedGames,
@@ -29,7 +32,8 @@ const UserGameLikes = () => {
     return (
       <div className="p-8 text-center">
         <p className="text-red-500">
-          Error loading liked games: {error?.message}
+          Error loading liked games:{" "}
+          {error instanceof Error ? error.message : "Unknown error"}
         </p>
       </div>
     );
@@ -37,14 +41,15 @@ const UserGameLikes = () => {
 
   if (!likedGames || likedGames.length === 0) {
     return (
-      <div className="p-8 text-center">
-        <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold mb-2">No liked games yet</h3>
-        <p className="text-muted-foreground">
-          {isOwnProfile
-            ? "Games you like will appear here!"
-            : `${viewedProfile?.display_name} hasn't liked any games yet.`}
-        </p>
+      <div className="space-y-4">
+        <div className="text-center py-12 bg-base-100 rounded-lg border border-base-300">
+          <h3 className="text-lg font-semibold mb-2">No liked games yet</h3>
+          <p className="text-base-content/60">
+            {isOwnProfile
+              ? "Games you like will appear here!"
+              : `${viewedProfile?.display_name} hasn't liked any games yet.`}
+          </p>
+        </div>
       </div>
     );
   }
@@ -53,7 +58,8 @@ const UserGameLikes = () => {
     <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
       {likedGames.map((game) => (
         <GameCard
-          id={game.id}
+          key={game.id}
+          id={game.id.toString()}
           name={game.name}
           slug={game.slug || ""}
           coverId={game.cover_id || ""}
