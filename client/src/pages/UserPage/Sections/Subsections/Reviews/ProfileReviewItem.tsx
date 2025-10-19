@@ -7,7 +7,7 @@ import {
   MessageCircle,
   ChevronDown,
 } from "lucide-react";
-import { GameLogWithProfile } from "@/Interface";
+import { GameLogWithProfile, LogCommentWithProfile } from "@/Interface";
 import StarDisplay from "@/components/content/StarDisplay";
 import LogDropdown from "@/pages/GamePage/GameLogs/LogItems/LogDropdown";
 import InlineLikeButton from "@/components/controls/InlineLikeButton";
@@ -15,7 +15,7 @@ import {
   useLogComments,
   useCreateLogComment,
   useDeleteLogComment,
-} from "@/hooks/gameLogs/";
+} from "@/hooks/gameLogs";
 import CommentItem from "@/pages/GamePage/GameLogs/Comments/CommentItem";
 import CommentInput from "@/pages/GamePage/GameLogs/Comments/CommentInput";
 import { UserAuth } from "@/context/AuthContext";
@@ -271,7 +271,7 @@ const ProfileReviewItem = ({
         <div className="mt-4 pt-4 border-t border-base-300">
           {comments && comments.length > 0 && (
             <div className="space-y-3 mb-4">
-              {comments.map((comment) => (
+              {comments.map((comment: LogCommentWithProfile) => (
                 <CommentItem
                   key={comment.id}
                   comment={comment}

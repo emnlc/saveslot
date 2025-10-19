@@ -7,7 +7,7 @@ import {
 import ProfileHeader from "@/pages/UserPage/Sections/ProfileHeader";
 import { useEffect } from "react";
 import { useProfile } from "@/hooks/profiles";
-import type { Profile } from "@/hooks/profiles";
+import type { Profile } from "@/types/profiles";
 import { UserAuth } from "@/context/AuthContext";
 
 type ProfileOutletContext = {

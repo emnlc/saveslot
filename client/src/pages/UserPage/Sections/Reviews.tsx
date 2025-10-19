@@ -3,7 +3,7 @@ import { GameLogWithProfile } from "@/Interface";
 import { useProfile } from "@/hooks/profiles";
 import { UserAuth } from "@/context/AuthContext";
 import { useUserReviews } from "@/hooks/UserReviewHooks/useUserReviews";
-import { useDeleteGameLog } from "@/hooks/gameLogs/";
+import { useDeleteGameLog } from "@/hooks/gameLogs";
 import { useParams } from "@tanstack/react-router";
 import ProfileReviewItem from "./Subsections/Reviews/ProfileReviewItem";
 import CreateLogModal from "../../GamePage/GameLogModal/CreateLogModal";

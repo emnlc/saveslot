@@ -11,6 +11,7 @@ import CommentInput from "./CommentInput";
 import { UserAuth } from "@/context/AuthContext";
 
 import InlineLikeButton from "@/components/controls/InlineLikeButton";
+import { LogCommentWithProfile } from "@/Interface";
 
 type Props = {
   logId: string;
@@ -86,7 +87,7 @@ const CommentsSection = ({ logId, currentUserId }: Props) => {
           {/* Existing Comments */}
           {comments && comments.length > 0 && (
             <div className="space-y-3 mb-4">
-              {comments.map((comment) => (
+              {comments.map((comment: LogCommentWithProfile) => (
                 <CommentItem
                   key={comment.id}
                   comment={comment}

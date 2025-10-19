@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { UserAuth } from "@/context/AuthContext";
-import { Game, GameLogWithProfile } from "@/Interface";
+import { Game, GameLog, GameLogWithProfile } from "@/Interface";
 import { useReviewsData } from "@/hooks/reviews/useReviewsData";
 import ReviewsHeader from "./ReviewsHeader";
 import RatingStatsCard from "./RatingStatsCard";
@@ -31,7 +31,7 @@ const GamePageReviewsSection = ({ gameId, game }: Props) => {
   } = useReviewsData({ gameId });
 
   const handleEditLog = (logId: string) => {
-    const logToEdit = logs?.find((log) => log.id === logId);
+    const logToEdit = logs?.find((log: GameLog) => log.id === logId);
     if (logToEdit) {
       setEditingLog(logToEdit);
       setShowEditModal(true);

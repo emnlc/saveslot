@@ -51,7 +51,7 @@ const Navbar = () => {
       setShowMobileSearch(false);
       // Blur the mobile search input to dismiss keyboard
       mobileSearchInputRef.current?.blur();
-      navigate({ to: "/search", search: { q: query } });
+      navigate({ to: "/search", search: { q: query, category: undefined } });
     }
   };
 
