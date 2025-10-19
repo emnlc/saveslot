@@ -10,9 +10,8 @@
     "esModuleInterop": true,
 
     /* Bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     // "allowImportingTsExtensions": true,
-    "ignoreDeprecations": "6.0",
 
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -25,7 +24,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     // "noUncheckedSideEffectImports": false,
-    "baseUrl": ".",
+    // "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
