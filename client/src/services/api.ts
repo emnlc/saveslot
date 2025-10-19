@@ -1,7 +1,5 @@
 export async function fetchHighlyRated<T>(): Promise<T> {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/highly-rated`
-  );
+  const res = await fetch(`${import.meta.env.VITE_API_URL}games/highly-rated`);
   if (!res.ok) {
     throw new Error("Failed to fetch highly rated games");
   }
@@ -10,9 +8,7 @@ export async function fetchHighlyRated<T>(): Promise<T> {
 }
 
 export async function fetchGame<T>(gameSlug: string): Promise<T> {
-  const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/${gameSlug}`
-  );
+  const res = await fetch(`${import.meta.env.VITE_API_URL}games/${gameSlug}`);
   if (!res.ok) {
     throw new Error("Failed to fetch game info");
   }
@@ -21,7 +17,7 @@ export async function fetchGame<T>(gameSlug: string): Promise<T> {
 
 export async function fetchGames<T>(page?: number): Promise<T> {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/games?page=${page}`
+    `${import.meta.env.VITE_API_URL}games/games?page=${page}`
   );
 
   if (!res.ok) {
@@ -37,7 +33,7 @@ export async function fetchAllUpcoming<T>(
   order?: string
 ): Promise<T> {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/upcoming/all?page=${page}&sort1=${sort}&order1=${order}`
+    `${import.meta.env.VITE_API_URL}games/upcoming/all?page=${page}&sort1=${sort}&order1=${order}`
   );
 
   if (!res.ok) {
@@ -53,7 +49,7 @@ export async function fetchAllNewlyReleased<T>(
   order?: string
 ): Promise<T> {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/newly-released/all?page=${page}&sort1=${sort}&order1=${order}`
+    `${import.meta.env.VITE_API_URL}games/newly-released/all?page=${page}&sort1=${sort}&order1=${order}`
   );
 
   if (!res.ok) {
@@ -64,7 +60,7 @@ export async function fetchAllNewlyReleased<T>(
 }
 
 export async function fetchUpcomingGames<T>(): Promise<T> {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}games/upcoming`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL}games/upcoming`);
 
   if (!res.ok) {
     throw new Error("Failed to fetch game list");
@@ -75,7 +71,7 @@ export async function fetchUpcomingGames<T>(): Promise<T> {
 
 export async function fetchNewlyReleasedGames<T>(): Promise<T> {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/newly-released`
+    `${import.meta.env.VITE_API_URL}games/newly-released`
   );
 
   if (!res.ok) {
@@ -86,7 +82,7 @@ export async function fetchNewlyReleasedGames<T>(): Promise<T> {
 }
 export async function fetchCriticallyAcclaimedGames<T>(): Promise<T> {
   const res = await fetch(
-    `${import.meta.env.VITE_BACKEND_URL}games/critically-acclaimed`
+    `${import.meta.env.VITE_API_URL}games/critically-acclaimed`
   );
 
   if (!res.ok) {
