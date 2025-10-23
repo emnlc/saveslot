@@ -25,6 +25,7 @@ app.use(
       "https://saveslot.app",
       "https://www.saveslot.app",
       process.env.NODE_ENV !== "production" ? "http://localhost:5173" : "",
+      process.env.LOCAL_NETWORK_URL || "",
     ].filter(Boolean),
     credentials: true,
   })

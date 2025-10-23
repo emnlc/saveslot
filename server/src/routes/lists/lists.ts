@@ -142,7 +142,7 @@ listsRoutes.get("/user/:user_id/popular", async (c) => {
         listData[item.list_id] = { count: 0, gameIds: [] };
       }
       listData[item.list_id].count++;
-      if (listData[item.list_id].gameIds.length < 4) {
+      if (listData[item.list_id].gameIds.length < 5) {
         listData[item.list_id].gameIds.push(item.game_id);
       }
     });

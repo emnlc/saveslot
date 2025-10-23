@@ -110,7 +110,7 @@ likesRoutes.get("/user/:user_id/lists", async (c) => {
       if (!itemsByList[item.list_id]) {
         itemsByList[item.list_id] = [];
       }
-      if (itemsByList[item.list_id].length < 5) {
+      if (itemsByList[item.list_id].length < 10) {
         itemsByList[item.list_id].push(item);
       }
     });
