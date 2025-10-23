@@ -177,6 +177,7 @@ const Reviews = () => {
           onClose={handleCloseEditModal}
           onSuccess={handleEditSuccess}
           editingLog={editingLog}
+          isOpen={showEditModal}
         />
       )}
     </>

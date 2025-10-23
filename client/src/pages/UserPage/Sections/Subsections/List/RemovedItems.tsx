@@ -36,12 +36,7 @@ type Props = {
   toggleGameRemoval: (gameId: number) => void;
 };
 
-const RemovedItems = ({
-  editMode,
-  data,
-  gamesToRemove,
-  toggleGameRemoval,
-}: Props) => {
+const RemovedItems = ({ editMode, data, gamesToRemove }: Props) => {
   return (
     <>
       {editMode && gamesToRemove.size > 0 && (
@@ -59,10 +54,6 @@ const RemovedItems = ({
                   name={games.name}
                   slug={games.slug}
                   coverId={games.cover_id || ""}
-                  editMode={true}
-                  onRemoveClick={() => toggleGameRemoval(games.id)}
-                  isMarkedForRemoval={true}
-                  showAsMarkedForRemoval={true}
                 />
               ))}
           </div>
