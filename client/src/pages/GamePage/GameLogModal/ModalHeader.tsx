@@ -20,7 +20,7 @@ const ModalHeader = ({ game, onClose, isEditing }: Props) => {
         )}
         <div>
           <h2 className="text-xl font-bold text-base-content">
-            {isEditing ? "Edit Game Log" : "Log Game"}
+            {isEditing ? "Edit Game Log" : ""}
           </h2>
           <h3 className="text-lg text-base-content/80">{game.name}</h3>
         </div>

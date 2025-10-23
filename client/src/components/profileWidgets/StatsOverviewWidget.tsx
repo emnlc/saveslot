@@ -53,7 +53,7 @@ const StatsOverviewWidget = ({ userId }: Props) => {
         {statItems.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center text-center p-2 border border-base-300"
+            className="flex flex-col items-center justify-center text-center rounded p-2 border border-base-300"
           >
             <div className="flex items-center gap-1 mb-1">
               <item.icon className={`w-4 h-4 ${item.color}`} />

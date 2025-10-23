@@ -1,6 +1,6 @@
 import { useCreateList } from "@/hooks/lists";
 import { supabase } from "@/services/supabase";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type Props = {
   isOpen: boolean;
@@ -8,11 +8,36 @@ type Props = {
 };
 
 const CreateListModal = ({ isOpen, onClose }: Props) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [name, setName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
-
   const createListMutation = useCreateList();
+
+  // Handle opening/closing the dialog
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  // Handle dialog close event
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      onClose();
+    };
+
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
 
   useEffect(() => {
     const getUser = async () => {
@@ -34,60 +59,67 @@ const CreateListModal = ({ isOpen, onClose }: Props) => {
         isPublic,
         userId,
       });
-
       setName("");
       setIsPublic(true);
-      onClose();
+      dialogRef.current?.close();
     } catch (error) {
       alert((error as Error).message);
     }
   };
 
-  if (!isOpen) return null;
+  const handleCancel = () => {
+    dialogRef.current?.close();
+  };
 
   return (
-    <dialog className="modal modal-open">
-      <div className="modal-box">
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box rounded overflow-y-auto max-w-md max-h-[600px] flex flex-col">
         <h3 className="font-bold text-lg mb-4">Create New List</h3>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="form-control">
-            <label className="label">
-              <span className="label-text">List Name</span>
+            <label className="label" htmlFor="new-list-name-input">
+              <span className="text-sm label-text">List Name</span>
             </label>
             <input
-              type="text"
-              placeholder="Enter list name"
-              className="input input-bordered w-full"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
               autoFocus
+              type="text"
+              value={name}
+              id="new-list-name-input"
+              placeholder="Enter list name"
+              onChange={(e) => setName(e.target.value)}
+              className="input w-full focus:outline-none focus:ring-0 focus:input-primary mt-2"
             />
           </div>
 
-          <div className="form-control">
-            <label className="cursor-pointer label">
-              <span className="label-text">Make this list public</span>
-              <input
-                type="checkbox"
-                className="toggle toggle-primary"
-                checked={isPublic}
-                onChange={(e) => setIsPublic(e.target.checked)}
-              />
+          <div className="form-control flex flex-row justify-between">
+            <label
+              htmlFor="new-list-public-toggle"
+              className="cursor-pointer label"
+            >
+              <span className="text-sm label-text">Make this list public</span>
             </label>
+            <input
+              id="new-list-public-toggle"
+              type="checkbox"
+              className="toggle toggle-sm toggle-primary"
+              checked={isPublic}
+              onChange={(e) => setIsPublic(e.target.checked)}
+            />
           </div>
 
           <div className="modal-action">
             <button
               type="button"
-              onClick={onClose}
-              className="btn btn-ghost"
+              onClick={handleCancel}
+              className="btn btn-sm btn-ghost"
               disabled={createListMutation.isPending}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="btn btn-primary"
+              className="btn btn-sm btn-primary"
               disabled={!name.trim() || createListMutation.isPending || !userId}
             >
               {createListMutation.isPending ? (
@@ -102,8 +134,10 @@ const CreateListModal = ({ isOpen, onClose }: Props) => {
           </div>
         </form>
       </div>
+
+      {/* Click outside to close - using form method="dialog" */}
       <form method="dialog" className="modal-backdrop">
-        <button onClick={onClose}>close</button>
+        <button>close</button>
       </form>
     </dialog>
   );

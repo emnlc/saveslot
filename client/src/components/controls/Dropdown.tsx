@@ -1,45 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Check } from "lucide-react";
 import { LucideIcon } from "lucide-react";
-
 interface DropdownItem {
   label: string;
   onClick: () => void;
   isSelected?: boolean;
   icon?: LucideIcon;
 }
-
 interface DropdownProps {
   buttonText: string;
   items: DropdownItem[];
   buttonClass?: string;
   dropdownClass?: string;
+  dropdownMenuClass?: string;
   disabled?: boolean;
 }
-
 const Dropdown = ({
   buttonText,
   items,
   buttonClass,
   dropdownClass,
+  dropdownMenuClass,
   disabled = false,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   const handleItemClick = (itemOnClick: () => void) => {
     if (disabled) return;
-
     itemOnClick();
     setIsOpen(false);
   };
-
   const toggleDropdown = () => {
     if (!disabled) {
       setIsOpen(!isOpen);
     }
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -49,21 +44,16 @@ const Dropdown = ({
         setIsOpen(false);
       }
     };
-
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
-
   const defaultButtonClass =
-    "flex items-center justify-between space-x-2 px-3 py-2 text-xs  bg-base-100 border border-base-300 rounded-lg hover:border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 cursor-pointer";
-
+    "flex items-center justify-between space-x-2 px-3 py-2 text-xs  bg-base-100 border border-base-300 rounded hover:border-base-content/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 cursor-pointer";
   const finalButtonClass = buttonClass || defaultButtonClass;
-
   return (
     <div ref={dropdownRef} className={`relative ${dropdownClass || ""}`}>
       <button
@@ -78,9 +68,10 @@ const Dropdown = ({
           }`}
         />
       </button>
-
       {isOpen && (
-        <div className="absolute right-0 top-full mt-1 min-w-full bg-base-100 border border-base-300 rounded-lg shadow-lg z-50 overflow-hidden">
+        <div
+          className={`absolute right-0 top-full mt-1 min-w-full bg-base-100 border border-base-300 rounded shadow-lg z-50 overflow-hidden ${dropdownMenuClass || ""}`}
+        >
           {items.map((item, index) => (
             <button
               key={index}
@@ -104,5 +95,4 @@ const Dropdown = ({
     </div>
   );
 };
-
 export default Dropdown;

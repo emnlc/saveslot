@@ -16,7 +16,7 @@ export const LikeActivityCard = ({ activity }: LikeActivityCardProps) => {
   const isOwnProfile = currentUser?.id === viewedProfile?.id;
 
   return (
-    <div className="border border-base-300 rounded-lg p-4 transition-colors">
+    <div className="border border-base-300 rounded p-4 transition-colors">
       <div className="flex items-center gap-3">
         <div className="flex-1">
           {activity.data.targetType === "game" && activity.data.game && (

@@ -14,7 +14,7 @@ export const ReviewActivityCard = ({ activity }: ReviewActivityCardProps) => {
 
   if (hasRating) {
     return (
-      <div className="border border-base-300 rounded-lg p-4 transition-colors">
+      <div className="border border-base-300 rounded p-4 transition-colors">
         <div className="flex gap-4">
           <Link
             to="/games/$gamesSlug"
@@ -23,7 +23,7 @@ export const ReviewActivityCard = ({ activity }: ReviewActivityCardProps) => {
             <img
               src={getCoverUrl(activity.data.game.cover_id)}
               alt={activity.data.game.name}
-              className="w-24 h-full object-cover rounded-sm"
+              className="w-24 h-full object-cover rounded"
             />
           </Link>
           <div className="flex-1">

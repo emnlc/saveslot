@@ -82,7 +82,7 @@ const ModalFooter = ({
   };
 
   return (
-    <div className="flex justify-between items-center p-6 border-t border-base-300">
+    <div className="flex flex-col md:flex-row justify-between items-center p-6 border-t border-base-300">
       <div className="flex space-x-3">
         {/* Only show Save Draft button when creating new logs */}
         {!isEditing && (
@@ -100,7 +100,7 @@ const ModalFooter = ({
               {getDraftButtonContent()}
             </button>
 
-            {/* Delete Draft button - only show when there's a draft */}
+            {/* Delete Draft button */}
             {hasDraft && (
               <button
                 type="button"
@@ -120,14 +120,18 @@ const ModalFooter = ({
         )}
       </div>
       <div className="flex space-x-3">
-        <button type="button" onClick={onClose} className="btn btn-ghost">
+        <button
+          type="button"
+          onClick={onClose}
+          className="btn btn-sm btn-ghost"
+        >
           Cancel
         </button>
         <button
           type="button"
           onClick={onSubmit}
           disabled={isLoading}
-          className="btn btn-primary"
+          className="btn btn-sm btn-primary"
         >
           <Send className="w-4 h-4 mr-2" />
           {isLoading

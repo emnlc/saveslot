@@ -75,7 +75,7 @@ const LogDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-8 z-50 bg-base-100 border border-base-300 rounded-lg shadow-lg py-1 min-w-[120px]">
+        <div className="absolute right-0 top-8 z-50 bg-base-100 border border-base-300 rounded shadow-lg min-w-[120px]">
           {isOwner && (
             <>
               {onEdit && (

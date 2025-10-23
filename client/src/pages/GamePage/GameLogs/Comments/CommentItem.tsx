@@ -44,10 +44,10 @@ const CommentItem = ({ comment, currentUserId, onDelete, onReport }: Props) => {
         </div>
       )}
       <div className="flex-1">
-        <div className="bg-base-200 rounded-lg px-3 py-2 relative">
+        <div className="bg-base-200 rounded px-3 py-2 relative">
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center space-x-2">
-              <span className="font-medium text-sm">
+              <span className="text-base-content/60 font-medium text-sm">
                 {comment.profile.display_name || comment.profile.username}
               </span>
               <span className="text-xs text-base-content/60">

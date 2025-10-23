@@ -45,9 +45,9 @@ const GameLogForm = ({ game, formData, onFormDataChange }: Props) => {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 md:p-6 space-y-6 max-h-screen">
       {/* Rating and Time Played Row */}
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
         <RatingSection
           rating={formData.rating}
           hoveredRating={formData.hoveredRating}

@@ -26,7 +26,7 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Stacked Featured Games */}
+      {/* Hero Section */}
       <section className="min-h-[80vh] my-12 flex items-center px-4 md:px-8">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
@@ -48,7 +48,7 @@ const Landing = () => {
                   Get Started Free
                   <ArrowRight className="w-4 h-4" />
                 </Link>
-                <Link to="/games" className="btn btn-neutral">
+                <Link to="/games" className="btn btn-soft">
                   Browse Games
                 </Link>
               </div>

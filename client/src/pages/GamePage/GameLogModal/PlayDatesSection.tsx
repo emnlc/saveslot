@@ -1,4 +1,4 @@
-import { Calendar } from "lucide-react";
+import DatePicker from "@/components/controls/DatePicker";
 
 type Props = {
   playStartDate: string;
@@ -17,26 +17,24 @@ const PlayDatesSection = ({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label className="block text-sm font-medium text-base-content mb-2">
-          <Calendar className="w-4 h-4 inline mr-1" />
           Started Playing
         </label>
-        <input
-          type="date"
+        <DatePicker
           value={playStartDate}
-          onChange={(e) => onPlayStartDateChange(e.target.value)}
-          className="input input-bordered w-full"
+          onChange={onPlayStartDateChange}
+          placeholder="Select start date"
+          allowClear={true}
         />
       </div>
       <div>
         <label className="block text-sm font-medium text-base-content mb-2">
-          <Calendar className="w-4 h-4 inline mr-1" />
           Finished Playing
         </label>
-        <input
-          type="date"
+        <DatePicker
           value={playEndDate}
-          onChange={(e) => onPlayEndDateChange(e.target.value)}
-          className="input input-bordered w-full"
+          onChange={onPlayEndDateChange}
+          placeholder="Select end date"
+          allowClear={true}
         />
       </div>
     </div>

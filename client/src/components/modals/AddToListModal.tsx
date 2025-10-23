@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUserLists } from "@/hooks/lists";
 import { useCreateList } from "@/hooks/lists";
 import { useAddGameToList } from "@/hooks/lists";
@@ -9,11 +9,13 @@ type Props = {
   gameId: number;
   gameTitle: string;
   onClose: () => void;
+  isOpen: boolean; // Add this prop
 };
 
 type ViewMode = "selectList" | "createList";
 
-const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
+const AddToListModal = ({ gameId, gameTitle, onClose, isOpen }: Props) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("selectList");
   const [newListName, setNewListName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
@@ -22,7 +24,31 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"public" | "private">("public");
 
-  // Fixed: Changed useState to useEffect
+  // Handle opening/closing the dialog
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  // Handle dialog close event
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      onClose();
+    };
+
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
+
   useEffect(() => {
     const getUser = async () => {
       const {
@@ -50,20 +76,17 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
 
   const handleCreateList = async () => {
     if (!newListName.trim() || !userId) return;
-
     try {
       const newList = await createListMutation.mutateAsync({
         name: newListName,
         isPublic,
-        userId, // Added userId
+        userId,
       });
-
       await addGameMutation.mutateAsync({
         listId: newList.id,
         gameId,
       });
-
-      onClose();
+      dialogRef.current?.close(); // Use dialog close method
     } catch (error) {
       alert((error as Error).message);
     }
@@ -75,13 +98,12 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
 
   const handleAddToSelectedList = async () => {
     if (!selectedListId) return;
-
     try {
       await addGameMutation.mutateAsync({
         listId: selectedListId,
         gameId,
       });
-      onClose();
+      dialogRef.current?.close(); // Use dialog close method
     } catch (error) {
       alert((error as Error).message);
     }
@@ -90,15 +112,19 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
   const handleBackToLists = () => {
     setViewMode("selectList");
     setNewListName("");
-    setIsPublic(true); // Reset to default
+    setIsPublic(true);
     setSelectedListId(null);
+  };
+
+  const handleCloseClick = () => {
+    dialogRef.current?.close(); // Use dialog close method
   };
 
   const isLoading = createListMutation.isPending || addGameMutation.isPending;
 
   return (
-    <dialog id="add_to_list_modal" className="modal modal-open">
-      <div className="modal-box w-11/12 max-w-md max-h-[600px] flex flex-col">
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box rounded overflow-y-auto max-w-md max-h-[600px] flex flex-col">
         <div className="flex items-center justify-between mb-4">
           {viewMode === "createList" ? (
             <button
@@ -114,17 +140,19 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
               ? `Add "${gameTitle}" to list`
               : "Create new list"}
           </h3>
-          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
+          <button
+            onClick={handleCloseClick}
+            className="btn btn-ghost btn-sm btn-circle"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {viewMode === "selectList" ? (
           <>
-            {/* Public/Private Toggle */}
             <div className="tabs tabs-boxed w-full mb-4">
               <button
-                className={`tab flex-1 btn btn-ghost rounded-r-none ${
+                className={`tab flex-1 btn btn-sm btn-ghost rounded-r-none ${
                   activeTab === "public"
                     ? "tab-active bg-primary text-primary-content rounded-l-lg"
                     : ""
@@ -134,7 +162,7 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
                 Public
               </button>
               <button
-                className={`tab flex-1 btn btn-ghost rounded-l-none ${
+                className={`tab flex-1 btn btn-sm btn-ghost rounded-l-none ${
                   activeTab === "private"
                     ? "tab-active bg-primary text-primary-content rounded-r-lg"
                     : ""
@@ -145,32 +173,29 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
               </button>
             </div>
 
-            {/* New List Button */}
             <button
               onClick={() => {
                 setViewMode("createList");
-                setIsPublic(activeTab === "public"); // Set based on current tab
+                setIsPublic(activeTab === "public");
               }}
-              className="btn btn-ghost w-full justify-start mb-4 h-auto py-3"
+              className="btn btn-ghost w-full justify-start mb-4"
               disabled={isLoading}
             >
               <Plus className="w-4 h-4 mr-2" />
               <span>New list...</span>
             </button>
 
-            {/* Search */}
             <div className="relative mb-4">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50" />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 pointer-events-none z-10" />
               <input
                 type="text"
                 placeholder="Type to search"
-                className="input input-bordered w-full pl-10"
+                className="input w-full focus:outline-none focus:ring-0 focus:input-primary pl-10 text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
-            {/* Lists */}
             <div className="flex-1 overflow-hidden">
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {listsLoading ? (
@@ -185,21 +210,21 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
                       key={list.id}
                       onClick={() => handleSelectList(list.id)}
                       disabled={isLoading}
-                      className={`btn w-full justify-between h-auto py-3 ${
+                      className={`btn w-full justify-between ${
                         selectedListId === list.id ? "btn-primary" : "btn-ghost"
                       }`}
                     >
                       <span className="text-left">
-                        <div className="font-medium">{list.name}</div>
+                        <div className="text-sm font-medium">{list.name}</div>
                       </span>
-                      <span className="text-sm opacity-50">
+                      <span className="text-xs opacity-50">
                         {list.game_count}{" "}
                         {list.game_count === 1 ? "game" : "games"}
                       </span>
                     </button>
                   ))
                 ) : (
-                  <div className="text-center text-base-content/50 py-8">
+                  <div className="text-center text-xs text-base-content/50 py-6">
                     {searchQuery
                       ? `No ${activeTab} lists found`
                       : `No ${activeTab} lists created yet`}
@@ -209,16 +234,15 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
             </div>
           </>
         ) : (
-          /* Create List Form */
-          <div className="space-y-4">
-            <div className="form-control space-y-4">
+          <div className="space-y-6">
+            <div className="form-control space-y-2">
               <label className="label">
-                <span className="label-text">List name</span>
+                <span className="label-text text-sm">List name</span>
               </label>
               <input
                 type="text"
                 placeholder="Enter list name"
-                className="input input-bordered w-full"
+                className="input w-full focus:outline-none focus:ring-0 focus:input-primary"
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
                 onKeyDown={(e) => {
@@ -230,11 +254,13 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
               />
             </div>
             <div className="form-control">
-              <label className="cursor-pointer label">
-                <span className="label-text">Make this list public</span>
+              <label className="cursor-pointer label flex justify-between w-full">
+                <span className="text-sm label-text">
+                  Make this list public
+                </span>
                 <input
                   type="checkbox"
-                  className="toggle toggle-primary"
+                  className="toggle toggle-sm toggle-primary"
                   checked={isPublic}
                   onChange={(e) => setIsPublic(e.target.checked)}
                 />
@@ -257,13 +283,12 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
           </div>
         )}
 
-        {/* Add button for existing lists */}
         {viewMode === "selectList" && (
           <div className="modal-action mt-2">
             <button
               onClick={handleAddToSelectedList}
               disabled={!selectedListId || isLoading}
-              className="btn btn-primary"
+              className="btn btn-sm btn-primary"
             >
               {isLoading ? (
                 <>
@@ -277,6 +302,11 @@ const AddToListModal = ({ gameId, gameTitle, onClose }: Props) => {
           </div>
         )}
       </div>
+
+      {/* Click outside to close - using form method="dialog" */}
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
     </dialog>
   );
 };

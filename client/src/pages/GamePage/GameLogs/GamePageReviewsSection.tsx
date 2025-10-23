@@ -80,7 +80,7 @@ const GamePageReviewsSection = ({ gameId, game }: Props) => {
             onEditLog={handleEditLog}
           />
         ) : (
-          <EmptyReviewsState />
+          <EmptyReviewsState released={game.is_released} />
         )}
       </div>
 
@@ -92,6 +92,7 @@ const GamePageReviewsSection = ({ gameId, game }: Props) => {
           onClose={handleCloseEditModal}
           onSuccess={handleEditSuccess}
           editingLog={editingLog}
+          isOpen={showEditModal}
         />
       )}
     </>

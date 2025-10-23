@@ -120,7 +120,7 @@ const ProfileReviewItem = ({
     : null;
 
   return (
-    <div className="bg-base-100 rounded-lg border border-base-300 p-4">
+    <div className="bg-base-100 rounded border border-base-300 p-4">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center space-x-3">
           {cover_url && (

@@ -18,7 +18,7 @@ const ReviewSection = ({
           Review
         </label>
         <span
-          className={`text-sm ${
+          className={`text-xs self-center ${
             reviewText.length > 2700 ? "text-error" : "text-base-content/60"
           }`}
         >
@@ -30,7 +30,7 @@ const ReviewSection = ({
         onChange={(e) => onReviewTextChange(e.target.value)}
         maxLength={3000}
         rows={6}
-        className="textarea textarea-bordered w-full resize-none mb-2"
+        className="textarea text-sm focus:outline-none focus:ring-0 focus:textarea-primary w-full resize-none mb-2 rounded"
         placeholder="Share your thoughts about this game..."
       />
 

@@ -1,5 +1,4 @@
-// components/AddFavoriteModal.tsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { X, Search } from "lucide-react";
 import { useFavoriteGames, useAddFavoriteGame } from "@/hooks/favorites";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -7,6 +6,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 interface Props {
   userId: string;
   onClose: () => void;
+  isOpen: boolean; // Add this prop
 }
 
 interface GameSearchResult {
@@ -18,14 +18,40 @@ interface GameSearchResult {
   release_date_human?: string | null;
 }
 
-const AddFavoriteModal = ({ userId, onClose }: Props) => {
+const AddFavoriteModal = ({ userId, onClose, isOpen }: Props) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<GameSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-
   const debouncedSearch = useDebounce(searchQuery, 300);
+
   const { data: currentFavorites } = useFavoriteGames(userId);
   const addFavoriteMutation = useAddFavoriteGame();
+
+  // Handle opening/closing the dialog
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  // Handle dialog close event
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      onClose();
+    };
+
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
 
   // Search games using /search/quick endpoint
   useEffect(() => {
@@ -83,6 +109,10 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
     }
   };
 
+  const handleClose = () => {
+    dialogRef.current?.close();
+  };
+
   // Helper to extract year from release date
   const getYear = (game: GameSearchResult): string => {
     if (game.official_release_date) {
@@ -93,18 +123,16 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
         // Fall through to next check
       }
     }
-
     if (game.release_date_human) {
       const match = game.release_date_human.match(/\d{4}/);
       if (match) return match[0];
     }
-
     return "TBA";
   };
 
   return (
-    <div className="modal modal-open">
-      <div className="modal-box max-w-2xl w-full max-h-[80vh] flex flex-col p-0">
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box max-w-md md:max-w-2xl rounded max-h-[80vh] flex flex-col p-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-base-300 shrink-0">
           <div>
@@ -113,7 +141,10 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
               {currentFavorites?.length || 0} of 10 favorites
             </p>
           </div>
-          <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">
+          <button
+            onClick={handleClose}
+            className="btn btn-ghost btn-sm btn-circle"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -121,13 +152,13 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
         {/* Search Input */}
         <div className="p-4 shrink-0">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/60" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-base-content/50 pointer-events-none z-10" />
             <input
               type="text"
               placeholder="Search for games..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input input-bordered w-full pl-10"
+              className="input w-full focus:outline-none focus:ring-0 focus:input-primary pl-10"
               disabled={!canAddMore}
               autoFocus
             />
@@ -157,7 +188,6 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
               {searchResults.map((game) => {
                 const isFavorite = favoriteGameIds.has(game.id);
                 const year = getYear(game);
-
                 return (
                   <div
                     key={game.id}
@@ -176,13 +206,13 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
                         </span>
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                      <p className="font-medium text-xs md:text-sm truncate">
                         {game.name}
-                        <span className="text-base-content/60 ml-2">
-                          ({year})
-                        </span>
                       </p>
+                      <span className="text-xs md:text-sm text-base-content/60">
+                        {year}
+                      </span>
                     </div>
                     <button
                       onClick={() => handleAddFavorite(game)}
@@ -208,17 +238,17 @@ const AddFavoriteModal = ({ userId, onClose }: Props) => {
 
         {/* Footer */}
         <div className="p-4 border-t border-base-300 shrink-0">
-          <button onClick={onClose} className="btn btn-block">
+          <button onClick={handleClose} className="btn btn-block">
             Done
           </button>
         </div>
       </div>
 
-      {/* Backdrop */}
-      <div className="modal-backdrop" onClick={onClose}>
+      {/* Click outside to close - using form method="dialog" */}
+      <form method="dialog" className="modal-backdrop">
         <button>close</button>
-      </div>
-    </div>
+      </form>
+    </dialog>
   );
 };
 

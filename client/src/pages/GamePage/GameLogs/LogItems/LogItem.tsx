@@ -26,7 +26,7 @@ const LogItem = ({ log, currentUserId, onEdit, onDelete, onReport }: Props) => {
   };
 
   return (
-    <div className="bg-base-100 rounded-lg border border-base-300 p-6 mb-4">
+    <div className="bg-base-100 rounded border border-base-300 p-6 mb-4">
       {/* Header */}
       <LogItemHeader
         log={log}

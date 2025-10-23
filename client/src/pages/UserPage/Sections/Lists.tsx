@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useProfile } from "@/hooks/profiles";
 import { UserAuth } from "@/context/AuthContext";
 import { useUserLists } from "@/hooks/lists";
@@ -11,15 +11,7 @@ const Lists = () => {
   const { profile: currentUser } = UserAuth();
   const { data: viewedProfile } = useProfile(username || "", currentUser?.id);
   const isOwnProfile = currentUser?.id === viewedProfile?.id;
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  useEffect(() => {
-    document.body.style.overflow = isModalOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isModalOpen]);
 
   const {
     data: lists,
@@ -75,7 +67,6 @@ const Lists = () => {
               ? "Create your first game list to get started!"
               : `${viewedProfile?.display_name} hasn't created any lists yet.`}
           </p>
-
           {isOwnProfile && (
             <>
               <button
@@ -96,32 +87,36 @@ const Lists = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">
-          {isOwnProfile
-            ? "Your Lists"
-            : `${viewedProfile?.display_name}'s Lists`}
-        </h2>
-        {isOwnProfile && (
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="btn btn-secondary btn-sm"
-          >
-            New List
-          </button>
-        )}
-      </div>
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {lists.map((list) => (
-          <ListCard key={list.id} list={list} />
-        ))}
-      </div>
+    <>
+      {/* Always render the modal, control via isOpen */}
       <CreateListModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-    </div>
+
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">
+            {isOwnProfile
+              ? "Your Lists"
+              : `${viewedProfile?.display_name}'s Lists`}
+          </h2>
+          {isOwnProfile && (
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="btn btn-secondary btn-sm"
+            >
+              New List
+            </button>
+          )}
+        </div>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {lists.map((list) => (
+            <ListCard key={list.id} list={list} />
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

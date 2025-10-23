@@ -9,7 +9,7 @@ import {
   useUpdateRanks,
 } from "@/hooks/lists";
 import { useState, useEffect } from "react";
-import DraggableGameList from "@/components/content/DraggableGameList";
+import DraggableGameList from "@/pages/UserPage/Sections/Subsections/List/DraggableGameList";
 import DeleteListConfirmation from "./DeleteListConfirmation";
 import ListHeader from "./ListHeader";
 import RemovedItems from "./RemovedItems";

@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { Game, GameLogWithProfile } from "@/Interface";
 import { useGameLogForm } from "@/hooks/gameLogs/useGameLogForm";
 import ModalHeader from "./ModalHeader";
@@ -8,11 +9,20 @@ type Props = {
   game: Game;
   userId: string;
   onClose: () => void;
+  isOpen: boolean;
   editingLog?: GameLogWithProfile | null;
   onSuccess?: () => void;
 };
 
-const CreateLogModal = ({ game, userId, onClose, editingLog }: Props) => {
+const CreateLogModal = ({
+  game,
+  userId,
+  onClose,
+  isOpen,
+  editingLog,
+}: Props) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
   const {
     formData,
     formHandlers,
@@ -31,13 +41,42 @@ const CreateLogModal = ({ game, userId, onClose, editingLog }: Props) => {
     isInitialDraftLoad,
   } = useGameLogForm({ userId, gameId: game.id, editingLog });
 
+  // Handle opening/closing the dialog
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      dialog.showModal();
+    } else {
+      dialog.close();
+    }
+  }, [isOpen]);
+
+  // Handle dialog close event
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    const handleClose = () => {
+      onClose();
+    };
+
+    dialog.addEventListener("close", handleClose);
+    return () => dialog.removeEventListener("close", handleClose);
+  }, [onClose]);
+
   const onSubmit = () => handleSubmit(onClose);
 
   return (
-    <dialog className="modal modal-open">
-      <div className="bg-base-100 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <dialog ref={dialogRef} className="modal">
+      <div className="modal-box rounded overflow-y-auto max-w-md md:max-w-2xl max-h-[80vh]">
         {/* Header */}
-        <ModalHeader game={game} onClose={onClose} isEditing={isEditing} />
+        <ModalHeader
+          game={game}
+          onClose={() => dialogRef.current?.close()}
+          isEditing={isEditing}
+        />
 
         {/* Loading state for initial draft fetch */}
         {isDraftLoading && !isEditing && (
@@ -47,7 +86,7 @@ const CreateLogModal = ({ game, userId, onClose, editingLog }: Props) => {
           </div>
         )}
 
-        {/* Form Content - only show when draft is loaded or when editing */}
+        {/* Form Content */}
         {(hasDraftLoaded || isEditing) && (
           <GameLogForm
             game={game}
@@ -56,13 +95,13 @@ const CreateLogModal = ({ game, userId, onClose, editingLog }: Props) => {
           />
         )}
 
-        {/* Footer - only show when draft is loaded or when editing */}
+        {/* Footer */}
         {(hasDraftLoaded || isEditing) && (
           <ModalFooter
             onSaveDraft={saveDraft}
             onDeleteDraft={deleteDraft}
             onSubmit={onSubmit}
-            onClose={onClose}
+            onClose={() => dialogRef.current?.close()}
             isLoading={isLoading}
             isDraftSaving={isDraftSaving}
             isDraftDeleting={isDraftDeleting}
@@ -81,6 +120,11 @@ const CreateLogModal = ({ game, userId, onClose, editingLog }: Props) => {
           </div>
         )}
       </div>
+
+      {/* Click outside to close */}
+      <form method="dialog" className="modal-backdrop">
+        <button>close</button>
+      </form>
     </dialog>
   );
 };

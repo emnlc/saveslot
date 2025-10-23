@@ -1,6 +1,6 @@
 import { usePopularUserLists } from "@/hooks/lists/";
 import { Link } from "@tanstack/react-router";
-import { List, Heart, Gamepad2, ArrowRight } from "lucide-react";
+import { List, Heart, ArrowRight } from "lucide-react";
 
 interface Props {
   userId: string;
@@ -102,11 +102,10 @@ const PopularListsWidget = ({ userId, username }: Props) => {
 
               <div className="flex items-center gap-3 text-xs text-base-content/60">
                 <div className="flex items-center gap-1">
-                  <Gamepad2 className="w-3 h-3" />
-                  <span>{list.item_count}</span>
+                  <span>{list.item_count} Games</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Heart className="w-3 h-3" />
+                  <Heart className="w-3 fill-base-content/60" stroke="0" />
                   <span>{list.like_count}</span>
                 </div>
               </div>

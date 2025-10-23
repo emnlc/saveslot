@@ -57,7 +57,7 @@ const CommentInput = ({ onSubmit, isSubmitting, profile }: Props) => {
           placeholder="Add a comment..."
           maxLength={1000}
           rows={2}
-          className="textarea textarea-neutral focus:textarea-primary focus:outline-0 transition-all w-full resize-none text-xs md:text-sm"
+          className="textarea rounded textarea-neutral focus:textarea-primary focus:outline-0 transition-all w-full resize-none text-xs md:text-sm"
         />
         <div className="flex justify-between items-center mt-2">
           <span className="text-xs  text-base-content/60">

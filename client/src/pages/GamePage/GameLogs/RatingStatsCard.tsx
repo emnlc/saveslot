@@ -35,7 +35,7 @@ const RatingStatsCard = ({ stats }: Props) => {
   const ratingCounts = calculateRatingCounts();
 
   return (
-    <div className="bg-base-100 rounded-lg border border-base-300 p-6 mb-6">
+    <div className="bg-base-100 rounded border border-base-300 p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Community Rating</h3>
         <span className="text-sm text-base-content/60">

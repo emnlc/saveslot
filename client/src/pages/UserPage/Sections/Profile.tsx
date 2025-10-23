@@ -97,10 +97,11 @@ const Profile = () => {
         </div>
       </div>
 
-      {showAddFavoriteModal && currentUser && (
+      {currentUser && (
         <AddFavoriteModal
           userId={currentUser.id}
           onClose={() => setShowAddFavoriteModal(false)}
+          isOpen={showAddFavoriteModal}
         />
       )}
     </div>

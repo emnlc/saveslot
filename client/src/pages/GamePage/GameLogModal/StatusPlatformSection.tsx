@@ -1,4 +1,5 @@
 import { Game, GameStatus } from "@/Interface";
+import Select from "@/components/controls/Select";
 
 type Props = {
   gameStatus: GameStatus | null;
@@ -24,48 +25,35 @@ const StatusPlatformSection = ({
   onPlatformChange,
 }: Props) => {
   return (
-    <div className="flex justify-between flex-row gap-4">
+    <div className="flex justify-between flex-col md:flex-row gap-4">
       {/* Game Status */}
       <div className="w-full">
-        <label
-          htmlFor="gameStatusSelect"
-          className="block text-sm font-medium text-base-content mb-2"
-        >
-          Status
-        </label>
-        <select
-          id="gameStatusSelect"
+        <Select
+          label="Status"
+          options={GAME_STATUSES}
           value={gameStatus || ""}
-          onChange={(e) =>
-            onGameStatusChange((e.target.value as GameStatus) || null)
+          onChange={(value) =>
+            onGameStatusChange((value as GameStatus) || null)
           }
-          className="select w-full"
-        >
-          {GAME_STATUSES.map((status) => (
-            <option key={status.value} value={status.value}>
-              {status.label}
-            </option>
-          ))}
-        </select>
+          placeholder="Select status"
+        />
       </div>
 
       {/* Platform */}
       <div className="w-full">
-        <label className="block text-sm font-medium text-base-content mb-2">
-          Platform
-        </label>
-        <select
+        <Select
+          label="Platform"
+          options={[
+            { value: "", label: "Select platform" },
+            ...(game.platforms?.map((gamePlatform) => ({
+              value: gamePlatform.name,
+              label: gamePlatform.name,
+            })) || []),
+          ]}
           value={platform}
-          onChange={(e) => onPlatformChange(e.target.value)}
-          className="select select-bordered w-full"
-        >
-          <option value="">Select platform</option>
-          {game.platforms?.map((gamePlatform) => (
-            <option key={gamePlatform.id} value={gamePlatform.name}>
-              {gamePlatform.name}
-            </option>
-          ))}
-        </select>
+          onChange={(value) => onPlatformChange(value as string)}
+          placeholder="Select platform"
+        />
       </div>
     </div>
   );

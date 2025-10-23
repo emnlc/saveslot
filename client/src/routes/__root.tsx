@@ -5,6 +5,7 @@ import LoadingBar, { LoadingBarRef } from "react-top-loading-bar";
 
 import Navbar from "@/components/navbar/Navbar";
 import Footer from "@/components/Footer";
+import NotFound from "@/components/NotFound";
 
 function RootComponent() {
   const loadingBarRef = useRef<LoadingBarRef>(null);
@@ -52,4 +53,9 @@ function RootComponent() {
 
 export const Route = createRootRoute({
   component: RootComponent,
+  notFoundComponent: () => (
+    <>
+      <NotFound />
+    </>
+  ),
 });

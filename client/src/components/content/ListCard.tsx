@@ -33,11 +33,13 @@ const ListCard = ({ list }: Props) => {
     <Link
       to="/u/$username/list/$listslug"
       params={{ listslug: list.slug, username: viewedProfile?.username || "" }}
-      className="flex flex-col border border-base-300 rounded-lg p-2 md:p-4 hover:border-primary transition-all cursor-pointer h-full"
+      className="group duration-200 flex flex-col border border-base-300 rounded p-2 md:p-4 hover:border-primary transition-all cursor-pointer h-full"
     >
       <div className="flex justify-between items-center mb-3">
         <div className="flex flex-row items-center gap-2">
-          <h3 className="font-semibold text-lg truncate">{list.name}</h3>
+          <h3 className="font-semibold text-sm line-clamp-1 group-hover:text-primary transition-colors truncate">
+            {list.name}
+          </h3>
           {!list.is_public && <Lock className="w-4 h-4 text-base-content/50" />}
         </div>
       </div>
@@ -48,12 +50,12 @@ const ListCard = ({ list }: Props) => {
             {list.preview_games.slice(0, 5).map((game, index) => (
               <div
                 key={game.id}
-                className="w-16 h-24 md:w-18 md:h-26 rounded bg-gray-200 flex items-center justify-center text-sm font-medium overflow-hidden flex-shrink-0 border border-base-300 shadow-md"
+                className="w-16 h-24 md:w-18 md:h-26 rounded bg-gray-200 flex items-center justify-center text-sm font-medium overflow-hidden flex-shrink-0 shadow-md"
                 style={{ zIndex: 10 - index }}
               >
                 {game.cover_id ? (
                   <img
-                    src={`https://images.igdb.com/igdb/image/upload/t_1080p/${game.cover_id}.jpg`}
+                    src={`https://images.igdb.com/igdb/image/upload/t_cover_med/${game.cover_id}.jpg`}
                     alt={game.name}
                     className="w-full h-full object-cover"
                   />

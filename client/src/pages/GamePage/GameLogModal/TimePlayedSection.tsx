@@ -16,7 +16,7 @@ const TimePlayedSection = ({
   return (
     <div className="flex flex-row justify-between items-center">
       <div>
-        <label className="block text-sm font-medium text-base-content mb-2">
+        <label className="block text-sm font-medium text-base-content mb-3">
           <Clock className="w-4 h-4 inline mr-1" />
           Time Played
         </label>
@@ -27,7 +27,7 @@ const TimePlayedSection = ({
               min="0"
               value={hoursPlayed ?? ""}
               onChange={(e) => onHoursChange(e.target.value)}
-              className="input input-bordered w-20"
+              className="input input-sm focus:outline-none focus:ring-0 focus:input-primary w-20 rounded transition-all"
               placeholder="0"
             />
             <span className="ml-2 text-sm text-base-content/60">hours</span>
@@ -39,7 +39,7 @@ const TimePlayedSection = ({
               max="59"
               value={minutesPlayed ?? ""}
               onChange={(e) => onMinutesChange(e.target.value)}
-              className="input input-bordered w-20"
+              className="input input-sm focus:outline-none focus:ring-0 focus:input-primary w-20 rounded transition-all"
               placeholder="0"
             />
             <span className="ml-2 text-sm text-base-content/60">minutes</span>

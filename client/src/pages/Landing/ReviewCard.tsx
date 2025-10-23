@@ -7,25 +7,20 @@ interface ReviewCardProps {
 }
 
 const ReviewCard = ({ review }: ReviewCardProps) => {
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.slice(0, maxLength).trim() + "...";
-  };
-
   return (
     <Link
       to={`/u/$username/reviews`}
       params={{ username: review.profile.username }}
-      className="group block p-4 rounded-xl bg-base-200/50 hover:bg-base-200 transition-all duration-200 border border-transparent hover:border-base-300"
+      className="group duration-200 flex flex-col border border-base-300 rounded p-2 md:p-4 hover:border-primary transition-all cursor-pointer h-full"
     >
       <div className="flex gap-3">
         {/* Game Cover - Smaller */}
         {review.game.cover_id && (
           <div className="flex-shrink-0">
             <img
-              src={`https://images.igdb.com/igdb/image/upload/t_cover_small/${review.game.cover_id}.jpg`}
+              src={`https://images.igdb.com/igdb/image/upload/t_cover_med/${review.game.cover_id}.jpg`}
               alt={review.game.name}
-              className="w-20 h-28 object-cover rounded"
+              className="w-20 object-cover rounded"
             />
           </div>
         )}
@@ -48,7 +43,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
 
           {/* Game Name & Rating + Likes */}
           <div className="mb-2">
-            <h3 className="font-semibold text-sm truncate mb-1">
+            <h3 className="group-hover:text-primary transition-colors font-semibold text-sm truncate mb-1">
               {review.game.name}
             </h3>
 
@@ -63,7 +58,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
               <span className="text-base-content/60">•</span>
               {/* Likes */}
               <div className="flex items-center gap-1 text-xs text-base-content/80">
-                <Heart className="w-3 h-3" />
+                <Heart className="w-3 fill-base-content/60" stroke="0" />
                 <span>{review.like_count || 0}</span>
               </div>
             </div>
@@ -72,7 +67,7 @@ const ReviewCard = ({ review }: ReviewCardProps) => {
           {/* Review Text - Truncated */}
           {review.review_text && (
             <p className="text-xs text-base-content/70 line-clamp-2 mb-2">
-              {truncateText(review.review_text, 120)}
+              {review.review_text}
             </p>
           )}
         </div>

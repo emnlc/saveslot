@@ -28,20 +28,22 @@ const GamePageHeader = ({ data }: Props) => {
 
   return (
     <>
-      {showModal && profile && (
+      {profile && (
         <AddToListModal
           gameId={data.id}
           gameTitle={data.name}
           onClose={() => setShowModal(false)}
+          isOpen={showModal}
         />
       )}
 
       {/* Add the CreateLogModal */}
-      {showLogModal && profile && data.is_released && (
+      {profile && data.is_released && (
         <CreateLogModal
           game={data}
           userId={profile.id}
           onClose={() => setShowLogModal(false)}
+          isOpen={showLogModal}
         />
       )}
 

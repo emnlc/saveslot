@@ -11,7 +11,7 @@ import {
   Trash,
   Gift,
   Play,
-  Check,
+  Trophy,
   Ban,
   ChevronRight,
   ChevronDown,
@@ -81,7 +81,7 @@ const GameStatusRadio = ({ gameId, released }: Props) => {
     {
       key: "completed" as const,
       label: "Completed",
-      icon: Check,
+      icon: Trophy,
       color: "success",
     },
     {
