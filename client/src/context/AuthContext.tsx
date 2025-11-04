@@ -247,9 +247,27 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const { error: listError } = await supabase.from("game_lists").insert([
-        { user_id: userId, name: "Favorites", is_public: true },
-        { user_id: userId, name: "Backlog", is_public: true },
-        { user_id: userId, name: "Wishlist", is_public: true },
+        {
+          user_id: userId,
+          name: "Favorites",
+          is_public: true,
+          ranked: false,
+          slug: "favorites",
+        },
+        {
+          user_id: userId,
+          name: "Backlog",
+          is_public: true,
+          ranked: false,
+          slug: "backlog",
+        },
+        {
+          user_id: userId,
+          name: "Wishlist",
+          is_public: true,
+          ranked: false,
+          slug: "wishlist",
+        },
       ]);
 
       if (listError) {
